@@ -24,28 +24,32 @@ const client = new MongoClient(uri, {
 // Connect to MongoDB
 async function run() {
     try {
+        await client.connect();
         console.log("Connected to MongoDB successfully!");
+
         const bookCollections = client.db("BookInventory").collection("Books");
 
+        // ✅ Fix: Add a homepage route
+        app.get("/", (req, res) => {
+            res.send("Backend is running successfully!");
+        });
+
         // Insert a book (POST)
-     // Insert a book (POST)
-app.post("/upload-book", async (req, res) => {
-    const { title, authorName, imageURL, category, bookDescription, bookPdfURL } = req.body;
-    
-    // Validate required fields
-    if (!title || !authorName || !imageURL || !category || !bookDescription || !bookPdfURL) {
-        return res.status(400).json({ error: "All fields are required" });
-    }
+        app.post("/upload-book", async (req, res) => {
+            const { title, authorName, imageURL, category, bookDescription, bookPdfURL } = req.body;
+            
+            if (!title || !authorName || !imageURL || !category || !bookDescription || !bookPdfURL) {
+                return res.status(400).json({ error: "All fields are required" });
+            }
 
-    try {
-        const newBook = { title, authorName, imageURL, category, bookDescription, bookPdfURL };
-        const result = await bookCollections.insertOne(newBook);
-        res.status(201).json({ success: true, message: "Book uploaded successfully", book: newBook });
-    } catch (error) {
-        res.status(500).json({ error: "Failed to add book", details: error.message });
-    }
-});
-
+            try {
+                const newBook = { title, authorName, imageURL, category, bookDescription, bookPdfURL };
+                await bookCollections.insertOne(newBook);
+                res.status(201).json({ success: true, message: "Book uploaded successfully", book: newBook });
+            } catch (error) {
+                res.status(500).json({ error: "Failed to add book", details: error.message });
+            }
+        });
 
         // Get all books (GET)
         app.get("/all-books", async (req, res) => {
@@ -63,8 +67,7 @@ app.post("/upload-book", async (req, res) => {
         app.get("/books/:id", async (req, res) => {
             try {
                 const id = req.params.id;
-                const filter = { _id: new ObjectId(id) };
-                const book = await bookCollections.findOne(filter);
+                const book = await bookCollections.findOne({ _id: new ObjectId(id) });
 
                 if (!book) {
                     return res.status(404).json({ error: "Book not found" });
@@ -82,10 +85,10 @@ app.post("/upload-book", async (req, res) => {
             try {
                 const id = req.params.id;
                 const updateBookData = req.body;
-                const filter = { _id: new ObjectId(id) };
-                const updatedDoc = { $set: updateBookData };
-
-                const result = await bookCollections.updateOne(filter, updatedDoc);
+                const result = await bookCollections.updateOne(
+                    { _id: new ObjectId(id) },
+                    { $set: updateBookData }
+                );
 
                 if (result.modifiedCount === 0) {
                     return res.status(404).json({ error: "Book not found or no changes made" });
@@ -102,8 +105,7 @@ app.post("/upload-book", async (req, res) => {
         app.delete("/book/:id", async (req, res) => {
             try {
                 const id = req.params.id;
-                const filter = { _id: new ObjectId(id) };
-                const result = await bookCollections.deleteOne(filter);
+                const result = await bookCollections.deleteOne({ _id: new ObjectId(id) });
 
                 if (result.deletedCount > 0) {
                     res.json({ success: true, message: "Book deleted successfully" });
@@ -116,15 +118,15 @@ app.post("/upload-book", async (req, res) => {
             }
         });
 
+        // ✅ Fix: Start server only after MongoDB is connected
+        app.listen(port, () => {
+            console.log(`Server running on port ${port}`);
+        });
+
     } catch (error) {
         console.error("Error connecting to MongoDB:", error);
     }
 }
 
-// ✅ Move outside of `run()`
+// Start the app
 run().catch(console.dir);
-
-// Start the server
-app.listen(port, () => {
-    console.log(`Server running on port ${port}`);
-});
