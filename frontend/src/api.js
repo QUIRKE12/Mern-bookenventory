@@ -7,6 +7,7 @@ export const getAllBooks = async () => {
   return res.json();
 };
 
+
 // Get single book
 export const getBookById = async (id) => {
   const res = await fetch(`${BASE_URL}/books/${id}`);
