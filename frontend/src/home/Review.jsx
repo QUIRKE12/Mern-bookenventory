@@ -7,7 +7,7 @@ import { Pagination } from "swiper/modules";
 // Import React icons
 import { FaStar } from "react-icons/fa6";
 import { Avatar } from "flowbite-react";
-import profile from "../assets/profile.jpeg";
+import profile from  "/assets/profile.jpeg";
 
 // Import Swiper styles
 import "swiper/css";

@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import awar from "../assets/awar.png";
+import awar from "/assets/awar.png";
 
 const PromoBanner = () => {
   return (

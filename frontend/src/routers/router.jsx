@@ -13,15 +13,19 @@ import Dashboard from "../dashboard/Dashboard";
 import UploadBook from "../dashboard/UploadBook";
 import ManageBooks from "../dashboard/ManageBooks";
 import EditBooks from "../dashboard/EditBooks";
-import SideBar from "../dashboard/SideBar";
 import Login from "../components/Login";
 import PrivateRoute from "../PrivateRoute/PrivateRoute";
 import Logout from "../components/Logout";
+import About from "../about/About";
+import Blog from "../blog/Blog";
+import NotFound from "../components/NotFound";
 
 // Fetching Book Data Before Edit Page Loads
+const API_URL = import.meta.env.VITE_API_URL;
+
 const fetchBookData = async ({ params }) => {
   try {
-    const res = await fetch(`http://localhost:5000/books/${params.id}`);
+    const res = await fetch(`${API_URL}/books/${params.id}`);
     if (!res.ok) throw new Error("Failed to load book data");
     return res.json();
   } catch (error) {
@@ -31,33 +35,38 @@ const fetchBookData = async ({ params }) => {
 };
 
 const router = createBrowserRouter([
+  // ✅ Main layout with Navbar and Footer
   {
     path: "/",
-    element: <App />,
+    element: <App />, 
     children: [
       { path: "/", element: <Home /> },
       { path: "/shop", element: <Shop /> },
       { path: "/singlebook", element: <SingleBook /> },
+      { path: "/about", element: <About /> },
+      { path: "/blog", element: <Blog /> },
     ],
   },
+
+  // ✅ Signup & Login (without Navbar & Footer)
+  { path: "/sign-up", element: <Signup /> }, // ❌ Moved OUTSIDE App
+  { path: "/login", element: <Login /> },
+  { path: "/logout", element: <Logout /> },
+
+  // ✅ Dashboard Layout (Private)
   {
     path: "/admin",
-    element: <DashboardLayout />,
+    element: <PrivateRoute><DashboardLayout /></PrivateRoute>,
     children: [
-      { path: "dashboard", element: <PrivateRoute><Dashboard /></PrivateRoute> },
-      { path: "upload", element: <PrivateRoute><UploadBook /></PrivateRoute> },
-      { path: "manage", element: <PrivateRoute><ManageBooks /></PrivateRoute> },
-      { path: "sidebar", element: <PrivateRoute><SideBar /></PrivateRoute> },
-      {
-        path: "edit-books/:id",
-        element: <PrivateRoute><EditBooks /></PrivateRoute>,
-        loader: fetchBookData, // Use the function for better error handling
-      },
+      { path: "dashboard", element: <Dashboard /> },
+      { path: "upload", element: <UploadBook /> },
+      { path: "manage", element: <ManageBooks /> },
+      { path: "edit-books/:id", element: <EditBooks />, loader: fetchBookData },
     ],
   },
-  { path: "/sign-up", element: <Signup /> },
-  { path: "/login", element: <Login /> },
-  { path: "/logout", element: <Logout /> }
+
+  // ✅ 404 Not Found Page
+  { path: "*", element: <NotFound /> },
 ]);
 
 export default router;

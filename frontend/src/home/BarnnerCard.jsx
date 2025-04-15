@@ -18,12 +18,12 @@ const BarnnerCard = () => {
         modules={[EffectCards]}
         className="mySwiper"
       >
-        <SwiperSlide></SwiperSlide>
-        <SwiperSlide></SwiperSlide>
-        <SwiperSlide></SwiperSlide>
-        <SwiperSlide></SwiperSlide>
-        <SwiperSlide></SwiperSlide>
-        <SwiperSlide></SwiperSlide>
+ <SwiperSlide className="swiper-slide-1"></SwiperSlide>
+<SwiperSlide className="swiper-slide-2"></SwiperSlide>
+<SwiperSlide className="swiper-slide-3"></SwiperSlide>
+<SwiperSlide className="swiper-slide-4"></SwiperSlide>
+<SwiperSlide className="swiper-slide-5"></SwiperSlide>
+
       </Swiper>
           </div>
   )

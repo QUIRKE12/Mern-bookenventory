@@ -1,11 +1,17 @@
 import React, { useContext, useState } from "react";
-import { AuthContext } from "../contexts/AuthContext"; // Correct path
-import googleLogo from "../assets/google-logo.svg";
+import { AuthContext } from "../contexts/AuthContext";
+import { useNavigate, useLocation } from "react-router-dom"; // Import navigation hooks
+import googleLogo from "/assets/google-logo.svg";
 
 const Signup = () => {
-  const { createUser, loginwithGoogle } = useContext(AuthContext); // Correctly accessing context
+  const { createUser, loginwithGoogle } = useContext(AuthContext);
   const [error, setError] = useState("");
+  
+  const navigate = useNavigate(); // Initialize navigation
+  const location = useLocation(); // Get the current location
+  const from = location.state?.from?.pathname || "/"; // Redirect back to original page or home
 
+  // ✅ Handle Email/Password Signup
   const handleSignUp = async (event) => {
     event.preventDefault();
     const form = event.target;
@@ -13,62 +19,65 @@ const Signup = () => {
     const password = form.password.value;
 
     try {
-      await createUser(email, password); // Call createUser
-      alert("Sign up successfully");
+      await createUser(email, password); // Call createUser function from AuthContext
+      alert("Sign up successful!");
+      navigate(from, { replace: true }); // Redirect user after signup
     } catch (error) {
       setError(error.message);
     }
   };
 
+  // ✅ Handle Google Signup
   const handleRegister = async () => {
     try {
-      const result = await loginwithGoogle(); // Get the result of Google login
-      const user = result.user; // Access the authenticated user information
-      alert("Signed up successfully with Google!");
-      console.log(user); // Log the user data or use it further
+      const result = await loginwithGoogle();
+      const user = result.user;
+      alert(`Welcome, ${user.displayName}! Signed up successfully with Google.`);
+      navigate(from, { replace: true }); // Redirect user after Google login
     } catch (error) {
       if (error.code === "auth/popup-closed-by-user") {
         alert("Popup was closed before completing the login. Please try again.");
       } else {
-        alert("An error occurred: " + error.message);
+        setError(error.message);
       }
     }
   };
-  
-  
 
   return (
     <div className="min-h-screen bg-gray-100 py-6 flex flex-col justify-center sm:py-12">
       <div className="relative py-3 sm:max-w-xl sm:mx-auto">
-        <div
-          className="absolute inset-0 bg-gradient-to-r from-blue-300 to-blue-600 shadow-lg transform -skew-y-6 sm:skew-y-0 sm:-rotate-6 sm:rounded-3xl"
-        />
+        <div className="absolute inset-0 bg-gradient-to-r from-blue-300 to-blue-600 shadow-lg transform -skew-y-6 sm:skew-y-0 sm:-rotate-6 sm:rounded-3xl" />
         <div className="relative px-4 py-10 bg-white shadow-lg sm:rounded-3xl sm:p-20">
           <div className="max-w-md mx-auto">
-            <div>
-              <h1 className="text-2xl font-semibold">Sign up Form</h1>
-            </div>
-            <form onSubmit={handleSignUp} className="py-8 text-base leading-6 space-y-4 text-gray-700 sm:text-lg sm:leading-7">
+            <h1 className="text-2xl font-semibold">Sign Up Form</h1>
+            <form onSubmit={handleSignUp} className="py-8 space-y-4">
               <input
-                id="email"
                 name="email"
-                type="text"
-                className="peer h-10 w-full border-b-2 border-gray-300 text-gray-900 focus:outline-none focus:border-rose-600"
+                type="email"
+                required
+                className="h-10 w-full border-b-2 border-gray-300 text-gray-900 focus:outline-none focus:border-blue-600"
                 placeholder="Email address"
               />
               <input
-                id="password"
                 name="password"
                 type="password"
-                className="peer h-10 w-full border-b-2 border-gray-300 text-gray-900 focus:outline-none focus:border-rose-600"
+                required
+                className="h-10 w-full border-b-2 border-gray-300 text-gray-900 focus:outline-none focus:border-blue-600"
                 placeholder="Password"
               />
-              <button className="bg-blue-500 text-white rounded-md px-6 py-2">Sign up</button>
+              <button type="submit" className="w-full bg-blue-500 text-white rounded-md px-6 py-2 hover:bg-blue-600">
+                Sign Up
+              </button>
             </form>
-            <button onClick={handleRegister} className="block">
-              <img src={googleLogo} alt="" className="w-12 h-12 inline-block" /> Login with Google
+            
+            {/* Google Login Button */}
+            <button onClick={handleRegister} className="w-full flex items-center justify-center gap-2 border px-4 py-2 rounded-md hover:bg-gray-100">
+              <img src={googleLogo} alt="Google" className="w-6 h-6" />
+              Sign up with Google
             </button>
-            {error && <p className="text-red-500">{error}</p>}
+
+            {/* Error Message */}
+            {error && <p className="text-red-500 mt-2">{error}</p>}
           </div>
         </div>
       </div>

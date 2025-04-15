@@ -3,7 +3,7 @@ import { HiArrowSmRight, HiChartPie, HiInbox, HiOutlineCloudUpload, HiShoppingBa
 import { useContext } from "react";
 import { AuthContext } from "../contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
-import defaultProfile from "../assets/profile.jpeg"; // Default image for users without profile pictures
+import defaultProfile from "/assets/profile.jpeg"; // Default image for users without profile pictures
 
 const SideBar = () => {
   const { user, logout } = useContext(AuthContext);
