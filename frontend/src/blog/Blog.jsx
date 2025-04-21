@@ -1,7 +1,7 @@
 import React from 'react';
 import post from '/assets/books.jpg';
 import postImage from "/assets/awar.png";
-import postImag from "/assets/profile.jpeg";
+import postImag from "/assets/salvator.jpg";
 
 const Blog = () => {
   return (

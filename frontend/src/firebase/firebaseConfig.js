@@ -2,12 +2,13 @@ import { initializeApp } from "firebase/app";
 import { getAuth } from "firebase/auth";
 
 const firebaseConfig = {
-    apiKey: import.meta.env.VITE_FIREBASE_API_KEY, // ! asserts non-null
-    authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
-    projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
-    storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
-    messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
-    appId: import.meta.env.VITE_FIREBASE_APP_ID,
+    apiKey: "AIzaSyACRrFBgVMBFmuEq6hrfvhPmedAmdGz8CU",
+  authDomain: "mern-book-ed810.firebaseapp.com",
+  projectId: "mern-book-ed810",
+  storageBucket: "mern-book-ed810.firebasestorage.app",
+  messagingSenderId: "827040606336",
+  appId: "1:827040606336:web:f70c82fd2bdee586851e65",
+  measurementId: "G-FMSW3W29VW"
 };
 
 const app = initializeApp(firebaseConfig);

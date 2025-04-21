@@ -57,8 +57,8 @@ const Dashboard = () => {
           <h2 className="text-lg font-semibold mb-3">📢 Recent Activity</h2>
           <ul className="text-gray-600 space-y-2">
             <li>📚 New book added: <strong>"The Art of React"</strong></li>
-            <li>👤 New user registered: <strong>John Kelly</strong></li>
-            <li>🛒 Order placed by <strong>Kelly Smith</strong></li>
+            <li>👤 New user registered: <strong>Salvaking</strong></li>
+            <li>🛒 Order placed by <strong>Salvator Ahishakiye</strong></li>
           </ul>
         </div>
 

@@ -7,7 +7,7 @@ import { Pagination } from "swiper/modules";
 // Import React icons
 import { FaStar } from "react-icons/fa6";
 import { Avatar } from "flowbite-react";
-import profile from  "/assets/profile.jpeg";
+import profile from  "/assets/salvator.jpg";
 
 // Import Swiper styles
 import "swiper/css";
@@ -18,8 +18,8 @@ const Review = () => {
   const reviews = [
     {
       id: 1,
-      name: "Kelly Nishimwe",
-      title: "CEO, Kelly Group Company",
+      name: "Salvator Ahishakiye",
+      title: "CEO, Salvator energy Group Company",
       image: profile,
       rating: 4,
       review:
@@ -27,7 +27,7 @@ const Review = () => {
     },
     {
       id: 2,
-      name: "Kelly Nishimwe",
+      name: "Salvator Ahishakiye",
       title: "Founder, Tech Solutions",
       image: profile,
       rating: 5,
@@ -36,7 +36,7 @@ const Review = () => {
     },
     {
       id: 3,
-      name: "Kelly Nishimwe",
+      name: "Salvator Ahishakiye",
       title: "Manager, Creative Studio",
       image: profile,
       rating: 5,
