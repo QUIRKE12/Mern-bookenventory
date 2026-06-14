@@ -7,7 +7,7 @@ function App() {
     <>
       <Navbar />
       <div className="min-h-screen">
-        <Outlet /> {/* This will render the current page */}
+        <Outlet />
       </div>
       <MyFooter />
     </>
