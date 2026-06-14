@@ -1,13 +1,13 @@
 import { useState, useEffect } from "react";
-import { AuthContext } from "./AuthContext"; // Import AuthContext from separate file
-import { auth } from "../firebase/firebaseConfig"; // Firebase configuration
-import { 
-  createUserWithEmailAndPassword, 
-  signInWithPopup, 
-  GoogleAuthProvider, 
-  onAuthStateChanged, 
-  signInWithEmailAndPassword, 
-  signOut
+import { AuthContext } from "./AuthContext";
+import { auth } from "../firebase/firebase.config";
+import {
+  createUserWithEmailAndPassword,
+  signInWithPopup,
+  GoogleAuthProvider,
+  onAuthStateChanged,
+  signInWithEmailAndPassword,
+  signOut,
 } from "firebase/auth";
 
 const googleProvider = new GoogleAuthProvider();
@@ -16,64 +16,26 @@ const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  // Create user function (Sign Up)
-  const createUser = async (email, password) => {
+  const createUser = (email, password) => {
     setLoading(true);
-    try {
-      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-      setUser(userCredential.user);
-    } catch (error) {
-      console.error("Signup error:", error);
-      alert(error.message);
-    } finally {
-      setLoading(false);
-    }
+    return createUserWithEmailAndPassword(auth, email, password);
   };
 
-  // Sign in with Google
-  const loginwithGoogle = async () => {
+  const loginwithGoogle = () => {
     setLoading(true);
-    try {
-      const result = await signInWithPopup(auth, googleProvider);
-      setUser(result.user);
-      return result;
-    } catch (error) {
-      console.error("Google login error:", error);
-      throw error;
-    } finally {
-      setLoading(false);
-    }
+    return signInWithPopup(auth, googleProvider);
   };
 
-  // Login with Email and Password
-  const login = async (email, password) => {
+  const login = (email, password) => {
     setLoading(true);
-    try {
-      const userCredential = await signInWithEmailAndPassword(auth, email, password);
-      setUser(userCredential.user);
-      return userCredential.user;
-    } catch (error) {
-      console.error("Login error:", error);
-      alert(error.message);
-    } finally {
-      setLoading(false);
-    }
+    return signInWithEmailAndPassword(auth, email, password);
   };
 
-  // Logout function
-  const logout = async () => {
+  const logout = () => {
     setLoading(true);
-    try {
-      await signOut(auth);
-      setUser(null); // Clear user state on logout
-    } catch (error) {
-      console.error("Logout error:", error);
-    } finally {
-      setLoading(false);
-    }
+    return signOut(auth);
   };
 
-  // Handle authentication state change
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
       setUser(currentUser);
@@ -83,8 +45,17 @@ const AuthProvider = ({ children }) => {
     return () => unsubscribe();
   }, []);
 
+  const authInfo = {
+    user,
+    loading,
+    createUser,
+    login,
+    loginwithGoogle,
+    logout,
+  };
+
   return (
-    <AuthContext.Provider value={{ user, createUser, login, loginwithGoogle, logout, loading }}>
+    <AuthContext.Provider value={authInfo}>
       {children}
     </AuthContext.Provider>
   );
