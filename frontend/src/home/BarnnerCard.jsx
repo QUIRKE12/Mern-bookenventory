@@ -2,7 +2,7 @@ import { Swiper, SwiperSlide } from 'swiper/react';
 import 'swiper/css';
 import 'swiper/css/effect-cards';
 import './BarnnerCard.css';
-import { EffectCards } from 'swiper/modules';
+import { EffectCards, Autoplay } from 'swiper/modules';
 
 const BarnnerCard = () => {
   return (
@@ -10,7 +10,11 @@ const BarnnerCard = () => {
       <Swiper
         effect={'cards'}
         grabCursor={true}
-        modules={[EffectCards]}
+        modules={[EffectCards, Autoplay]}
+        autoplay={{
+          delay: 4000,
+          disableOnInteraction: false,
+        }}
         className="mySwiper"
       >
         <SwiperSlide />
