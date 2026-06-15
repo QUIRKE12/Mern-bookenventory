@@ -1,5 +1,5 @@
 import { useContext, useEffect, useState } from "react";
-import { FaBarsStaggered, FaXmark, FaWineBottle } from "react-icons/fa6";
+import { FaBarsStaggered, FaXmark, FaWineBottle, FaCartShopping } from "react-icons/fa6";
 import { Link, useNavigate } from "react-router-dom";
 import { AuthContext } from "../contexts/AuthContext";
 
@@ -56,6 +56,16 @@ const Navbar = () => {
               </li>
             ))}
             <li>
+              {user && (
+                <Link
+                  to="/orders"
+                  className="text-black hover:text-blue-700 transition"
+                >
+                  <FaCartShopping className="w-6 h-6" />
+                </Link>
+              )}
+            </li>
+            <li>
               {user ? (
                 <button
                   onClick={() => navigate("/admin/dashboard")}
@@ -100,6 +110,17 @@ const Navbar = () => {
                 </Link>
               </li>
             ))}
+            <li>
+              {user && (
+                <Link
+                  to="/orders"
+                  onClick={() => setIsMenuOpen(false)}
+                  className="text-black hover:text-blue-700"
+                >
+                  <FaCartShopping className="w-6 h-6" />
+                </Link>
+              )}
+            </li>
             <li>
               {user ? (
                 <button
