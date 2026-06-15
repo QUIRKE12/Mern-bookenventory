@@ -1,12 +1,12 @@
-import { useContext, useState, useEffect } from "react";
-import { FaBarsStaggered, FaBlog, FaXmark } from "react-icons/fa6";
+import { useContext, useEffect, useState } from "react";
+import { FaBarsStaggered, FaXmark, FaWineBottle } from "react-icons/fa6";
 import { Link, useNavigate } from "react-router-dom";
 import { AuthContext } from "../contexts/AuthContext";
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isSticky, setIsSticky] = useState(false);
-  const { user } = useContext(AuthContext); // Get user from context
+  const { user } = useContext(AuthContext);
   const navigate = useNavigate();
 
   const toggleMenu = () => {
@@ -15,124 +15,112 @@ const Navbar = () => {
 
   useEffect(() => {
     const handleScroll = () => {
-      if (window.scrollY > 100) {
-        setIsSticky(true);
-      } else {
-        setIsSticky(false);
-      }
+      setIsSticky(window.scrollY > 100);
     };
-
     window.addEventListener("scroll", handleScroll);
-    return () => {
-      window.removeEventListener("scroll", handleScroll);
-    };
+    return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  // Define nav items without conditional rendering
   const navItems = [
-    { link: "Home", path: "/" },
-    { link: "Shop", path: "/shop" },
-    { link: "About", path: "/about" },
-    { link: "Blog", path: "/blog" },
-
+    { link: "Ahabanza", path: "/" },
+    { link: "Ibinyobwa", path: "/shop" },
+    { link: "Turi Bande", path: "/about" },
+    { link: "Amakuru", path: "/blog" },
   ];
 
   return (
-    <header
-      className="w-full bg-transparent fixed top-0 left-0 right-0 transition-all ease-in duration-300 z-10"
-    >
-      <nav className={`py-4 lg:px-24 px-24 ${isSticky ? "sticky top-0 left-0 right-0 bg-blue-300" : ""}`}>
-        {/* Logo */}
-        <div className="flex justify-between items-center text-base gap-8">
-          <Link to="/" className="flex items-center gap-2 text-2xl font-bold text-blue-700">
-            <FaBlog className="inline-block" /> Books
+    <header className="w-full fixed top-0 left-0 right-0 z-50">
+      <nav
+        className={`py-4 lg:px-24 px-6 transition-all duration-300 ${
+          isSticky ? "bg-blue-200 shadow-md" : "bg-transparent"
+        }`}
+      >
+        <div className="flex justify-between items-center">
+          <Link
+            to="/"
+            className="flex items-center gap-2 text-2xl font-bold text-blue-700"
+          >
+            <FaWineBottle />
+            GIGO COMPANY
           </Link>
 
-          {/* Navigation Links for Large Devices */}
-          <ul className="md:flex space-x-12 hidden">
+          <ul className="hidden md:flex items-center gap-8">
             {navItems.map(({ link, path }) => (
               <li key={path}>
                 <Link
                   to={path}
-                  className="block text-base text-black uppercase cursor-pointer hover:text-blue-700"
+                  className="text-black font-medium hover:text-blue-700 transition"
                 >
                   {link}
                 </Link>
               </li>
             ))}
-
-            {/* Conditionally render "Sell Your Book" button based on login status */}
-            {user ? (
-              <li>
+            <li>
+              {user ? (
                 <button
                   onClick={() => navigate("/admin/dashboard")}
-                  className="block text-base text-black uppercase cursor-pointer hover:text-blue-700"
+                  className="bg-blue-700 text-white px-4 py-2 rounded-lg hover:bg-blue-800 transition"
                 >
-                  Sell Your Book
+                  Dashboard
                 </button>
-              </li>
-            ) : (
-              <li>
+              ) : (
                 <Link
                   to="/login"
-                  className="block text-base text-black uppercase cursor-pointer hover:text-blue-700"
+                  className="bg-blue-700 text-white px-4 py-2 rounded-lg hover:bg-blue-800 transition"
                 >
-                  Sell Your Book
+                  Injira
                 </Link>
-              </li>
-            )}
+              )}
+            </li>
           </ul>
 
-          {/* Menu Button for Mobile Devices */}
           <div className="md:hidden">
-            <button onClick={toggleMenu} className="text-black focus:outline-none">
+            <button onClick={toggleMenu}>
               {isMenuOpen ? (
-                <FaXmark className="h-5 w-5 text-black" />
+                <FaXmark className="w-6 h-6 text-black" />
               ) : (
-                <FaBarsStaggered className="h-5 w-5 text-black" />
+                <FaBarsStaggered className="w-6 h-6 text-black" />
               )}
             </button>
           </div>
         </div>
       </nav>
 
-      {/* Mobile Menu */}
       {isMenuOpen && (
         <div className="md:hidden absolute top-16 left-0 w-full bg-white shadow-md">
-          <ul className="flex flex-col items-center space-y-4 py-4">
+          <ul className="flex flex-col items-center gap-6 py-6">
             {navItems.map(({ link, path }) => (
               <li key={path}>
                 <Link
                   to={path}
-                  className="block text-base text-black uppercase cursor-pointer hover:text-blue-700"
-                  onClick={() => setIsMenuOpen(false)} // Close menu on click
+                  className="text-black font-medium hover:text-blue-700"
+                  onClick={() => setIsMenuOpen(false)}
                 >
                   {link}
                 </Link>
               </li>
             ))}
-
-            {/* Conditionally render "Sell Your Book" button in mobile menu */}
-            {user ? (
-              <li>
+            <li>
+              {user ? (
                 <button
-                  onClick={() => navigate("/admin/dashboard")}
-                  className="block text-base text-black uppercase cursor-pointer hover:text-blue-700"
+                  onClick={() => {
+                    navigate("/admin/dashboard");
+                    setIsMenuOpen(false);
+                  }}
+                  className="bg-blue-700 text-white px-4 py-2 rounded-lg"
                 >
-                  Sell Your Book
+                  Dashboard
                 </button>
-              </li>
-            ) : (
-              <li>
+              ) : (
                 <Link
                   to="/login"
-                  className="block text-base text-black uppercase cursor-pointer hover:text-blue-700"
-                  onClick={() => setIsMenuOpen(false)} // Close menu on click
+                  onClick={() => setIsMenuOpen(false)}
+                  className="bg-blue-700 text-white px-4 py-2 rounded-lg"
                 >
-                  Sell Your Book
+                  Injira
                 </Link>
-              </li>
-            )}
+              )}
+            </li>
           </ul>
         </div>
       )}
