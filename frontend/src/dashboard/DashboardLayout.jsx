@@ -3,11 +3,11 @@ import SideBar from "./SideBar";
 
 const DashboardLayout = () => {
   return (
-    <div className="flex">
+    <div className="flex min-h-screen bg-gray-100">
       <SideBar />
-      <div className="flex-1 ml-48 p-4">
-        <Outlet /> {/* This will render the child routes */}
-      </div>
+      <main className="flex-1 md:ml-64 p-6">
+        <Outlet />
+      </main>
     </div>
   );
 };
