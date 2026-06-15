@@ -1,20 +1,20 @@
 import { useEffect, useState } from "react";
-import BarnnerCards from "../components/BookCards";
+import ProductCards from "../components/ProductCards";
 
-const BestSellerBooks = () => {
-  const [books, setBooks] = useState([]);
+const BestSellerProducts = () => {
+  const [products, setProducts] = useState([]);
 
   useEffect(() => {
-    fetch("http://localhost:5000/all-books")
+    fetch(`${import.meta.env.VITE_API_URL}/all-products`)
       .then((res) => res.json())
-      .then((data) => setBooks(data.slice(0, 8)));
+      .then((data) => setProducts(data.slice(0, 8)));
   }, []);
 
   return (
     <div className="px-4 lg:px-24 my-16">
-      <BarnnerCards books={books} headline="Best Seller Books" />
+      <ProductCards products={products} headline="Best Seller Products" />
     </div>
   );
 };
 
-export default BestSellerBooks;
+export default BestSellerProducts;
