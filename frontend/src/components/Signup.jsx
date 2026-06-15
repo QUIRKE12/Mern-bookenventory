@@ -1,42 +1,42 @@
 import React, { useContext, useState } from "react";
 import { AuthContext } from "../contexts/AuthContext";
-import { useNavigate, useLocation } from "react-router-dom"; // Import navigation hooks
-import googleLogo from "/assets/google-logo.svg";
+import { useNavigate, useLocation, Link } from "react-router-dom";
 
 const Signup = () => {
   const { createUser, loginwithGoogle } = useContext(AuthContext);
   const [error, setError] = useState("");
-  
-  const navigate = useNavigate(); // Initialize navigation
-  const location = useLocation(); // Get the current location
-  const from = location.state?.from?.pathname || "/"; // Redirect back to original page or home
+  const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
+  const location = useLocation();
+  const from = location.state?.from?.pathname || "/";
 
-  // ✅ Handle Email/Password Signup
   const handleSignUp = async (event) => {
     event.preventDefault();
     const form = event.target;
     const email = form.email.value;
     const password = form.password.value;
-
+    setError("");
+    setLoading(true);
     try {
-      await createUser(email, password); // Call createUser function from AuthContext
-      alert("Sign up successful!");
-      navigate(from, { replace: true }); // Redirect user after signup
+      await createUser(email, password);
+      alert("Konti yawe yaremwe neza!");
+      navigate(from, { replace: true });
     } catch (error) {
       setError(error.message);
+    } finally {
+      setLoading(false);
     }
   };
 
-  // ✅ Handle Google Signup
-  const handleRegister = async () => {
+  const handleGoogleSignup = async () => {
     try {
       const result = await loginwithGoogle();
       const user = result.user;
-      alert(`Welcome, ${user.displayName}! Signed up successfully with Google.`);
-      navigate(from, { replace: true }); // Redirect user after Google login
+      alert(`Murakaza neza ${user.displayName || user.email}`);
+      navigate(from, { replace: true });
     } catch (error) {
       if (error.code === "auth/popup-closed-by-user") {
-        alert("Popup was closed before completing the login. Please try again.");
+        setError("Mwarafunze idirisha rya Google mutararangiza kwiyandikisha.");
       } else {
         setError(error.message);
       }
@@ -44,41 +44,73 @@ const Signup = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 py-6 flex flex-col justify-center sm:py-12">
-      <div className="relative py-3 sm:max-w-xl sm:mx-auto">
-        <div className="absolute inset-0 bg-gradient-to-r from-blue-300 to-blue-600 shadow-lg transform -skew-y-6 sm:skew-y-0 sm:-rotate-6 sm:rounded-3xl" />
-        <div className="relative px-4 py-10 bg-white shadow-lg sm:rounded-3xl sm:p-20">
-          <div className="max-w-md mx-auto">
-            <h1 className="text-2xl font-semibold">Sign Up Form</h1>
-            <form onSubmit={handleSignUp} className="py-8 space-y-4">
-              <input
-                name="email"
-                type="email"
-                required
-                className="h-10 w-full border-b-2 border-gray-300 text-gray-900 focus:outline-none focus:border-blue-600"
-                placeholder="Email address"
-              />
-              <input
-                name="password"
-                type="password"
-                required
-                className="h-10 w-full border-b-2 border-gray-300 text-gray-900 focus:outline-none focus:border-blue-600"
-                placeholder="Password"
-              />
-              <button type="submit" className="w-full bg-blue-500 text-white rounded-md px-6 py-2 hover:bg-blue-600">
-                Sign Up
-              </button>
-            </form>
-            
-            {/* Google Login Button */}
-            <button onClick={handleRegister} className="w-full flex items-center justify-center gap-2 border px-4 py-2 rounded-md hover:bg-gray-100">
-              <img src={googleLogo} alt="Google" className="w-6 h-6" />
-              Sign up with Google
-            </button>
-
-            {/* Error Message */}
-            {error && <p className="text-red-500 mt-2">{error}</p>}
+    <div className="min-h-screen bg-gray-100 flex justify-center items-center px-4">
+      <div className="w-full max-w-md">
+        <div className="bg-white shadow-xl rounded-2xl p-8">
+          <div className="text-center mb-8">
+            <h1 className="text-3xl font-bold text-blue-700">
+              GIGO COMPANY LIMITED
+            </h1>
+            <p className="text-gray-600 mt-2">
+              Iyandikishe kugira ukoreshe sisiteme yacu
+            </p>
           </div>
+
+          <form onSubmit={handleSignUp} className="space-y-5">
+            <input
+              type="email"
+              name="email"
+              required
+              placeholder="Shiramwo Email Yawe"
+              className="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+            <input
+              type="password"
+              name="password"
+              required
+              placeholder="Shiramwo Ijambo Banga"
+              className="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+            <button
+              type="submit"
+              disabled={loading}
+              className="w-full bg-blue-700 text-white py-3 rounded-lg hover:bg-blue-800 transition"
+            >
+              {loading ? "Turiko Twiyandikisha..." : "Iyandikishe"}
+            </button>
+          </form>
+
+          <div className="my-5 flex items-center">
+            <div className="flex-grow border-t"></div>
+            <span className="px-3 text-gray-500">canke</span>
+            <div className="flex-grow border-t"></div>
+          </div>
+
+          <button
+            onClick={handleGoogleSignup}
+            className="flex items-center justify-center w-full border rounded-lg py-3 hover:bg-gray-50"
+          >
+            <img
+              src="/assets/google-logo.svg"
+              alt="Google"
+              className="w-5 h-5 mr-2"
+            />
+            Iyandikishe ukoresheje Google
+          </button>
+
+          <p className="text-center text-gray-600 mt-6">
+            Urasanzwe ufise konti?{" "}
+            <Link
+              to="/login"
+              className="text-blue-700 font-semibold hover:underline"
+            >
+              Injira hano
+            </Link>
+          </p>
+
+          {error && (
+            <p className="text-red-500 text-center mt-4">{error}</p>
+          )}
         </div>
       </div>
     </div>
