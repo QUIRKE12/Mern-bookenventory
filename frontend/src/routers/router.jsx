@@ -6,6 +6,7 @@ import Home from "../home/Home";
 import Shop from "../shop/Shop";
 import SingleProduct from "../components/SingleProduct";
 import Signup from "../components/Signup";
+import Orders from "../components/Orders";
 
 // Dashboard imports
 import DashboardLayout from "../dashboard/DashboardLayout";
@@ -43,6 +44,7 @@ const router = createBrowserRouter([
       { path: "/product/:id", element: <SingleProduct />, loader: fetchProductData },
       { path: "/about", element: <About /> },
       { path: "/blog", element: <Blog /> },
+      { path: "/orders", element: <Orders /> },
     ],
   },
 
