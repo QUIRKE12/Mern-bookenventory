@@ -1,59 +1,81 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { FaEdit, FaTrashAlt } from "react-icons/fa"; // Importing icons
+import { FaEdit, FaTrashAlt } from "react-icons/fa";
 
-const ManageBooks = () => {
-  const [allBooks, setAllBooks] = useState([]);
+const ManageProducts = () => {
+  const [allProducts, setAllProducts] = useState([]);
   const navigate = useNavigate();
 
   useEffect(() => {
-    fetch("http://localhost:5000/all-books")
+    fetch(`${import.meta.env.VITE_API_URL}/all-products`)
       .then((res) => res.json())
-      .then((data) => setAllBooks(data));
+      .then((data) => setAllProducts(data));
   }, []);
 
   const handleDelete = (id) => {
-    if (!window.confirm("Are you sure you want to delete this book?")) return;
+    if (!window.confirm("Are you sure you want to delete this product?"))
+      return;
 
-    fetch(`http://localhost:5000/book/${id}`, { method: "DELETE" })
+    fetch(`${import.meta.env.VITE_API_URL}/product/${id}`, {
+      method: "DELETE",
+    })
       .then((res) => res.json())
       .then((data) => {
         if (data.success) {
-          alert("Book deleted successfully");
-          setAllBooks((prevBooks) => prevBooks.filter((book) => book._id !== id));
+          alert("Product deleted successfully");
+          setAllProducts((prevProducts) =>
+            prevProducts.filter((product) => product._id !== id)
+          );
         } else {
-          alert("Failed to delete book: " + data.message);
+          alert("Failed to delete product");
         }
       })
-      .catch((error) => console.error("Error deleting book:", error));
+      .catch((error) => console.error("Error deleting product:", error));
   };
 
   return (
     <div className="flex justify-center items-center min-h-screen bg-gray-100">
-      <div className="w-full max-w-5xl bg-white p-6 shadow-md rounded-lg">
-        <h2 className="text-3xl font-bold mb-6 text-center">Manage Books</h2>
-        
+      <div className="w-full max-w-6xl bg-white p-6 shadow-md rounded-lg">
+        <h2 className="text-3xl font-bold mb-6 text-center">
+          Manage Products
+        </h2>
         <table className="w-full border-collapse border border-gray-300">
           <thead className="bg-gray-200">
             <tr>
               <th className="border px-4 py-2">No</th>
-              <th className="border px-4 py-2">Author Name</th>
+              <th className="border px-4 py-2">Product Name</th>
+              <th className="border px-4 py-2">Brand</th>
               <th className="border px-4 py-2">Category</th>
+              <th className="border px-4 py-2">Branch</th>
+              <th className="border px-4 py-2">Price</th>
               <th className="border px-4 py-2">Actions</th>
             </tr>
           </thead>
           <tbody>
-            {allBooks.map((book, index) => (
-              <tr key={book._id} className="bg-white">
+            {allProducts.map((product, index) => (
+              <tr key={product._id}>
                 <td className="border px-4 py-2">{index + 1}</td>
-                <td className="border px-4 py-2">{book.authorName}</td>
-                <td className="border px-4 py-2">{book.category}</td>
-                <td className="border px-4 py-2 flex justify-center space-x-4">
-                  <button onClick={() => navigate(`/admin/edit-books/${book._id}`)} className="bg-blue-600 text-white px-3 py-1 rounded-md flex items-center">
-                    <FaEdit /> Edit
+                <td className="border px-4 py-2">{product.productName}</td>
+                <td className="border px-4 py-2">{product.brandName}</td>
+                <td className="border px-4 py-2">{product.category}</td>
+                <td className="border px-4 py-2">{product.branch}</td>
+                <td className="border px-4 py-2">{product.price} BIF</td>
+                <td className="border px-4 py-2 flex justify-center gap-3">
+                  <button
+                    onClick={() =>
+                      navigate(`/admin/edit-product/${product._id}`)
+                    }
+                    className="bg-blue-600 text-white px-3 py-1 rounded-md flex items-center gap-2"
+                  >
+                    <FaEdit />
+                    Edit
                   </button>
-                  <button onClick={() => handleDelete(book._id)} className="bg-red-600 text-white px-3 py-1 rounded-md flex items-center">
-                    <FaTrashAlt /> Delete
+                  <button
+                    onClick={() => handleDelete(product._id)}
+                    className="bg-red-600 text-white px-3 py-1 rounded-md flex items-center gap-2"
+                  >
+                    <FaTrashAlt />
+                    Delete
                   </button>
                 </td>
               </tr>
@@ -65,4 +87,4 @@ const ManageBooks = () => {
   );
 };
 
-export default ManageBooks;
+export default ManageProducts;
