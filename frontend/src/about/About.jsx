@@ -8,8 +8,8 @@ const About = () => {
           TURI BA NDE?
         </h1>
         <p className="text-lg text-gray-600 max-w-3xl mx-auto">
-          Kaze muri <strong>GIGO COMPANY LIMITED</strong>. Turi INDUSTRIE
-          yihariye mu gukora no gukwiragiza ibinyobwa vy'ubwoko butandukanye.
+          Kaze muri <strong>GIGO COMPANY LIMITED</strong>. Turi ishirahamwe
+          ryihariye mu gukora no gukwiragiza ibinyobwa vy'ubwoko butandukanye.
           Dutanga ibinyobwa vyiza, vyizewe kandi ku giciro kibereye abakiriya
           bose. Intumbero yacu ni ugushikana ibinyobwa bikunzwe ku bantu bose
           mu buryo bworoshe kandi bwihuta.
@@ -56,4 +56,29 @@ const About = () => {
             </p>
           </div>
           <div className="space-y-4">
-            <h3
+            <h3 className="text-xl font-bold text-blue-700">ICIZERE N'UMUTEKANO</h3>
+            <p className="text-gray-600">
+              Dukorana n'abakiriya bacu mu kuri, icizere no mu mutekano.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <section className="text-center">
+        <h2 className="text-3xl lg:text-4xl font-semibold text-blue-700 mb-4">
+          TWIFATANYE NAMWE
+        </h2>
+        <p className="text-lg text-gray-600 mb-6 max-w-3xl mx-auto">
+          Ba umwe mu bakiriya n'abafatanyabikorwa ba
+          <strong> GIGO COMPANY LIMITED</strong>. Twama twiteguriye
+          kubashikiriza ibinyobwa vyiza kandi ku giciro kibereye bose.
+        </p>
+        <button className="bg-blue-700 text-white font-semibold px-8 py-3 rounded-full hover:bg-blue-800 transition-all duration-300">
+          TANGURA NONAHA
+        </button>
+      </section>
+    </div>
+  );
+};
+
+export default About;
