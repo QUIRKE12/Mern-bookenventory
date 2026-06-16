@@ -18,7 +18,20 @@ const Signup = () => {
     setError("");
     setLoading(true);
     try {
-      await createUser(email, password);
+      const result = await createUser(email, password);
+      const user = result.user;
+
+      // Save user to MongoDB
+      await fetch(`${import.meta.env.VITE_API_URL}/users`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: user.displayName || email.split("@")[0],
+          email: user.email,
+          photoURL: user.photoURL || "",
+        }),
+      });
+
       alert("Konti yawe yaremwe neza!");
       navigate(from, { replace: true });
     } catch (error) {
@@ -32,6 +45,18 @@ const Signup = () => {
     try {
       const result = await loginwithGoogle();
       const user = result.user;
+
+      // Save user to MongoDB
+      await fetch(`${import.meta.env.VITE_API_URL}/users`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: user.displayName || "",
+          email: user.email,
+          photoURL: user.photoURL || "",
+        }),
+      });
+
       alert(`Murakaza neza ${user.displayName || user.email}`);
       navigate(from, { replace: true });
     } catch (error) {
