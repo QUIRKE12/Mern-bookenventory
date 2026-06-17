@@ -1,4 +1,6 @@
-import { Sidebar } from "flowbite-react";
+import { useContext } from "react";
+import { AuthContext } from "../contexts/AuthContext";
+import { useNavigate, useLocation } from "react-router-dom";
 import {
   HiArrowSmRight,
   HiChartPie,
@@ -7,13 +9,30 @@ import {
   HiShoppingBag,
   HiUser,
 } from "react-icons/hi";
-import { useContext } from "react";
-import { AuthContext } from "../contexts/AuthContext";
-import { useNavigate } from "react-router-dom";
+
+const COLORS = {
+  bg: "#0D1B2A",
+  surface: "#1E2D3D",
+  accent: "#F5A623",
+  accentDim: "rgba(245,166,35,0.15)",
+  text: "#F8F9FA",
+  textMuted: "#8A9BB0",
+  border: "rgba(255,255,255,0.07)",
+  redDim: "rgba(192,57,43,0.15)",
+};
+
+const NAV_ITEMS = [
+  { label: "Dashboard", icon: HiChartPie, href: "/admin/dashboard" },
+  { label: "Add Product", icon: HiOutlineCloudUpload, href: "/admin/upload" },
+  { label: "Manage Products", icon: HiInbox, href: "/admin/manage-products" },
+  { label: "Orders", icon: HiShoppingBag, href: "/admin/orders" },
+  { label: "Users", icon: HiUser, href: "/admin/users" },
+];
 
 const SideBar = () => {
   const { user, logout } = useContext(AuthContext);
   const navigate = useNavigate();
+  const location = useLocation();
 
   const handleLogout = async () => {
     try {
@@ -25,53 +44,115 @@ const SideBar = () => {
   };
 
   return (
-    <div className="h-screen w-64 bg-white shadow-lg fixed">
-      <Sidebar aria-label="Dashboard Sidebar" className="h-full">
-        <div className="flex items-center gap-3 p-4 border-b">
-          <img
-            src={user?.photoURL || "/assets/salvator.jpg"}
-            alt="Profile"
-            className="w-12 h-12 rounded-full border"
-          />
-          <div>
-            <h2 className="font-semibold">
-              {user?.displayName || "Admin"}
-            </h2>
-            <p className="text-sm text-gray-500">
-              {user?.email || "admin@gigo.com"}
-            </p>
+    <div
+      style={{
+        width: "220px",
+        height: "100vh",
+        background: COLORS.surface,
+        borderRight: `1px solid ${COLORS.border}`,
+        display: "flex",
+        flexDirection: "column",
+        position: "fixed",
+        top: 0,
+        left: 0,
+        zIndex: 100,
+        fontFamily: "'Inter', 'Segoe UI', system-ui, sans-serif",
+      }}
+    >
+      {/* Profile */}
+      <div
+        style={{
+          padding: "20px 16px",
+          borderBottom: `1px solid ${COLORS.border}`,
+          display: "flex",
+          alignItems: "center",
+          gap: "12px",
+        }}
+      >
+        <img
+          src={user?.photoURL || "/assets/salvator.jpg"}
+          alt="Profile"
+          style={{
+            width: "42px",
+            height: "42px",
+            borderRadius: "50%",
+            border: `2px solid ${COLORS.accent}`,
+            objectFit: "cover",
+            flexShrink: 0,
+          }}
+        />
+        <div style={{ overflow: "hidden" }}>
+          <div
+            style={{
+              fontWeight: "700",
+              fontSize: "13px",
+              color: COLORS.text,
+              whiteSpace: "nowrap",
+              overflow: "hidden",
+              textOverflow: "ellipsis",
+            }}
+          >
+            {user?.displayName || "Admin"}
+          </div>
+          <div
+            style={{
+              fontSize: "11px",
+              color: COLORS.textMuted,
+              whiteSpace: "nowrap",
+              overflow: "hidden",
+              textOverflow: "ellipsis",
+            }}
+          >
+            {user?.email || "admin@gigo.com"}
           </div>
         </div>
+      </div>
 
-        <Sidebar.Items>
-          <Sidebar.ItemGroup>
-            <Sidebar.Item href="/admin/dashboard" icon={HiChartPie}>
-              Dashboard
-            </Sidebar.Item>
-            <Sidebar.Item href="/admin/upload" icon={HiOutlineCloudUpload}>
-              Add Product
-            </Sidebar.Item>
-            <Sidebar.Item href="/admin/manage-products" icon={HiInbox}>
-              Manage Products
-            </Sidebar.Item>
-            <Sidebar.Item href="/admin/orders" icon={HiShoppingBag}>
-              Orders
-            </Sidebar.Item>
-            <Sidebar.Item href="/admin/users" icon={HiUser}>
-              Users
-            </Sidebar.Item>
+      {/* Nav Items */}
+      <nav style={{ flex: 1, padding: "12px", overflowY: "auto" }}>
+        <div
+          style={{
+            fontSize: "10px",
+            color: COLORS.textMuted,
+            letterSpacing: "0.12em",
+            textTransform: "uppercase",
+            padding: "0 8px",
+            marginBottom: "8px",
+          }}
+        >
+          Main Menu
+        </div>
+        {NAV_ITEMS.map((item) => {
+          const active = location.pathname === item.href;
+          const Icon = item.icon;
+          return (
             <div
-              onClick={handleLogout}
-              className="flex items-center gap-2 p-3 cursor-pointer text-red-600 hover:bg-red-50 rounded-lg"
+              key={item.href}
+              onClick={() => navigate(item.href)}
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: "10px",
+                padding: "9px 12px",
+                borderRadius: "8px",
+                cursor: "pointer",
+                marginBottom: "2px",
+                background: active ? COLORS.accentDim : "transparent",
+                borderLeft: active
+                  ? `3px solid ${COLORS.accent}`
+                  : "3px solid transparent",
+                color: active ? COLORS.accent : COLORS.textMuted,
+                fontWeight: active ? "600" : "400",
+                fontSize: "13.5px",
+                transition: "all 0.15s",
+                userSelect: "none",
+              }}
             >
-              <HiArrowSmRight className="text-xl" />
-              <span>Logout</span>
+              <Icon style={{ fontSize: "17px", flexShrink: 0 }} />
+              {item.label}
             </div>
-          </Sidebar.ItemGroup>
-        </Sidebar.Items>
-      </Sidebar>
-    </div>
-  );
-};
+          );
+        })}
+      </nav>
 
-export default SideBar;
+      {/* Logout */}
