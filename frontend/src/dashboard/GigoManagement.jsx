@@ -132,7 +132,7 @@ fetch(`${API}/dashboard-stats`, { headers:{ Authorization:`Bearer ${token}` } })
   if (loading) return <Spinner />;
   if (!stats) return <div style={S.alert("error")}>Failed to load dashboard data.</div>;
 
-  const { kpis, monthlyRevenue=[], bestSellers=[], recentOrders=[] } = stats;
+const { kpis={}, monthlyRevenue=[], bestSellers=[], recentOrders=[] } = stats;
   const now = new Date();
 
   // Build chart data from monthlyRevenue array
