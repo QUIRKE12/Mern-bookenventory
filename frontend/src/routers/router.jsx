@@ -1,3 +1,13 @@
+{
+  path: "/admin",
+  element: (
+    <PrivateRoute>
+      <DashboardLayout />
+    </PrivateRoute>
+  ),
+  children: [...]
+}
+/*
 import { createBrowserRouter } from "react-router-dom";
 import App from "../App";
 // Import components
@@ -80,3 +90,4 @@ const router = createBrowserRouter([
 ]);
 
 export default router;
+
