@@ -902,11 +902,123 @@ function Reports({ token }) {
     </div>
   );
 }
-<div style={S.content}>{PAGE_MAP[active]}</div>
+// ── APP SHELL ─────────────────────────────────────────────────────────────────
+const NAV_ITEMS = [
+  { id:"dashboard", icon:"⬡", label:"Dashboard" },
+  { id:"products",  icon:"▦", label:"Products" },
+  { id:"inventory", icon:"◫", label:"Inventory" },
+  { id:"orders",    icon:"◈", label:"Orders" },
+  { id:"branches",  icon:"◉", label:"Branches" },
+  { id:"users",     icon:"◎", label:"Users & Roles" },
+  { id:"reports",   icon:"◧", label:"Reports" },
+];
+
+const PAGE_LABELS = {
+  dashboard:"Dashboard Overview",
+  products:"Products",
+  inventory:"Inventory",
+  orders:"Orders",
+  branches:"Branches",
+  users:"Users & Roles",
+  reports:"Reports & Analytics"
+};
+
+export default function GigoManagement() {
+  const { user, token } = useContext(AuthContext);
+  const navigate = useNavigate();
+  const [active, setActive] = useState("dashboard");
+  const [lowStockCount, setLowStockCount] = useState(0);
+
+  useEffect(() => {
+    if (!user && !token) navigate("/login", { replace: true });
+  }, [user, token]);
+
+  useEffect(() => {
+    if (!token) return;
+    fetch(`${API}/inventory/low-stock`, { headers:{ Authorization:`Bearer ${token}` } })
+      .then(r => r.json()).then(d => setLowStockCount(d.count || 0))
+      .catch(() => {});
+  }, [token, active]);
+
+  const logout = () => {
+    navigate("/login", { replace: true });
+  };
+
+  if (!token) {
+    return (
+      <div style={{...S.app, alignItems:"center", justifyContent:"center"}}>
+        <div style={{color:C.textMuted, fontSize:"14px"}}>Loading...</div>
+      </div>
+    );
+  }
+
+  const pageProps = { token };
+  const PAGE_MAP = {
+    dashboard: <Dashboard {...pageProps} />,
+    products:  <Products {...pageProps} />,
+    inventory: <Inventory {...pageProps} />,
+    orders:    <Orders {...pageProps} />,
+    branches:  <Branches {...pageProps} />,
+    users:     <Users {...pageProps} />,
+    reports:   <Reports {...pageProps} />,
+  };
+
+  return (
+    <div style={S.app}>
+      <aside style={S.sidebar}>
+        <div style={S.logo}>
+          <div style={S.logoTop}>
+            <div style={S.logoIcon}>G</div>
+            <div style={S.logoText}>GIGO CO.</div>
+          </div>
+          <div style={S.logoSub}>Management System</div>
+        </div>
+        <nav style={S.nav}>
+          <div style={S.navLabel}>Main Menu</div>
+          {NAV_ITEMS.map(item => (
+            <div key={item.id} style={S.navItem(active===item.id)} onClick={()=>setActive(item.id)}>
+              <span style={S.navIcon}>{item.icon}</span>
+              {item.label}
+              {item.id==="inventory" && lowStockCount > 0 &&
+                <span style={{...S.badge,marginLeft:"auto"}}>{lowStockCount}</span>
+              }
+            </div>
+          ))}
+        </nav>
+        <div style={S.sidebarFooter}>
+          <div style={S.userCard} onClick={logout} title="Click to logout">
+            <div style={S.avatar}>{user?.email?.slice(0,2).toUpperCase() || "OW"}</div>
+            <div style={{flex:1,minWidth:0}}>
+              <div style={{fontSize:"12px",fontWeight:"700",color:C.text,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>
+                {user?.email || "Owner"}
+              </div>
+              <div style={{fontSize:"10px",color:C.textMuted}}>Click to logout</div>
+            </div>
+            <span style={{color:C.textMuted,fontSize:"12px"}}>⏻</span>
+          </div>
+        </div>
+      </aside>
+      <main style={S.main}>
+        <div style={S.topbar}>
+          <div style={S.pageTitle}>{PAGE_LABELS[active]}</div>
+          <div style={S.topbarRight}>
+            {lowStockCount > 0 && (
+              <div style={{position:"relative",cursor:"pointer"}} onClick={()=>setActive("inventory")}>
+                <span style={{fontSize:"18px",color:C.textMuted}}>🔔</span>
+                <span style={{...S.badge,position:"absolute",top:"-4px",right:"-6px"}}>{lowStockCount}</span>
+              </div>
+            )}
+            <div style={{width:"1px",height:"20px",background:C.border}} />
+            <span style={{fontSize:"12px",color:C.textMuted}}>
+              {new Date().toLocaleDateString("en-RW",{weekday:"short",day:"numeric",month:"short",year:"numeric"})}
+            </span>
+          </div>
+        </div>
+        <div style={S.content}>{PAGE_MAP[active]}</div>
       </main>
     </div>
   );
 }
-export default function GigoManagement() {
+
 
 
