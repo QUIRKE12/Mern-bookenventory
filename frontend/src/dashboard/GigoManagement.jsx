@@ -903,8 +903,4 @@ function Reports({ token }) {
 }
 
 
-        <div style={S.content}>{PAGE_MAP[active]}</div>
-      </main>
-    </div>
-  );
-}
+
