@@ -156,3 +156,32 @@ const SideBar = () => {
       </nav>
 
       {/* Logout */}
+      <div style={{ padding: "12px", borderTop: `1px solid ${COLORS.border}` }}>
+        <div
+          onClick={handleLogout}
+          style={{
+            display: "flex",
+            alignItems: "center",
+            gap: "10px",
+            padding: "9px 12px",
+            borderRadius: "8px",
+            cursor: "pointer",
+            color: "#C0392B",
+            background: "transparent",
+            fontSize: "13.5px",
+            fontWeight: "500",
+            transition: "background 0.15s",
+            borderLeft: "3px solid transparent",
+          }}
+          onMouseEnter={(e) => (e.currentTarget.style.background = COLORS.redDim)}
+          onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}
+        >
+          <HiArrowSmRight style={{ fontSize: "17px" }} />
+          Logout
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default SideBar;
