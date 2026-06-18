@@ -1,19 +1,18 @@
 import { createBrowserRouter } from "react-router-dom";
 import App from "../App";
-
 // Import components
 import Home from "../home/Home";
 import Shop from "../shop/Shop";
 import SingleProduct from "../components/SingleProduct";
 import Signup from "../components/Signup";
 import Orders from "../components/Orders";
-
 // Dashboard imports
 import DashboardLayout from "../dashboard/DashboardLayout";
 import Dashboard from "../dashboard/Dashboard";
 import UploadProduct from "../dashboard/UploadProduct";
 import ManageProducts from "../dashboard/ManageProducts";
 import EditProduct from "../dashboard/EditProduct";
+import GigoManagement from "../dashboard/GigoManagement";
 import Login from "../components/Login";
 import PrivateRoute from "../PrivateRoute/PrivateRoute";
 import Logout from "../components/Logout";
@@ -47,11 +46,9 @@ const router = createBrowserRouter([
       { path: "/orders", element: <Orders /> },
     ],
   },
-
   { path: "/sign-up", element: <Signup /> },
   { path: "/login", element: <Login /> },
   { path: "/logout", element: <Logout /> },
-
   {
     path: "/admin",
     element: (
@@ -70,7 +67,15 @@ const router = createBrowserRouter([
       },
     ],
   },
-
+  // GigoManagement - standalone, outside DashboardLayout
+  {
+    path: "/admin/management",
+    element: (
+      <PrivateRoute>
+        <GigoManagement />
+      </PrivateRoute>
+    ),
+  },
   { path: "*", element: <NotFound /> },
 ]);
 
