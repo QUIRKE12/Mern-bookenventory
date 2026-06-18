@@ -901,6 +901,6 @@ function Reports({ token }) {
     </div>
   );
 }
-
+export default function GigoManagement() {
 
 
