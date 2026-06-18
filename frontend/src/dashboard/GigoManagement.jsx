@@ -1,3 +1,4 @@
+
 import { useState, useEffect, useCallback } from "react";
 import { useContext } from "react";
 import { AuthContext } from "../contexts/AuthContext";
@@ -898,6 +899,11 @@ function Reports({ token }) {
           </table>
         </div>
       )}
+    </div>
+  );
+}
+<div style={S.content}>{PAGE_MAP[active]}</div>
+      </main>
     </div>
   );
 }
