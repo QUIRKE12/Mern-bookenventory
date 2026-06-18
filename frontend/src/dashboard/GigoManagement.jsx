@@ -122,7 +122,7 @@ function SparkBar({ data }) {
 function Dashboard({ token }) {
   const [stats, setStats] = useState(null);
   const [loading, setLoading] = useState(true);
-
+fetch(`${API}/dashboard-stats`, { headers:{ Authorization:`Bearer ${token}` } })
   useEffect(() => {
     fetch(`${API}/stats/dashboard`, { headers:{ Authorization:`Bearer ${token}` } })
       .then(r => r.json()).then(d => { setStats(d); setLoading(false); })
