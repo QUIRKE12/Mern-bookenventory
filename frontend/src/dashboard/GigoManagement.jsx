@@ -1,4 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
+import { useContext } from "react";
+import { AuthContext } from "../contexts/AuthContext";
+import { useNavigate } from "react-router-dom";
 
 // ── CONFIG ────────────────────────────────────────────────────────────────────
 const API = "https://gigo-backend-4iea.onrender.com";
@@ -899,117 +902,7 @@ function Reports({ token }) {
   );
 }
 
-// ── APP SHELL ─────────────────────────────────────────────────────────────────
-const NAV_ITEMS = [
-  { id:"dashboard", icon:"⬡", label:"Dashboard" },
-  { id:"products",  icon:"▦", label:"Products" },
-  { id:"inventory", icon:"◫", label:"Inventory" },
-  { id:"orders",    icon:"◈", label:"Orders" },
-  { id:"branches",  icon:"◉", label:"Branches" },
-  { id:"users",     icon:"◎", label:"Users & Roles" },
-  { id:"reports",   icon:"◧", label:"Reports" },
-];
 
-const PAGE_LABELS = { dashboard:"Dashboard Overview", products:"Products", inventory:"Inventory", orders:"Orders", branches:"Branches", users:"Users & Roles", reports:"Reports & Analytics" };
-
-export default function App() {
-  const [active, setActive] = useState("dashboard");
-  const [token, setToken] = useState(() => localStorage.getItem("gigo_token") || "");
-  const [tokenInput, setTokenInput] = useState("");
-  const [lowStockCount, setLowStockCount] = useState(0);
-
-  // Fetch low-stock count for sidebar badge
-  useEffect(() => {
-    if (!token) return;
-    fetch(`${API}/inventory/low-stock`, { headers:{Authorization:`Bearer ${token}`} })
-      .then(r=>r.json()).then(d=>setLowStockCount(d.count||0))
-      .catch(()=>{});
-  }, [token, active]);
-
-  const login = () => {
-    localStorage.setItem("gigo_token", tokenInput);
-    setToken(tokenInput);
-  };
-
-  const logout = () => {
-    localStorage.removeItem("gigo_token");
-    setToken(""); setTokenInput("");
-  };
-
-  // Token entry screen
-  if (!token) {
-    return (
-      <div style={{...S.app, alignItems:"center", justifyContent:"center", flexDirection:"column"}}>
-        <div style={{...S.card, padding:"36px", width:"400px", maxWidth:"90vw"}}>
-          <div style={{...S.logoTop, justifyContent:"center", marginBottom:"24px"}}>
-            <div style={S.logoIcon}>G</div>
-            <div style={S.logoText}>GIGO CO.</div>
-          </div>
-          <div style={{fontSize:"14px", color:C.textMuted, textAlign:"center", marginBottom:"24px"}}>Enter your Firebase token to access the dashboard</div>
-          <div style={S.formRow}>
-            <label style={S.formLabel}>Firebase ID Token</label>
-            <textarea style={{...S.input, height:"80px", resize:"vertical", fontFamily:"monospace", fontSize:"11px"}} placeholder="Paste your token here..." value={tokenInput} onChange={e=>setTokenInput(e.target.value)} />
-          </div>
-          <button style={{...S.btn("primary"), width:"100%", padding:"12px"}} onClick={login} disabled={!tokenInput.trim()}>Enter Dashboard</button>
-          <div style={{fontSize:"11px", color:C.textMuted, textAlign:"center", marginTop:"14px"}}>Get your token from Firebase Auth → your app's login flow</div>
-        </div>
-      </div>
-    );
-  }
-
-  const pageProps = { token };
-  const PAGE_MAP = {
-    dashboard: <Dashboard {...pageProps} />,
-    products:  <Products {...pageProps} />,
-    inventory: <Inventory {...pageProps} />,
-    orders:    <Orders {...pageProps} />,
-    branches:  <Branches {...pageProps} />,
-    users:     <Users {...pageProps} />,
-    reports:   <Reports {...pageProps} />,
-  };
-
-  return (
-    <div style={S.app}>
-      <aside style={S.sidebar}>
-        <div style={S.logo}>
-          <div style={S.logoTop}><div style={S.logoIcon}>G</div><div style={S.logoText}>GIGO CO.</div></div>
-          <div style={S.logoSub}>Management System</div>
-        </div>
-        <nav style={S.nav}>
-          <div style={S.navLabel}>Main Menu</div>
-          {NAV_ITEMS.map(item => (
-            <div key={item.id} style={S.navItem(active===item.id)} onClick={()=>setActive(item.id)}>
-              <span style={S.navIcon}>{item.icon}</span>
-              {item.label}
-              {item.id==="inventory" && lowStockCount > 0 && <span style={{...S.badge,marginLeft:"auto"}}>{lowStockCount}</span>}
-            </div>
-          ))}
-        </nav>
-        <div style={S.sidebarFooter}>
-          <div style={S.userCard} onClick={logout} title="Click to logout">
-            <div style={S.avatar}>OW</div>
-            <div style={{flex:1,minWidth:0}}>
-              <div style={{fontSize:"12px",fontWeight:"700",color:C.text}}>Owner</div>
-              <div style={{fontSize:"10px",color:C.textMuted}}>Click to logout</div>
-            </div>
-            <span style={{color:C.textMuted,fontSize:"12px"}}>⏻</span>
-          </div>
-        </div>
-      </aside>
-      <main style={S.main}>
-        <div style={S.topbar}>
-          <div style={S.pageTitle}>{PAGE_LABELS[active]}</div>
-          <div style={S.topbarRight}>
-            {lowStockCount > 0 && (
-              <div style={{position:"relative",cursor:"pointer"}} onClick={()=>setActive("inventory")}>
-                <span style={{fontSize:"18px",color:C.textMuted}}>🔔</span>
-                <span style={{...S.badge,position:"absolute",top:"-4px",right:"-6px"}}>{lowStockCount}</span>
-              </div>
-            )}
-            <div style={{width:"1px",height:"20px",background:C.border}} />
-            <span style={{fontSize:"12px",color:C.textMuted}}>{new Date().toLocaleDateString("en-RW",{weekday:"short",day:"numeric",month:"short",year:"numeric"})}</span>
-          </div>
-        </div>
         <div style={S.content}>{PAGE_MAP[active]}</div>
       </main>
     </div>
