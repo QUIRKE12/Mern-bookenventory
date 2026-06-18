@@ -1,24 +1,11 @@
-{
-  path: "/admin",
-  element: (
-    <PrivateRoute>
-      <DashboardLayout />
-    </PrivateRoute>
-  ),
-  children: [...]
-}
-/*
-import { createBrowserRouter } from "react-router-dom";
+import { createBrowserRouter, Navigate } from "react-router-dom";
 import App from "../App";
-// Import components
 import Home from "../home/Home";
 import Shop from "../shop/Shop";
 import SingleProduct from "../components/SingleProduct";
 import Signup from "../components/Signup";
 import Orders from "../components/Orders";
-// Dashboard imports
 import DashboardLayout from "../dashboard/DashboardLayout";
-import Dashboard from "../dashboard/Dashboard";
 import UploadProduct from "../dashboard/UploadProduct";
 import ManageProducts from "../dashboard/ManageProducts";
 import EditProduct from "../dashboard/EditProduct";
@@ -67,7 +54,7 @@ const router = createBrowserRouter([
       </PrivateRoute>
     ),
     children: [
-      { path: "dashboard", element: <Dashboard /> },
+      { path: "dashboard", element: <Navigate to="/admin/management" replace /> },
       { path: "upload", element: <UploadProduct /> },
       { path: "manage-products", element: <ManageProducts /> },
       {
@@ -77,7 +64,6 @@ const router = createBrowserRouter([
       },
     ],
   },
-  // GigoManagement - standalone, outside DashboardLayout
   {
     path: "/admin/management",
     element: (
@@ -90,4 +76,3 @@ const router = createBrowserRouter([
 ]);
 
 export default router;
-
