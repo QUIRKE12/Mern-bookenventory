@@ -39,11 +39,21 @@ const AuthProvider = ({ children }) => {
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
-      setUser(currentUser);
       if (currentUser) {
-        const idToken = await currentUser.getIdToken();
-        setToken(idToken);
+        try {
+          const idToken = await currentUser.getIdToken();
+          setToken(idToken);
+          const res = await fetch(
+            `${import.meta.env.VITE_API_URL}/users/${currentUser.email}`,
+            { headers: { Authorization: `Bearer ${idToken}` } }
+          );
+          const data = await res.json();
+          setUser({ ...currentUser, role: data.role || "customer" });
+        } catch {
+          setUser({ ...currentUser, role: "customer" });
+        }
       } else {
+        setUser(null);
         setToken(null);
       }
       setLoading(false);
