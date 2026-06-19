@@ -352,15 +352,9 @@ app.patch("/orders/:id/mark-paid", verifyToken, async (req, res) => {
     try {
         const order = await Order.findByIdAndUpdate(
             req.params.id,
-            { $set: { paymentStatus: "pending_approval" } },
+            { $set: { paymentStatus: "pending_approval", paymentScreenshot: req.body.paymentScreenshot || "" } },
             { new: true }
         );
-        if (!order) return res.status(404).json({ error: "Order not found" });
-        res.json({ success: true, message: "Payment marked, awaiting approval", order });
-    } catch (error) {
-        res.status(500).json({ error: "Failed to mark payment" });
-    }
-});
 
 // Manager/owner approves payment
 app.patch("/orders/:id/approve-payment", verifyToken, checkRole("owner", "branch_manager"), async (req, res) => {
