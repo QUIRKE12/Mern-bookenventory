@@ -70,7 +70,7 @@ const orderSchema = new mongoose.Schema({
     ],
     totalAmount: { type: Number, required: true },
     status: { type: String, enum: ["pending", "processing", "delivered", "cancelled"], default: "pending" },
-    paymentStatus: { type: String, enum: ["unpaid", "pending_approval", "paid"], default: "unpaid" },
+    paymentStatus: { type: String, enum: ["unpaid", "pending_approval", "paid"], default: "unpaid" },paymentScreenshot: { type: String, default: "" },
 }, { timestamps: true });
 
 const Order = mongoose.model("Order", orderSchema);
