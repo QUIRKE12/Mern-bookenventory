@@ -362,6 +362,23 @@ app.patch("/orders/:id/cancel", verifyToken, async (req, res) => {
     res.status(500).json({ error: "Failed to cancel order" });
   }
 });
+// Customer update order
+app.patch("/orders/:id/customer-update", verifyToken, async (req, res) => {
+  try {
+    const user = await User.findOne({ email: req.user.email });
+    const order = await Order.findById(req.params.id);
+    if (!order) return res.status(404).json({ error: "Order not found" });
+    if (order.customerEmail !== user.email) return res.status(403).json({ error: "Forbidden" });
+    if (order.status !== "pending") return res.status(400).json({ error: "Can only edit pending orders" });
+    order.products = req.body.products;
+    order.totalAmount = req.body.totalAmount;
+    await order.save();
+    res.json({ success: true, message: "Order updated", order });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Failed to update order" });
+  }
+});
 // Customer marks as paid
 app.patch("/orders/:id/mark-paid", verifyToken, async (req, res) => {
     try {
