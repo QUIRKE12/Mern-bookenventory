@@ -346,7 +346,22 @@ app.get("/orders/:id", verifyToken, async (req, res) => {
         res.status(500).json({ error: "Failed to fetch order" });
     }
 });
-
+// Customer cancel order
+app.patch("/orders/:id/cancel", verifyToken, async (req, res) => {
+  try {
+    const user = await User.findOne({ email: req.user.email });
+    const order = await Order.findById(req.params.id);
+    if (!order) return res.status(404).json({ error: "Order not found" });
+    if (order.customerEmail !== user.email) return res.status(403).json({ error: "Forbidden" });
+    if (order.status !== "pending") return res.status(400).json({ error: "Can only cancel pending orders" });
+    order.status = "cancelled";
+    await order.save();
+    res.json({ success: true, message: "Order cancelled", order });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Failed to cancel order" });
+  }
+});
 // Customer marks as paid
 app.patch("/orders/:id/mark-paid", verifyToken, async (req, res) => {
     try {
