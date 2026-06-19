@@ -14,7 +14,7 @@ import Login from "../components/Login";
 import PrivateRoute from "../PrivateRoute/PrivateRoute";
 import ManagerRoute from "../PrivateRoute/ManagerRoute";
 import OwnerRoute from "../PrivateRoute/OwnerRoute";
-import Unauthorized from "../components/Unauthorized";
+import Unauthorized from "../PrivateRoute/Unauthorized";
 import Logout from "../components/Logout";
 import About from "../about/About";
 import Blog from "../blog/Blog";
