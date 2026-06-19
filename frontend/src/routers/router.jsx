@@ -12,6 +12,9 @@ import EditProduct from "../dashboard/EditProduct";
 import GigoManagement from "../dashboard/GigoManagement";
 import Login from "../components/Login";
 import PrivateRoute from "../PrivateRoute/PrivateRoute";
+import ManagerRoute from "../PrivateRoute/ManagerRoute";
+import OwnerRoute from "../PrivateRoute/OwnerRoute";
+import Unauthorized from "../components/Unauthorized";
 import Logout from "../components/Logout";
 import About from "../about/About";
 import Blog from "../blog/Blog";
@@ -46,6 +49,7 @@ const router = createBrowserRouter([
   { path: "/sign-up", element: <Signup /> },
   { path: "/login", element: <Login /> },
   { path: "/logout", element: <Logout /> },
+  { path: "/unauthorized", element: <Unauthorized /> },
   {
     path: "/admin",
     element: (
@@ -55,11 +59,11 @@ const router = createBrowserRouter([
     ),
     children: [
       { path: "dashboard", element: <Navigate to="/admin/management" replace /> },
-      { path: "upload", element: <UploadProduct /> },
-      { path: "manage-products", element: <ManageProducts /> },
+      { path: "upload", element: <OwnerRoute><UploadProduct /></OwnerRoute> },
+      { path: "manage-products", element: <ManagerRoute><ManageProducts /></ManagerRoute> },
       {
         path: "edit-product/:id",
-        element: <EditProduct />,
+        element: <OwnerRoute><EditProduct /></OwnerRoute>,
         loader: fetchProductData,
       },
     ],
@@ -67,9 +71,9 @@ const router = createBrowserRouter([
   {
     path: "/admin/management",
     element: (
-      <PrivateRoute>
+      <ManagerRoute>
         <GigoManagement />
-      </PrivateRoute>
+      </ManagerRoute>
     ),
   },
   { path: "*", element: <NotFound /> },
