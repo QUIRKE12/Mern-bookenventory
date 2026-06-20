@@ -8,7 +8,7 @@ const Shop = () => {
   useEffect(() => {
     fetch(`${import.meta.env.VITE_API_URL}/all-products`)
       .then((res) => res.json())
-      .then((data) => setProducts(data));
+      .then((data) => setProducts(data.products || []));
   }, []);
 
   return (
