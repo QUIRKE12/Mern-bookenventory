@@ -13,6 +13,7 @@ const Signup = () => {
   const handleSignUp = async (event) => {
     event.preventDefault();
     const form = event.target;
+    const name = form.name.value;
     const email = form.email.value;
     const password = form.password.value;
     setError("");
@@ -21,14 +22,15 @@ const Signup = () => {
       const result = await createUser(email, password);
       const user = result.user;
 
-      // Save user to MongoDB
+      // Save user to MongoDB with name
       await fetch(`${import.meta.env.VITE_API_URL}/users`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          name: user.displayName || email.split("@")[0],
+          name: name || user.displayName || email.split("@")[0],
           email: user.email,
           photoURL: user.photoURL || "",
+          role: "customer",
         }),
       });
 
@@ -51,9 +53,10 @@ const Signup = () => {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          name: user.displayName || "",
+          name: user.displayName || user.email.split("@")[0],
           email: user.email,
           photoURL: user.photoURL || "",
+          role: "customer",
         }),
       });
 
@@ -82,6 +85,13 @@ const Signup = () => {
           </div>
 
           <form onSubmit={handleSignUp} className="space-y-5">
+            <input
+              type="text"
+              name="name"
+              required
+              placeholder="Injiza Amazina Yawe"
+              className="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
             <input
               type="email"
               name="email"
