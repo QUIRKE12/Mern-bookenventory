@@ -22,10 +22,16 @@ const Signup = () => {
       const result = await createUser(email, password);
       const user = result.user;
 
-      // Save user to MongoDB with name
+      // Get Firebase token
+      const idToken = await user.getIdToken();
+
+      // Save user to MongoDB with token
       await fetch(`${import.meta.env.VITE_API_URL}/users`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { 
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${idToken}`
+        },
         body: JSON.stringify({
           name: name || user.displayName || email.split("@")[0],
           email: user.email,
@@ -48,10 +54,16 @@ const Signup = () => {
       const result = await loginwithGoogle();
       const user = result.user;
 
-      // Save user to MongoDB
+      // Get Firebase token
+      const idToken = await user.getIdToken();
+
+      // Save user to MongoDB with token
       await fetch(`${import.meta.env.VITE_API_URL}/users`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { 
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${idToken}`
+        },
         body: JSON.stringify({
           name: user.displayName || user.email.split("@")[0],
           email: user.email,
