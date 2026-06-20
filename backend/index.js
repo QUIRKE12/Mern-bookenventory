@@ -3,11 +3,22 @@ const express = require('express');
 const cors = require('cors');
 const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
-const jwt = require('jsonwebtoken');
+const { initializeApp, getApps, cert } = require('firebase-admin/app');
+const { getAuth } = require('firebase-admin/auth');
 
 const app = express();
 const port = process.env.PORT || 5000;
-const JWT_SECRET = process.env.JWT_SECRET || "gigo_secret_key_change_in_production";
+
+// ── Firebase Admin init ───────────────────────────────────────────────────────
+// Expects FIREBASE_SERVICE_ACCOUNT env var to contain the service account JSON
+// (as a single-line string) for project "gigo-company-ltd".
+if (getApps().length === 0) {
+    const serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT);
+    initializeApp({
+        credential: cert(serviceAccount),
+    });
+}
+const firebaseAuth = getAuth();
 
 app.use(cors());
 app.use(express.json());
@@ -95,121 +106,57 @@ const StockMovement = mongoose.model("StockMovement", stockMovementSchema);
 
 // ===== MIDDLEWARE =====
 
-// ── JWT verify ────────────────────────────────────────────────────────────────
-const verifyToken = (req, res, next) => {
+// ── Firebase ID token verify ──────────────────────────────────────────────────
+const verifyToken = async (req, res, next) => {
     const authHeader = req.headers.authorization;
     if (!authHeader || !authHeader.startsWith("Bearer ")) {
         return res.status(401).json({ error: "Unauthorized - no token" });
     }
-    const token = authHeader.split(" ")[1];
+    const idToken = authHeader.split(" ")[1];
     try {
-        const decoded = jwt.verify(token, JWT_SECRET);
-        req.user = decoded; // { id, email, role, branch }
+        const decoded = await firebaseAuth.verifyIdToken(idToken);
+        req.user = { uid: decoded.uid, email: decoded.email }; // role/branch are NOT in the Firebase token; look up in MongoDB per route
         next();
     } catch (error) {
         return res.status(401).json({ error: "Unauthorized - invalid token" });
     }
 };
 
-// ── Role check ────────────────────────────────────────────────────────────────
-const checkRole = (...roles) => async (req, res, next) => {
-    try {
-        const user = await User.findById(req.user.id);
-        if (!user || !roles.includes(user.role)) {
-            return res.status(403).json({ error: "Forbidden - insufficient role" });
-        }
-        req.dbUser = user;
-        next();
-    } catch (error) {
-        return res.status(500).json({ error: "Role check failed" });
-    }
-};
-
-// ── Branch check ──────────────────────────────────────────────────────────────
-const checkBranch = async (req, res, next) => {
-    const user = req.dbUser;
-    const targetBranch = req.body.branch || req.query.branch;
-    if (user.role === "owner") return next();
-    if (user.branch === "all") return next();
-    if (targetBranch && user.branch !== targetBranch) {
-        return res.status(403).json({ error: "Forbidden - wrong branch" });
-    }
-    next();
-};
-
 // ===== AUTH ROUTES =====
 
-// ── Register ──────────────────────────────────────────────────────────────────
-app.post("/auth/register", async (req, res) => {
+// ── Sync Firebase user into MongoDB (called by frontend after sign-up/sign-in) ─
+app.post("/users", verifyToken, async (req, res) => {
     try {
-        const { name, email, password, role, branch } = req.body;
-        if (!name || !email || !password) {
-            return res.status(400).json({ error: "Name, email and password are required" });
+        const { name, email, photoURL } = req.body;
+        if (!email) return res.status(400).json({ error: "Email is required" });
+        if (email !== req.user.email) {
+            return res.status(403).json({ error: "Forbidden - email does not match token" });
         }
-        const exists = await User.findOne({ email });
-        if (exists) return res.status(400).json({ error: "Email already registered" });
 
-        const hashed = await bcrypt.hash(password, 10);
+        const existing = await User.findOne({ email });
+        if (existing) {
+            return res.json({ success: true, user: existing, created: false });
+        }
+
         const user = new User({
-            name,
+            name: name || req.user.email.split("@")[0],
             email,
-            password: hashed,
-            role: role || "employee",
-            branch: branch || "all",
+            photoURL: photoURL || "",
+            role: "customer",
+            branch: "all",
         });
         await user.save();
 
-        const token = jwt.sign(
-            { id: user._id, email: user.email, role: user.role, branch: user.branch },
-            JWT_SECRET,
-            { expiresIn: "7d" }
-        );
-
-        res.status(201).json({
-            success: true,
-            token,
-            user: { _id: user._id, name: user.name, email: user.email, role: user.role, branch: user.branch },
-        });
+        res.status(201).json({ success: true, user, created: true });
     } catch (error) {
-        res.status(500).json({ error: "Registration failed", details: error.message });
-    }
-});
-
-// ── Login ─────────────────────────────────────────────────────────────────────
-app.post("/auth/login", async (req, res) => {
-    try {
-        const { email, password } = req.body;
-        if (!email || !password) {
-            return res.status(400).json({ error: "Email and password are required" });
-        }
-
-        const user = await User.findOne({ email });
-        if (!user) return res.status(401).json({ error: "Invalid email or password" });
-        if (user.status === "inactive") return res.status(403).json({ error: "Account is inactive" });
-
-        const match = await bcrypt.compare(password, user.password);
-        if (!match) return res.status(401).json({ error: "Invalid email or password" });
-
-        const token = jwt.sign(
-            { id: user._id, email: user.email, role: user.role, branch: user.branch },
-            JWT_SECRET,
-            { expiresIn: "7d" }
-        );
-
-        res.json({
-            success: true,
-            token,
-            user: { _id: user._id, name: user.name, email: user.email, role: user.role, branch: user.branch },
-        });
-    } catch (error) {
-        res.status(500).json({ error: "Login failed", details: error.message });
+        res.status(500).json({ error: "Failed to sync user", details: error.message });
     }
 });
 
 // ── Get current user ──────────────────────────────────────────────────────────
 app.get("/auth/me", verifyToken, async (req, res) => {
     try {
-        const user = await User.findById(req.user.id).select("-password");
+        const user = await User.findOne({ email: req.user.email }).select("-password");
         if (!user) return res.status(404).json({ error: "User not found" });
         res.json(user);
     } catch (error) {
@@ -224,8 +171,16 @@ app.get("/", (req, res) => {
 
 // ===== PRODUCT ROUTES =====
 
-app.post("/upload-product", verifyToken, checkRole("owner", "branch_manager"), checkBranch, async (req, res) => {
+app.post("/upload-product", verifyToken, async (req, res) => {
     try {
+        const dbUser = await User.findOne({ email: req.user.email });
+        if (!dbUser || !["owner", "branch_manager"].includes(dbUser.role)) {
+            return res.status(403).json({ error: "Forbidden - insufficient role" });
+        }
+        const targetBranch = req.body.branch;
+        if (dbUser.role !== "owner" && dbUser.branch !== "all" && targetBranch && dbUser.branch !== targetBranch) {
+            return res.status(403).json({ error: "Forbidden - wrong branch" });
+        }
         const newProduct = new Product(req.body);
         await newProduct.save();
         res.status(201).json({ success: true, message: "Product uploaded successfully", product: newProduct });
@@ -264,8 +219,16 @@ app.get("/products/:id", async (req, res) => {
     }
 });
 
-app.patch("/product/:id", verifyToken, checkRole("owner", "branch_manager"), checkBranch, async (req, res) => {
+app.patch("/product/:id", verifyToken, async (req, res) => {
     try {
+        const dbUser = await User.findOne({ email: req.user.email });
+        if (!dbUser || !["owner", "branch_manager"].includes(dbUser.role)) {
+            return res.status(403).json({ error: "Forbidden - insufficient role" });
+        }
+        const targetBranch = req.body.branch;
+        if (dbUser.role !== "owner" && dbUser.branch !== "all" && targetBranch && dbUser.branch !== targetBranch) {
+            return res.status(403).json({ error: "Forbidden - wrong branch" });
+        }
         const updatedProduct = await Product.findByIdAndUpdate(
             req.params.id, { $set: req.body }, { new: true, runValidators: true }
         );
@@ -276,8 +239,16 @@ app.patch("/product/:id", verifyToken, checkRole("owner", "branch_manager"), che
     }
 });
 
-app.delete("/product/:id", verifyToken, checkRole("owner", "branch_manager"), checkBranch, async (req, res) => {
+app.delete("/product/:id", verifyToken, async (req, res) => {
     try {
+        const dbUser = await User.findOne({ email: req.user.email });
+        if (!dbUser || !["owner", "branch_manager"].includes(dbUser.role)) {
+            return res.status(403).json({ error: "Forbidden - insufficient role" });
+        }
+        const targetBranch = req.query.branch;
+        if (dbUser.role !== "owner" && dbUser.branch !== "all" && targetBranch && dbUser.branch !== targetBranch) {
+            return res.status(403).json({ error: "Forbidden - wrong branch" });
+        }
         const deletedProduct = await Product.findByIdAndDelete(req.params.id);
         if (!deletedProduct) return res.status(404).json({ success: false, message: "Product not found" });
         res.json({ success: true, message: "Product deleted successfully" });
@@ -288,8 +259,12 @@ app.delete("/product/:id", verifyToken, checkRole("owner", "branch_manager"), ch
 
 // ===== USER ROUTES =====
 
-app.get("/users", verifyToken, checkRole("owner", "branch_manager"), async (req, res) => {
+app.get("/users", verifyToken, async (req, res) => {
     try {
+        const dbUser = await User.findOne({ email: req.user.email });
+        if (!dbUser || !["owner", "branch_manager"].includes(dbUser.role)) {
+            return res.status(403).json({ error: "Forbidden - insufficient role" });
+        }
         const query = {};
         if (req.query?.role) query.role = req.query.role;
         if (req.query?.branch) query.branch = req.query.branch;
@@ -317,8 +292,12 @@ app.get("/users/:email", async (req, res) => {
         res.status(500).json({ error: "Failed to fetch user" });
     }
 });
-app.patch("/users/:id", verifyToken, checkRole("owner"), async (req, res) => {
+app.patch("/users/:id", verifyToken, async (req, res) => {
     try {
+        const dbUser = await User.findOne({ email: req.user.email });
+        if (!dbUser || dbUser.role !== "owner") {
+            return res.status(403).json({ error: "Forbidden - insufficient role" });
+        }
         const updatedUser = await User.findByIdAndUpdate(
             req.params.id, { $set: req.body }, { new: true, runValidators: true }
         ).select("-password");
@@ -329,8 +308,12 @@ app.patch("/users/:id", verifyToken, checkRole("owner"), async (req, res) => {
     }
 });
 
-app.delete("/users/:id", verifyToken, checkRole("owner"), async (req, res) => {
+app.delete("/users/:id", verifyToken, async (req, res) => {
     try {
+        const dbUser = await User.findOne({ email: req.user.email });
+        if (!dbUser || dbUser.role !== "owner") {
+            return res.status(403).json({ error: "Forbidden - insufficient role" });
+        }
         const deletedUser = await User.findByIdAndDelete(req.params.id);
         if (!deletedUser) return res.status(404).json({ success: false, message: "User not found" });
         res.json({ success: true, message: "User deleted successfully" });
@@ -353,7 +336,8 @@ app.post("/orders", verifyToken, async (req, res) => {
 
 app.get("/orders", verifyToken, async (req, res) => {
     try {
-        const user = await User.findById(req.user.id);
+        const user = await User.findOne({ email: req.user.email });
+        if (!user) return res.status(404).json({ error: "User not found" });
         const query = {};
 
         if (user.role === "customer") query.customerEmail = user.email;
@@ -393,7 +377,8 @@ app.get("/orders/:id", verifyToken, async (req, res) => {
 
 app.patch("/orders/:id/cancel", verifyToken, async (req, res) => {
     try {
-        const user = await User.findById(req.user.id);
+        const user = await User.findOne({ email: req.user.email });
+        if (!user) return res.status(404).json({ error: "User not found" });
         const order = await Order.findById(req.params.id);
         if (!order) return res.status(404).json({ error: "Order not found" });
         if (order.customerEmail !== user.email) return res.status(403).json({ error: "Forbidden" });
@@ -408,7 +393,8 @@ app.patch("/orders/:id/cancel", verifyToken, async (req, res) => {
 
 app.patch("/orders/:id/customer-update", verifyToken, async (req, res) => {
     try {
-        const user = await User.findById(req.user.id);
+        const user = await User.findOne({ email: req.user.email });
+        if (!user) return res.status(404).json({ error: "User not found" });
         const order = await Order.findById(req.params.id);
         if (!order) return res.status(404).json({ error: "Order not found" });
         if (order.customerEmail !== user.email) return res.status(403).json({ error: "Forbidden" });
@@ -436,8 +422,12 @@ app.patch("/orders/:id/mark-paid", verifyToken, async (req, res) => {
     }
 });
 
-app.patch("/orders/:id/approve-payment", verifyToken, checkRole("owner", "branch_manager"), async (req, res) => {
+app.patch("/orders/:id/approve-payment", verifyToken, async (req, res) => {
     try {
+        const dbUser = await User.findOne({ email: req.user.email });
+        if (!dbUser || !["owner", "branch_manager"].includes(dbUser.role)) {
+            return res.status(403).json({ error: "Forbidden - insufficient role" });
+        }
         const order = await Order.findByIdAndUpdate(
             req.params.id, { $set: { paymentStatus: "paid" } }, { new: true }
         );
@@ -448,8 +438,12 @@ app.patch("/orders/:id/approve-payment", verifyToken, checkRole("owner", "branch
     }
 });
 
-app.patch("/orders/:id", verifyToken, checkRole("owner", "branch_manager"), async (req, res) => {
+app.patch("/orders/:id", verifyToken, async (req, res) => {
     try {
+        const dbUser = await User.findOne({ email: req.user.email });
+        if (!dbUser || !["owner", "branch_manager"].includes(dbUser.role)) {
+            return res.status(403).json({ error: "Forbidden - insufficient role" });
+        }
         const updatedOrder = await Order.findByIdAndUpdate(
             req.params.id, { $set: req.body }, { new: true, runValidators: true }
         );
@@ -460,8 +454,12 @@ app.patch("/orders/:id", verifyToken, checkRole("owner", "branch_manager"), asyn
     }
 });
 
-app.delete("/orders/:id", verifyToken, checkRole("owner", "branch_manager"), async (req, res) => {
+app.delete("/orders/:id", verifyToken, async (req, res) => {
     try {
+        const dbUser = await User.findOne({ email: req.user.email });
+        if (!dbUser || !["owner", "branch_manager"].includes(dbUser.role)) {
+            return res.status(403).json({ error: "Forbidden - insufficient role" });
+        }
         const deletedOrder = await Order.findByIdAndDelete(req.params.id);
         if (!deletedOrder) return res.status(404).json({ success: false, message: "Order not found" });
         res.json({ success: true, message: "Order deleted successfully" });
@@ -556,8 +554,12 @@ app.get("/inventory/movements", verifyToken, async (req, res) => {
 });
 // ===== BRANCH ROUTES =====
 
-app.post("/branches", verifyToken, checkRole("owner"), async (req, res) => {
+app.post("/branches", verifyToken, async (req, res) => {
     try {
+        const dbUser = await User.findOne({ email: req.user.email });
+        if (!dbUser || dbUser.role !== "owner") {
+            return res.status(403).json({ error: "Forbidden - insufficient role" });
+        }
         const branch = new Branch(req.body);
         await branch.save();
         res.status(201).json({ success: true, branch });
@@ -586,8 +588,12 @@ app.get("/branches", async (req, res) => {
     }
 });
 
-app.patch("/branches/:id", verifyToken, checkRole("owner"), async (req, res) => {
+app.patch("/branches/:id", verifyToken, async (req, res) => {
     try {
+        const dbUser = await User.findOne({ email: req.user.email });
+        if (!dbUser || dbUser.role !== "owner") {
+            return res.status(403).json({ error: "Forbidden - insufficient role" });
+        }
         const updated = await Branch.findByIdAndUpdate(req.params.id, { $set: req.body }, { new: true });
         if (!updated) return res.status(404).json({ error: "Branch not found" });
         res.json({ success: true, branch: updated });
@@ -596,8 +602,12 @@ app.patch("/branches/:id", verifyToken, checkRole("owner"), async (req, res) => 
     }
 });
 
-app.delete("/branches/:id", verifyToken, checkRole("owner"), async (req, res) => {
+app.delete("/branches/:id", verifyToken, async (req, res) => {
     try {
+        const dbUser = await User.findOne({ email: req.user.email });
+        if (!dbUser || dbUser.role !== "owner") {
+            return res.status(403).json({ error: "Forbidden - insufficient role" });
+        }
         const deleted = await Branch.findByIdAndDelete(req.params.id);
         if (!deleted) return res.status(404).json({ success: false, message: "Branch not found" });
         res.json({ success: true, message: "Branch deleted" });
@@ -656,9 +666,12 @@ app.get("/stats/dashboard", verifyToken, async (req, res) => {
 });
 // ===== REPORTS =====
 
-app.get("/report/daily", verifyToken, checkRole("owner", "branch_manager"), async (req, res) => {
+app.get("/report/daily", verifyToken, async (req, res) => {
     try {
-        const user = req.dbUser;
+        const user = await User.findOne({ email: req.user.email });
+        if (!user || !["owner", "branch_manager"].includes(user.role)) {
+            return res.status(403).json({ error: "Forbidden - insufficient role" });
+        }
         const targetDate = req.query.date ? new Date(req.query.date) : new Date();
         const startOfDay = new Date(targetDate.getFullYear(), targetDate.getMonth(), targetDate.getDate());
         const endOfDay = new Date(startOfDay.getTime() + 24 * 60 * 60 * 1000);
@@ -679,9 +692,12 @@ app.get("/report/daily", verifyToken, checkRole("owner", "branch_manager"), asyn
     }
 });
 
-app.get("/report/monthly", verifyToken, checkRole("owner", "branch_manager"), async (req, res) => {
+app.get("/report/monthly", verifyToken, async (req, res) => {
     try {
-        const user = req.dbUser;
+        const user = await User.findOne({ email: req.user.email });
+        if (!user || !["owner", "branch_manager"].includes(user.role)) {
+            return res.status(403).json({ error: "Forbidden - insufficient role" });
+        }
         const now = new Date();
         const year = parseInt(req.query.year) || now.getFullYear();
         const month = parseInt(req.query.month) || (now.getMonth() + 1);
@@ -716,9 +732,12 @@ app.get("/report/monthly", verifyToken, checkRole("owner", "branch_manager"), as
     }
 });
 
-app.get("/report/weekly", verifyToken, checkRole("owner", "branch_manager"), async (req, res) => {
+app.get("/report/weekly", verifyToken, async (req, res) => {
     try {
-        const user = req.dbUser;
+        const user = await User.findOne({ email: req.user.email });
+        if (!user || !["owner", "branch_manager"].includes(user.role)) {
+            return res.status(403).json({ error: "Forbidden - insufficient role" });
+        }
         const sevenDaysAgo = new Date();
         sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
         const branches = (user.role === "owner" || user.branch === "all") ? ["Bujumbura HQ", "Kampala", "Uganda", "DRC"] : [user.branch];
@@ -738,8 +757,12 @@ app.get("/report/weekly", verifyToken, checkRole("owner", "branch_manager"), asy
     }
 });
 
-app.get("/report/branch-performance", verifyToken, checkRole("owner"), async (req, res) => {
+app.get("/report/branch-performance", verifyToken, async (req, res) => {
     try {
+        const dbUser = await User.findOne({ email: req.user.email });
+        if (!dbUser || dbUser.role !== "owner") {
+            return res.status(403).json({ error: "Forbidden - insufficient role" });
+        }
         const now = new Date();
         const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
         const branches = ["Bujumbura HQ", "Kampala", "Uganda", "DRC"];
