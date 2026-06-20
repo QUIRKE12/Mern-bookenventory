@@ -9,7 +9,7 @@ const ManageProducts = () => {
   useEffect(() => {
     fetch(`${import.meta.env.VITE_API_URL}/all-products`)
       .then((res) => res.json())
-      .then((data) => setAllProducts(data));
+      .then((data) => setAllProducts(data.products || []));
   }, []);
 
   const handleDelete = (id) => {
