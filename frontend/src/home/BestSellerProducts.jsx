@@ -7,7 +7,7 @@ const BestSellerProducts = () => {
   useEffect(() => {
     fetch(`${import.meta.env.VITE_API_URL}/all-products`)
       .then((res) => res.json())
-      .then((data) => setProducts(data.slice(0, 8)));
+      .then((data) => setProducts((data.products || []).slice(0, 8)));
   }, []);
 
   return (
