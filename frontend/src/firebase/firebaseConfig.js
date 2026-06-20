@@ -1,8 +1,15 @@
-VITE_API_URL=https://gigo-backend-4iea.onrender.com
+import { initializeApp } from "firebase/app";
+import { getAuth } from "firebase/auth";
 
-VITE_FIREBASE_API_KEY=AIzaSyAzzBmhCtjzd7WOy9HuN5iOZvnR39wEcvQ
-VITE_FIREBASE_AUTH_DOMAIN=gigo-company-ltd.firebaseapp.com
-VITE_FIREBASE_PROJECT_ID=gigo-company-ltd
-VITE_FIREBASE_STORAGE_BUCKET=gigo-company-ltd.firebasestorage.app
-VITE_FIREBASE_MESSAGING_SENDER_ID=826211078319
-VITE_FIREBASE_APP_ID=1:826211078319:web:ff62be615338c98b64c45a
+const firebaseConfig = {
+  apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
+  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
+  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
+  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
+  appId: import.meta.env.VITE_FIREBASE_APP_ID,
+};
+
+const app = initializeApp(firebaseConfig);
+export const auth = getAuth(app);
+export default app;
