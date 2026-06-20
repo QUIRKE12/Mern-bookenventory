@@ -308,8 +308,12 @@ app.get("/users", verifyToken, checkRole("owner", "branch_manager"), async (req,
     }
 });
 
-app.get("/users/:email", async (req, res) => {
+app.get("/users/:email", verifyToken, async (req, res) => {
     try {
+        // Only allow users to fetch their own profile
+        if (req.user.email !== req.params.email) {
+            return res.status(403).json({ error: "Forbidden" });
+        }
         const user = await User.findOne({ email: req.params.email }).select("-password");
         if (!user) return res.status(404).json({ error: "User not found" });
         res.json(user);
@@ -317,7 +321,6 @@ app.get("/users/:email", async (req, res) => {
         res.status(500).json({ error: "Failed to fetch user" });
     }
 });
-
 app.patch("/users/:id", verifyToken, checkRole("owner"), async (req, res) => {
     try {
         const updatedUser = await User.findByIdAndUpdate(
