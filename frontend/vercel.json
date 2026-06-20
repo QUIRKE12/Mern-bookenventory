@@ -1,9 +1,5 @@
 {
   "rewrites": [
-    { "source": "/admin/:path*", "destination": "/index.html" },
-    { "source": "/sign-up", "destination": "/index.html" },
-    { "source": "/login", "destination": "/index.html" },
-    { "source": "/logout", "destination": "/index.html" },
-    { "source": "/unauthorized", "destination": "/index.html" }
+    { "source": "/(.*)", "destination": "/index.html" }
   ]
 }
