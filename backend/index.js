@@ -125,30 +125,25 @@ const verifyToken = async (req, res, next) => {
 // ===== AUTH ROUTES =====
 
 // ── Sync Firebase user into MongoDB (called by frontend after sign-up/sign-in) ─
-app.post("/users", verifyToken, async (req, res) => {
+app.post("/users", async (req, res) => {
     try {
         const { name, email, photoURL } = req.body;
         if (!email) return res.status(400).json({ error: "Email is required" });
-        if (email !== req.user.email) {
-            return res.status(403).json({ error: "Forbidden - email does not match token" });
-        }
-
         const existing = await User.findOne({ email });
         if (existing) {
             return res.json({ success: true, user: existing, created: false });
         }
-
         const user = new User({
-            name: name || req.user.email.split("@")[0],
+            name: name || email.split("@")[0],
             email,
             photoURL: photoURL || "",
             role: "customer",
             branch: "all",
         });
         await user.save();
-
         res.status(201).json({ success: true, user, created: true });
     } catch (error) {
+        console.error(error);
         res.status(500).json({ error: "Failed to sync user", details: error.message });
     }
 });
