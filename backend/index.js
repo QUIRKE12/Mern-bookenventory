@@ -308,7 +308,7 @@ app.get("/users", verifyToken, checkRole("owner", "branch_manager"), async (req,
     }
 });
 
-app.get("/users/:email", verifyToken, async (req, res) => {
+app.get("/users/:email", async (req, res) => {
     try {
         const user = await User.findOne({ email: req.params.email }).select("-password");
         if (!user) return res.status(404).json({ error: "User not found" });
