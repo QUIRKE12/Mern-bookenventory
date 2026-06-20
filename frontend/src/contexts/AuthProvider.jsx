@@ -1,79 +1,74 @@
 import { useState, useEffect } from "react";
 import { AuthContext } from "./AuthContext";
+import { auth } from "../firebase/firebaseConfig";
+import {
+  createUserWithEmailAndPassword,
+  signInWithPopup,
+  GoogleAuthProvider,
+  onAuthStateChanged,
+  signInWithEmailAndPassword,
+  signOut,
+} from "firebase/auth";
 
-const API = import.meta.env.VITE_API_URL || "https://gigo-backend-4iea.onrender.com";
+const googleProvider = new GoogleAuthProvider();
 
 const AuthProvider = ({ children }) => {
-  const [user, setUser]     = useState(null);
-  const [token, setToken]   = useState(null);
+  const [user, setUser] = useState(null);
+  const [token, setToken] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  // ── Restore session from localStorage on page refresh ──────────────────────
-  useEffect(() => {
-    const savedToken = localStorage.getItem("gigo_token");
-    const savedUser  = localStorage.getItem("gigo_user");
-    if (savedToken && savedUser) {
-      setToken(savedToken);
-      setUser(JSON.parse(savedUser));
-    }
-    setLoading(false);
-  }, []);
-
-  // ── Login with email + password ────────────────────────────────────────────
-  const login = async (email, password) => {
+  const createUser = (email, password) => {
     setLoading(true);
-    try {
-      const res = await fetch(`${API}/auth/login`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password }),
-      });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || "Login failed");
-
-      // Backend should return { token, user: { _id, name, email, role, branch } }
-      setToken(data.token);
-      setUser(data.user);
-      localStorage.setItem("gigo_token", data.token);
-      localStorage.setItem("gigo_user", JSON.stringify(data.user));
-      return data;
-    } finally {
-      setLoading(false);
-    }
+    return createUserWithEmailAndPassword(auth, email, password);
   };
 
-  // ── Logout ─────────────────────────────────────────────────────────────────
+  const loginwithGoogle = () => {
+    setLoading(true);
+    return signInWithPopup(auth, googleProvider);
+  };
+
+  const login = (email, password) => {
+    setLoading(true);
+    return signInWithEmailAndPassword(auth, email, password);
+  };
+
   const logout = () => {
-    setUser(null);
-    setToken(null);
-    localStorage.removeItem("gigo_token");
-    localStorage.removeItem("gigo_user");
+    setLoading(true);
+    return signOut(auth);
   };
 
-  // ── Create user (register) ─────────────────────────────────────────────────
-  const createUser = async (email, password, name = "", role = "employee", branch = "all") => {
-    setLoading(true);
-    try {
-      const res = await fetch(`${API}/auth/register`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password, name, role, branch }),
-      });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || "Registration failed");
-      return data;
-    } finally {
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
+      if (currentUser) {
+        try {
+          const idToken = await currentUser.getIdToken();
+          setToken(idToken);
+          const res = await fetch(
+            `${import.meta.env.VITE_API_URL}/users/${currentUser.email}`,
+            { headers: { Authorization: `Bearer ${idToken}` } }
+          );
+          const data = await res.json();
+          setUser({ ...currentUser, role: data.role || "customer" });
+        } catch {
+          setUser({ ...currentUser, role: "customer" });
+        }
+      } else {
+        setUser(null);
+        setToken(null);
+      }
       setLoading(false);
-    }
-  };
+    });
+    return () => unsubscribe();
+  }, []);
 
   const authInfo = {
     user,
     token,
     loading,
-    login,
-    logout,
     createUser,
+    login,
+    loginwithGoogle,
+    logout,
   };
 
   return (
