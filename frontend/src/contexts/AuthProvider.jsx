@@ -41,14 +41,22 @@ const AuthProvider = ({ children }) => {
     const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
       if (currentUser) {
         try {
-          const idToken = await currentUser.getIdToken();
+          // Force refresh token to avoid 401
+          const idToken = await currentUser.getIdToken(true);
           setToken(idToken);
+
           const res = await fetch(
             `${import.meta.env.VITE_API_URL}/users/${currentUser.email}`,
             { headers: { Authorization: `Bearer ${idToken}` } }
           );
-          const data = await res.json();
-          setUser({ ...currentUser, role: data.role || "customer" });
+
+          if (res.ok) {
+            const data = await res.json();
+            setUser({ ...currentUser, role: data.role || "customer" });
+          } else {
+            // If user not found in MongoDB, default to customer
+            setUser({ ...currentUser, role: "customer" });
+          }
         } catch {
           setUser({ ...currentUser, role: "customer" });
         }
