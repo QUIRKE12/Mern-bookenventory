@@ -3,15 +3,15 @@ import { AuthContext } from "../contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
 
 export default function Profile() {
-  const { user, logOut } = useContext(AuthContext);
+  const { user, logout } = useContext(AuthContext);
   const navigate = useNavigate();
   const [loggingOut, setLoggingOut] = useState(false);
 
   const handleLogout = async () => {
     setLoggingOut(true);
     try {
-      await logOut();
-      navigate("/login");
+      await logout();
+      navigate("/");
     } catch (err) {
       console.error(err);
       setLoggingOut(false);
@@ -44,10 +44,9 @@ export default function Profile() {
         <div style={{
           background: "#F5A623",
           padding: "32px 24px 48px",
-          position: "relative",
         }}>
           <p style={{ fontSize: "12px", fontWeight: 600, color: "#0D1B2A", letterSpacing: "1px", margin: 0 }}>
-            GIGO  BUSINESS COMPANY
+            GIGO COMPANY
           </p>
           <h2 style={{ fontSize: "20px", fontWeight: 600, color: "#0D1B2A", margin: "4px 0 0" }}>
             Konti Yanjye
@@ -87,9 +86,9 @@ export default function Profile() {
 
           {/* Detail rows */}
           {[
-            { label: "Amazina", value: user?.displayName || "—" },
-            { label: "Imeyili", value: user?.email },
-            { label: "Uruhare", value: "Umukiriya" },
+            { label: "Amazina",        value: user?.displayName || "—" },
+            { label: "Imeyili",        value: user?.email },
+            { label: "Uruhare",        value: user?.role === "owner" ? "Nyir'ubwite" : user?.role === "branch_manager" ? "Umuyobozi" : "Umukiriya" },
             {
               label: "Konti yemejwe",
               value: user?.emailVerified ? "Yemejwe ✓" : "Ntiyemejwe",
@@ -128,6 +127,27 @@ export default function Profile() {
             >
               Reba Amabuye Yanjye
             </button>
+
+            {/* Show dashboard link for staff */}
+            {user?.role && user.role !== "customer" && (
+              <button
+                onClick={() => navigate("/admin/management")}
+                style={{
+                  width: "100%",
+                  padding: "12px",
+                  background: "transparent",
+                  border: "1.5px solid rgba(255,255,255,0.15)",
+                  borderRadius: "8px",
+                  color: "rgba(255,255,255,0.7)",
+                  fontSize: "14px",
+                  fontWeight: 500,
+                  cursor: "pointer",
+                }}
+              >
+                Injira muri Dashboard
+              </button>
+            )}
+
             <button
               onClick={handleLogout}
               disabled={loggingOut}
