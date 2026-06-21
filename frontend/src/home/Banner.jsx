@@ -35,7 +35,7 @@ const Banner = () => {
             marginBottom: "20px",
             fontFamily: "'Inter', sans-serif",
           }}>
-            Ibinyobwa Vyiza<br />
+            Ivyokunywa Vyiza<br />
             <span style={{ color: "#FFF3E0" }}>Ku Giciro</span><br />
             Kibereye Bose
           </h1>
@@ -46,7 +46,7 @@ const Banner = () => {
             marginBottom: "36px",
             maxWidth: "440px",
           }}>
-            Turabashikiriza ibinyobwa vyiza kandi vyizewe. Turafise ibinyobwa vyambiye n'ibitambiye vy'ubwoko butandukanye kandi biboneka hafi yawe.
+            Turabashikiriza ivyokunywa vyiza kandi vyizewe. Turafise ibinyobwa vyambiye n'ibitambiye vy'ubwoko butandukanye kandi biboneka hafi yawe.
           </p>
           <div style={{ display: "flex", gap: "16px", flexWrap: "wrap" }}>
             <Link to="/shop" style={{
@@ -59,7 +59,7 @@ const Banner = () => {
               fontSize: "15px",
               boxShadow: "0 8px 24px rgba(0,0,0,0.15)",
             }}>
-              Reba Ibinyobwa →
+              Reba Ivyokunywa →
             </Link>
             <Link to="/about" style={{
               background: "rgba(255,255,255,0.2)",
