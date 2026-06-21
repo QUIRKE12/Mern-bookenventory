@@ -1,21 +1,25 @@
 import { useState, useEffect, useContext } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { AuthContext } from "../contexts/AuthContext";
+import { LanguageContext } from "../contexts/LanguageContext";
+import { languageOptions } from "../contexts/translations";
 import "./Navbar.css";
-
-const navLinks = [
-  { to: "/",       label: "Ahabanza" },
-  { to: "/shop",   label: "Ibicuruzwa" },
-  { to: "/about",  label: "Ibitwerekeye" },
-  { to: "/blog",   label: "Amakuru" },
-];
 
 export default function Navbar() {
   const { user, logout } = useContext(AuthContext);
+  const { language, setLanguage, t } = useContext(LanguageContext);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [langOpen, setLangOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
+
+  const navLinks = [
+    { to: "/",      label: t("home") },
+    { to: "/shop",  label: t("products") },
+    { to: "/about", label: t("about") },
+    { to: "/blog",  label: t("news") },
+  ];
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 10);
@@ -63,22 +67,48 @@ export default function Navbar() {
           ))}
         </ul>
 
-        {/* Desktop auth */}
+        {/* Desktop auth + language switcher */}
         <div className="gigo-nav-actions">
+          <div className="gigo-lang-switch">
+            <button
+              className="gigo-lang-btn"
+              onClick={() => setLangOpen((prev) => !prev)}
+            >
+              🌐 {languageOptions.find((l) => l.code === language)?.label}
+            </button>
+            {langOpen && (
+              <ul className="gigo-lang-dropdown">
+                {languageOptions.map((opt) => (
+                  <li key={opt.code}>
+                    <button
+                      className={`gigo-lang-option ${opt.code === language ? "active" : ""}`}
+                      onClick={() => {
+                        setLanguage(opt.code);
+                        setLangOpen(false);
+                      }}
+                    >
+                      {opt.label}
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
+
           {user ? (
             <>
-              <Link to="/orders" className="gigo-btn-outline">Commande</Link>
+              <Link to="/orders" className="gigo-btn-outline">{t("orders")}</Link>
               <Link to="/profile" className="gigo-avatar" title={user.displayName || user.email}>
                 {user.photoURL
                   ? <img src={user.photoURL} alt="avatar" />
                   : initials}
               </Link>
-              <button onClick={handleLogout} className="gigo-btn-solid">Sohoka</button>
+              <button onClick={handleLogout} className="gigo-btn-solid">{t("logout")}</button>
             </>
           ) : (
             <>
-              <Link to="/login"  className="gigo-btn-outline">Injira</Link>
-              <Link to="/signup" className="gigo-btn-solid">Iyandikishe</Link>
+              <Link to="/login"  className="gigo-btn-outline">{t("login")}</Link>
+              <Link to="/signup" className="gigo-btn-solid">{t("signup")}</Link>
             </>
           )}
         </div>
@@ -111,11 +141,23 @@ export default function Navbar() {
           ))}
           {user ? (
             <>
-              <li><Link to="/orders"  className="gigo-mobile-link">📋 commande Zanje</Link></li>
-              <li><Link to="/profile" className="gigo-mobile-link">👤 Konti Yanje</Link></li>
+              <li><Link to="/orders"  className="gigo-mobile-link">📋 {t("myOrders")}</Link></li>
+              <li><Link to="/profile" className="gigo-mobile-link">👤 {t("myAccount")}</Link></li>
             </>
           ) : null}
         </ul>
+
+        <li className="gigo-mobile-lang">
+          {languageOptions.map((opt) => (
+            <button
+              key={opt.code}
+              className={`gigo-lang-option-mobile ${opt.code === language ? "active" : ""}`}
+              onClick={() => setLanguage(opt.code)}
+            >
+              {opt.label}
+            </button>
+          ))}
+        </li>
 
         <div className="gigo-mobile-auth">
           {user ? (
@@ -127,16 +169,16 @@ export default function Navbar() {
                     : initials}
                 </div>
                 <div>
-                  <div className="gigo-mobile-name">{user.displayName || "Umukoresha"}</div>
+                  <div className="gigo-mobile-name">{user.displayName || t("user")}</div>
                   <div className="gigo-mobile-email">{user.email}</div>
                 </div>
               </div>
-              <button onClick={handleLogout} className="gigo-btn-solid full">Sohoka</button>
+              <button onClick={handleLogout} className="gigo-btn-solid full">{t("logout")}</button>
             </>
           ) : (
             <>
-              <Link to="/login"  className="gigo-btn-outline full">Injira</Link>
-              <Link to="/signup" className="gigo-btn-solid full">Iyandikishe</Link>
+              <Link to="/login"  className="gigo-btn-outline full">{t("login")}</Link>
+              <Link to="/signup" className="gigo-btn-solid full">{t("signup")}</Link>
             </>
           )}
         </div>
