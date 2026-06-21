@@ -1,5 +1,6 @@
 // Navbar translations: Kirundi/Kinyarwanda (rn), English (en), French (fr)
 export const translations = {
+  // ── Kirundi / Kinyarwanda ──────────────────────────
   rn: {
     home: "Ahabanza",
     products: "Ibicuruzwa",
@@ -12,6 +13,7 @@ export const translations = {
     signup: "Iyandikishe",
     logout: "Sohoka",
     user: "Umukoresha",
+    // Hero / Banner section
     heroTitleLine1: "Ivyokunywa Vyiza",
     heroTitleLine2: "Ku Giciro",
     heroTitleLine3: "Kibereye Bose",
@@ -26,8 +28,7 @@ export const translations = {
     badgeDeliveryTitle: "Gutwara Vyihuse",
     badgeDeliverySubtitle: "Bujumbura & Ahandi",
   },
-
-  
+  // ── English ─────────────────────────────────────────
   en: {
     home: "Home",
     products: "Products",
@@ -40,6 +41,7 @@ export const translations = {
     signup: "Sign Up",
     logout: "Sign Out",
     user: "User",
+    // Hero / Banner section
     heroTitleLine1: "Premium Drinks",
     heroTitleLine2: "At Prices",
     heroTitleLine3: "Everyone Loves",
@@ -54,6 +56,7 @@ export const translations = {
     badgeDeliveryTitle: "Fast Delivery",
     badgeDeliverySubtitle: "Bujumbura & More",
   },
+  // ── French ──────────────────────────────────────────
   fr: {
     home: "Accueil",
     products: "Produits",
@@ -66,6 +69,7 @@ export const translations = {
     signup: "S'inscrire",
     logout: "Déconnexion",
     user: "Utilisateur",
+    // Hero / Banner section
     heroTitleLine1: "Boissons Premium",
     heroTitleLine2: "À Prix",
     heroTitleLine3: "Accessibles à Tous",
