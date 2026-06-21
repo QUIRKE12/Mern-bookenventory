@@ -6,7 +6,7 @@ import "./Navbar.css";
 const navLinks = [
   { to: "/",       label: "Ahabanza" },
   { to: "/shop",   label: "Ibicuruzwa" },
-  { to: "/about",  label: "Ibyacu" },
+  { to: "/about",  label: "Ibitwerekeye" },
   { to: "/blog",   label: "Amakuru" },
 ];
 
@@ -46,7 +46,7 @@ export default function Navbar() {
         {/* Logo */}
         <Link to="/" className="gigo-logo">
           <div className="gigo-logo-icon">⚡</div>
-          <span className="gigo-logo-text">GIGO COMPANY</span>
+          <span className="gigo-logo-text">GIGO BUSINESS COMPANY</span>
         </Link>
 
         {/* Desktop nav links */}
