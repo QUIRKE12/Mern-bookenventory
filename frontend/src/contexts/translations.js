@@ -26,6 +26,8 @@ export const translations = {
     badgeDeliveryTitle: "Gutwara Vyihuse",
     badgeDeliverySubtitle: "Bujumbura & Ahandi",
   },
+
+  
   en: {
     home: "Home",
     products: "Products",
