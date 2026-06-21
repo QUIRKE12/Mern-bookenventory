@@ -17,12 +17,11 @@ const Navbar = () => {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  const navItems = [
-    { link: "Ahabanza", path: "/" },
-    { link: "Ibinyobwa", path: "/shop" },
-    { link: "Turi Bande", path: "/about" },
-    { link: "Amakuru", path: "/blog" },
-  ];
+const navItems = [
+  { link: "Ahabanza", path: "/" },
+  { link: "Ibinyobwa", path: "/shop" },
+  { link: "Turi Bande", path: "/about" },
+];
 
   return (
     <header style={{
