@@ -113,6 +113,41 @@ const S = {
   alert: (t) => ({ padding: "10px 16px", borderRadius: "8px", fontSize: "12px", fontWeight: "600", marginBottom: "14px", background: t === "error" ? C.redDim : C.greenDim, color: t === "error" ? C.red : C.green, border: `1px solid ${t === "error" ? C.red : C.green}` }),
 };
 
+// ── RESPONSIVE CSS (mobile sidebar + grid) ───────────────────────────────────
+const RESPONSIVE_CSS = `
+  .gigo-hamburger { display: none; }
+  .gigo-backdrop { display: none; }
+  @media (max-width: 880px) {
+    .gigo-sidebar {
+      transform: translateX(-100%);
+      transition: transform 0.25s ease;
+      box-shadow: 2px 0 24px rgba(0,0,0,0.4);
+    }
+    .gigo-sidebar.gigo-sidebar-open {
+      transform: translateX(0);
+    }
+    .gigo-main {
+      margin-left: 0 !important;
+    }
+    .gigo-hamburger {
+      display: flex;
+    }
+    .gigo-backdrop.gigo-backdrop-open {
+      display: block;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.5);
+      z-index: 90;
+    }
+    .gigo-kpi-grid {
+      grid-template-columns: repeat(2, 1fr) !important;
+    }
+    .gigo-2col-grid {
+      grid-template-columns: 1fr !important;
+    }
+  }
+`;
+
 // ── SHARED COMPONENTS ─────────────────────────────────────────────────────────
 function Spinner() { return <div style={S.spinner}>Loading...</div>; }
 
@@ -175,7 +210,7 @@ function Dashboard({ token }) {
         <div style={{ fontSize: "13px", color: C.textMuted }}>Here's what's happening across your branches today — {now.toLocaleDateString("en-RW", { weekday: "long", day: "numeric", month: "long", year: "numeric" })}</div>
       </div>
 
-      <div style={S.grid4}>
+      <div className="gigo-kpi-grid" style={S.grid4}>
         {kpiCards.map((k, i) => (
           <div key={i} style={S.kpiCard}>
             <div style={S.kpiBar(k.color)} />
@@ -187,7 +222,7 @@ function Dashboard({ token }) {
         ))}
       </div>
 
-      <div style={S.grid2}>
+      <div className="gigo-2col-grid" style={S.grid2}>
         <div style={S.card}>
           <div style={S.cardHeader}><div style={S.cardTitle}>Recent Orders</div></div>
           <table style={S.table}>
@@ -493,7 +528,7 @@ function Inventory({ token }) {
           </div>
         </div>
       )}
-      <div style={{ ...S.grid4, marginBottom: "20px" }}>
+      <div className="gigo-kpi-grid" style={{ ...S.grid4, marginBottom: "20px" }}>
         {[
           { label: "Total Products", value: products.length, color: C.blue },
           { label: "In Stock", value: inStock, color: C.green },
@@ -851,7 +886,7 @@ function Users({ token }) {
         </div>
       </div>
       {msg && <div style={S.alert(msg.type)}>{msg.text}</div>}
-      <div style={S.grid2}>
+      <div className="gigo-2col-grid" style={S.grid2}>
         <div style={S.card}>
           <div style={S.cardHeader}><div style={S.cardTitle}>Team Members</div></div>
           {loading ? <Spinner /> : (
@@ -979,7 +1014,7 @@ function Reports({ token }) {
       <div style={S.sectionHeader}>
         <div><div style={S.sectionTitle}>Reports & Analytics</div></div>
       </div>
-      <div style={{ ...S.grid2, marginBottom: "16px" }}>
+      <div className="gigo-kpi-grid" style={{ ...S.grid2, marginBottom: "16px" }}>
         {[
           { type: "daily", title: "Daily Sales Report", icon: "◈", desc: "Today's sales summary across all branches", color: C.green },
           { type: "monthly", title: "Monthly Financial Report", icon: "◧", desc: `Report for ${MONTH_NAMES[new Date().getMonth()]} ${new Date().getFullYear()}`, color: C.accent },
@@ -1115,6 +1150,7 @@ export default function GigoManagement() {
   const navigate = useNavigate();
   const [active, setActive] = useState("dashboard");
   const [lowStockCount, setLowStockCount] = useState(0);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   useEffect(() => {
     if (!user && !token) navigate("/login", { replace: true });
@@ -1151,7 +1187,14 @@ export default function GigoManagement() {
 
   return (
     <div style={S.app}>
-      <aside style={S.sidebar}>
+      <style>{RESPONSIVE_CSS}</style>
+
+      <div
+        className={`gigo-backdrop ${sidebarOpen ? "gigo-backdrop-open" : ""}`}
+        onClick={() => setSidebarOpen(false)}
+      />
+
+      <aside className={`gigo-sidebar ${sidebarOpen ? "gigo-sidebar-open" : ""}`} style={S.sidebar}>
         <div style={S.logo}>
           <div style={S.logoTop}>
             <div style={S.logoIcon}>G</div>
@@ -1162,7 +1205,11 @@ export default function GigoManagement() {
         <nav style={S.nav}>
           <div style={S.navLabel}>Main Menu</div>
           {NAV_ITEMS.map(item => (
-            <div key={item.id} style={S.navItem(active === item.id)} onClick={() => setActive(item.id)}>
+            <div
+              key={item.id}
+              style={S.navItem(active === item.id)}
+              onClick={() => { setActive(item.id); setSidebarOpen(false); }}
+            >
               <span style={S.navIcon}>{item.icon}</span>
               {item.label}
               {item.id === "inventory" && lowStockCount > 0 && (
@@ -1185,9 +1232,18 @@ export default function GigoManagement() {
         </div>
       </aside>
 
-      <main style={S.main}>
+      <main className="gigo-main" style={S.main}>
         <div style={S.topbar}>
-          <div style={S.pageTitle}>{PAGE_LABELS[active]}</div>
+          <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+            <div
+              className="gigo-hamburger"
+              onClick={() => setSidebarOpen(true)}
+              style={{ alignItems: "center", justifyContent: "center", width: "32px", height: "32px", borderRadius: "8px", cursor: "pointer", fontSize: "18px", color: C.text }}
+            >
+              ☰
+            </div>
+            <div style={S.pageTitle}>{PAGE_LABELS[active]}</div>
+          </div>
           <div style={S.topbarRight}>
             {lowStockCount > 0 && (
               <div style={{ position: "relative", cursor: "pointer" }} onClick={() => setActive("inventory")}>
