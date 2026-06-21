@@ -1,18 +1,21 @@
-import { useState, useEffect } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { useState, useEffect, useContext } from "react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import { AuthContext } from "../contexts/AuthContext";
 import "./Navbar.css";
 
 const navLinks = [
-  { to: "/", label: "Ahabanza", icon: "🏠" },
-  { to: "/shop", label: "Ibicuruzwa", icon: "🛍️" },
-  { to: "/orders", label: "Amabwiriza", icon: "📋" },
-  { to: "/profile", label: "Konti yanje", icon: "👤" },
+  { to: "/",       label: "Ahabanza" },
+  { to: "/shop",   label: "Ibicuruzwa" },
+  { to: "/about",  label: "Ibyacu" },
+  { to: "/blog",   label: "Amakuru" },
 ];
 
 export default function Navbar() {
+  const { user, logOut }  = useContext(AuthContext);
   const [menuOpen, setMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const location = useLocation();
+  const navigate = useNavigate();
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 10);
@@ -20,10 +23,22 @@ export default function Navbar() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  // Close menu on route change
   useEffect(() => {
     setMenuOpen(false);
   }, [location.pathname]);
+
+  const handleLogout = async () => {
+    try {
+      await logOut();
+      navigate("/");
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const initials = user?.displayName
+    ? user.displayName.split(" ").map((n) => n[0]).join("").slice(0, 2).toUpperCase()
+    : user?.email?.[0]?.toUpperCase() ?? "U";
 
   return (
     <>
@@ -31,10 +46,10 @@ export default function Navbar() {
         {/* Logo */}
         <Link to="/" className="gigo-logo">
           <div className="gigo-logo-icon">⚡</div>
-          <span className="gigo-logo-text">GIGO BUSINESS COMPANY</span>
+          <span className="gigo-logo-text">GIGO COMPANY</span>
         </Link>
 
-        {/* Desktop links */}
+        {/* Desktop nav links */}
         <ul className="gigo-nav-links">
           {navLinks.map((link) => (
             <li key={link.to}>
@@ -48,13 +63,27 @@ export default function Navbar() {
           ))}
         </ul>
 
-        {/* Auth buttons (desktop) */}
+        {/* Desktop auth */}
         <div className="gigo-nav-actions">
-          <Link to="/login" className="gigo-btn-outline">Injira</Link>
-          <Link to="/signup" className="gigo-btn-solid">Iyandikishe</Link>
+          {user ? (
+            <>
+              <Link to="/orders" className="gigo-btn-outline">Amabuye</Link>
+              <Link to="/profile" className="gigo-avatar" title={user.displayName || user.email}>
+                {user.photoURL
+                  ? <img src={user.photoURL} alt="avatar" />
+                  : initials}
+              </Link>
+              <button onClick={handleLogout} className="gigo-btn-solid">Sohoka</button>
+            </>
+          ) : (
+            <>
+              <Link to="/login"  className="gigo-btn-outline">Injira</Link>
+              <Link to="/signup" className="gigo-btn-solid">Iyandikishe</Link>
+            </>
+          )}
         </div>
 
-        {/* Hamburger (mobile) */}
+        {/* Hamburger */}
         <button
           className="gigo-hamburger"
           onClick={() => setMenuOpen((prev) => !prev)}
@@ -76,16 +105,40 @@ export default function Navbar() {
                 to={link.to}
                 className={`gigo-mobile-link ${location.pathname === link.to ? "active" : ""}`}
               >
-                <span className="gigo-mobile-icon">{link.icon}</span>
                 {link.label}
               </Link>
             </li>
           ))}
+          {user ? (
+            <>
+              <li><Link to="/orders"  className="gigo-mobile-link">📋 Amabuye Yanjye</Link></li>
+              <li><Link to="/profile" className="gigo-mobile-link">👤 Konti Yanjye</Link></li>
+            </>
+          ) : null}
         </ul>
 
         <div className="gigo-mobile-auth">
-          <Link to="/login" className="gigo-btn-outline full">Injira</Link>
-          <Link to="/signup" className="gigo-btn-solid full">Iyandikishe</Link>
+          {user ? (
+            <>
+              <div className="gigo-mobile-user">
+                <div className="gigo-avatar-sm">
+                  {user.photoURL
+                    ? <img src={user.photoURL} alt="avatar" />
+                    : initials}
+                </div>
+                <div>
+                  <div className="gigo-mobile-name">{user.displayName || "Umukoresha"}</div>
+                  <div className="gigo-mobile-email">{user.email}</div>
+                </div>
+              </div>
+              <button onClick={handleLogout} className="gigo-btn-solid full">Sohoka</button>
+            </>
+          ) : (
+            <>
+              <Link to="/login"  className="gigo-btn-outline full">Injira</Link>
+              <Link to="/signup" className="gigo-btn-solid full">Iyandikishe</Link>
+            </>
+          )}
         </div>
       </div>
 
