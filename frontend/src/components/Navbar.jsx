@@ -67,7 +67,7 @@ export default function Navbar() {
         <div className="gigo-nav-actions">
           {user ? (
             <>
-              <Link to="/orders" className="gigo-btn-outline">Amabuye</Link>
+              <Link to="/orders" className="gigo-btn-outline">Commande</Link>
               <Link to="/profile" className="gigo-avatar" title={user.displayName || user.email}>
                 {user.photoURL
                   ? <img src={user.photoURL} alt="avatar" />
@@ -111,8 +111,8 @@ export default function Navbar() {
           ))}
           {user ? (
             <>
-              <li><Link to="/orders"  className="gigo-mobile-link">📋 Amabuye Yanjye</Link></li>
-              <li><Link to="/profile" className="gigo-mobile-link">👤 Konti Yanjye</Link></li>
+              <li><Link to="/orders"  className="gigo-mobile-link">📋 commande Zanje</Link></li>
+              <li><Link to="/profile" className="gigo-mobile-link">👤 Konti Yanje</Link></li>
             </>
           ) : null}
         </ul>
