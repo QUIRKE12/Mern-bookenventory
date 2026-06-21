@@ -1,66 +1,92 @@
-import { Footer } from "flowbite-react";
-import {
-  BsFacebook,
-  BsInstagram,
-  BsTwitter,
-  BsWhatsapp,
-} from "react-icons/bs";
+import { BsFacebook, BsInstagram, BsTwitter, BsWhatsapp } from "react-icons/bs";
+import { Link } from "react-router-dom";
 
 const MyFooter = () => {
   return (
-    <Footer bgDark>
-      <div className="w-full px-4 lg:px-24">
-        <div className="grid w-full grid-cols-1 gap-8 px-6 py-8 md:grid-cols-4">
-          <div>
-            <Footer.Title title="GIGO COMPANY LTD" />
-            <Footer.LinkGroup col>
-              <Footer.Link href="/about">Turi Bande?</Footer.Link>
-              <Footer.Link href="/shop">Ibinyobwa</Footer.Link>
-              <Footer.Link href="/blog">Amakuru</Footer.Link>
-              <Footer.Link href="/contact">Twandikire</Footer.Link>
-            </Footer.LinkGroup>
+    <footer style={{
+      background: "#1a1a2e",
+      padding: "40px 5% 24px",
+      fontFamily: "'Inter', sans-serif",
+    }}>
+      <div style={{
+        display: "flex",
+        justifyContent: "space-between",
+        alignItems: "flex-start",
+        flexWrap: "wrap",
+        gap: "32px",
+        marginBottom: "32px",
+      }}>
+        {/* Brand */}
+        <div>
+          <div style={{ fontSize: "20px", fontWeight: "900", color: "#FF6B35", marginBottom: "8px" }}>
+            🍾 GIGO COMPANY LTD
           </div>
-          <div>
-            <Footer.Title title="Ibinyobwa" />
-            <Footer.LinkGroup col>
-              <Footer.Link href="#">Ibinyobwa Vyambiye</Footer.Link>
-              <Footer.Link href="#">Ibinyobwa Bitambiye</Footer.Link>
-              <Footer.Link href="#">Amananiza</Footer.Link>
-              <Footer.Link href="#">Ibishasha</Footer.Link>
-            </Footer.LinkGroup>
-          </div>
-          <div>
-            <Footer.Title title="Twandikire" />
-            <Footer.LinkGroup col>
-              <Footer.Link href="#">+257 XX XX XX XX</Footer.Link>
-              <Footer.Link href="#">info@gigocompany.com</Footer.Link>
-              <Footer.Link href="#">Bujumbura, Burundi</Footer.Link>
-            </Footer.LinkGroup>
-          </div>
-          <div>
-            <Footer.Title title="Amategeko" />
-            <Footer.LinkGroup col>
-              <Footer.Link href="#">Privacy Policy</Footer.Link>
-              <Footer.Link href="#">Terms & Conditions</Footer.Link>
-              <Footer.Link href="#">Customer Support</Footer.Link>
-            </Footer.LinkGroup>
+          <div style={{ fontSize: "13px", color: "#8A9BB0", maxWidth: "220px", lineHeight: 1.6 }}>
+            Ibinyobwa vyiza kandi vyizewe ku giciro kibereye bose.
           </div>
         </div>
-        <div className="w-full border-t border-gray-600 px-4 py-6 sm:flex sm:items-center sm:justify-between">
-          <Footer.Copyright
-            href="#"
-            by="GIGO COMPANY LIMITED"
-            year={new Date().getFullYear()}
-          />
-          <div className="mt-4 flex space-x-6 sm:mt-0">
-            <Footer.Icon href="#" icon={BsFacebook} />
-            <Footer.Icon href="#" icon={BsInstagram} />
-            <Footer.Icon href="#" icon={BsTwitter} />
-            <Footer.Icon href="#" icon={BsWhatsapp} />
+
+        {/* Links */}
+        <div style={{ display: "flex", gap: "48px", flexWrap: "wrap" }}>
+          <div>
+            <div style={{ fontSize: "12px", fontWeight: "700", color: "#fff", textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: "12px" }}>
+              Links
+            </div>
+            {[
+              { label: "Ahabanza", path: "/" },
+              { label: "Ibinyobwa", path: "/shop" },
+              { label: "Turi Bande", path: "/about" },
+            ].map((item, i) => (
+              <div key={i} style={{ marginBottom: "8px" }}>
+                <Link to={item.path} style={{ color: "#8A9BB0", textDecoration: "none", fontSize: "13px" }}>
+                  {item.label}
+                </Link>
+              </div>
+            ))}
+          </div>
+
+          <div>
+            <div style={{ fontSize: "12px", fontWeight: "700", color: "#fff", textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: "12px" }}>
+              Twandikire
+            </div>
+            {[
+              "+257 XX XX XX XX",
+              "info@gigocompany.com",
+              "Bujumbura, Burundi",
+            ].map((item, i) => (
+              <div key={i} style={{ color: "#8A9BB0", fontSize: "13px", marginBottom: "8px" }}>
+                {item}
+              </div>
+            ))}
           </div>
         </div>
       </div>
-    </Footer>
+
+      {/* Bottom bar */}
+      <div style={{
+        borderTop: "1px solid rgba(255,255,255,0.07)",
+        paddingTop: "20px",
+        display: "flex",
+        justifyContent: "space-between",
+        alignItems: "center",
+        flexWrap: "wrap",
+        gap: "12px",
+      }}>
+        <div style={{ color: "#8A9BB0", fontSize: "12px" }}>
+          © {new Date().getFullYear()} GIGO COMPANY LIMITED
+        </div>
+        <div style={{ display: "flex", gap: "16px" }}>
+          {[BsFacebook, BsInstagram, BsTwitter, BsWhatsapp].map((Icon, i) => (
+            <a key={i} href="#" style={{ color: "#8A9BB0", fontSize: "18px", transition: "color 0.2s" }}
+              onMouseEnter={e => e.currentTarget.style.color = "#FF6B35"}
+              onMouseLeave={e => e.currentTarget.style.color = "#8A9BB0"}
+            >
+              <Icon />
+            </a>
+          ))}
+        </div>
+      </div>
+    </footer>
   );
 };
 
