@@ -1,142 +1,154 @@
-import { useState } from "react";
 import { Link } from "react-router-dom";
-import BarnnerCard from "./BarnnerCard";
 
 const Banner = () => {
-  const [search, setSearch] = useState("");
-
   return (
     <div style={{
       background: "linear-gradient(135deg, #FF6B35 0%, #F7931E 100%)",
-      minHeight: "85vh",
+      minHeight: "90vh",
       display: "flex",
       alignItems: "center",
-      padding: "0 5%",
+      justifyContent: "space-between",
+      padding: "100px 5% 60px",
       position: "relative",
       overflow: "hidden",
     }}>
-      {/* Background decoration */}
-      <div style={{
-        position: "absolute", top: "-50px", right: "-50px",
-        width: "400px", height: "400px",
-        background: "rgba(255,255,255,0.05)",
-        borderRadius: "50%",
-      }} />
-      <div style={{
-        position: "absolute", bottom: "-80px", left: "30%",
-        width: "300px", height: "300px",
-        background: "rgba(255,255,255,0.05)",
-        borderRadius: "50%",
-      }} />
+      {/* Background circles */}
+      <div style={{ position: "absolute", top: "-100px", right: "-100px", width: "500px", height: "500px", background: "rgba(255,255,255,0.06)", borderRadius: "50%", zIndex: 0 }} />
+      <div style={{ position: "absolute", bottom: "-100px", left: "20%", width: "350px", height: "350px", background: "rgba(255,255,255,0.04)", borderRadius: "50%", zIndex: 0 }} />
 
-      <div style={{
-        display: "flex",
-        flexDirection: "row",
-        justifyContent: "space-between",
-        alignItems: "center",
-        width: "100%",
-        gap: "40px",
-        flexWrap: "wrap",
-      }}>
-        {/* Left content */}
-        <div style={{ flex: 1, minWidth: "300px", zIndex: 1 }}>
-          <div style={{
-            background: "rgba(255,255,255,0.2)",
-            display: "inline-block",
-            padding: "6px 16px",
-            borderRadius: "20px",
-            color: "#fff",
-            fontSize: "13px",
-            fontWeight: "600",
-            marginBottom: "20px",
-            backdropFilter: "blur(10px)",
-          }}>
-            🍾 Ibinyobwa Vyiza Mu Burundi
-          </div>
-
-          <h1 style={{
-            fontSize: "clamp(32px, 5vw, 58px)",
-            fontWeight: "900",
-            color: "#fff",
-            lineHeight: 1.1,
-            marginBottom: "20px",
-            fontFamily: "'Inter', sans-serif",
-          }}>
-            Ibinyobwa Vyiza<br />
-            <span style={{ color: "#FFF3E0" }}>Kaze Muri</span><br />
-            GIGO COMPANY
-          </h1>
-
-          <p style={{
-            color: "rgba(255,255,255,0.85)",
-            fontSize: "16px",
-            lineHeight: 1.6,
-            marginBottom: "32px",
-            maxWidth: "480px",
-          }}>
-            Turabashikiriza ibinyobwa vyiza kandi vyizewe ku giciro kibereye bose. 
-            Turafise ibinyobwa vyambiye n'ibitambiye vy'ubwoko butandukanye.
-          </p>
-
-          {/* Search bar */}
-          <div style={{
-            display: "flex",
-            maxWidth: "480px",
+      {/* Left content */}
+      <div style={{ flex: 1, minWidth: "280px", zIndex: 2, maxWidth: "550px" }}>
+        <h1 style={{
+          fontSize: "clamp(32px, 5vw, 62px)",
+          fontWeight: "900",
+          color: "#fff",
+          lineHeight: 1.1,
+          marginBottom: "20px",
+          fontFamily: "'Inter', sans-serif",
+        }}>
+          Ibinyobwa Vyiza<br />
+          <span style={{ color: "#FFF3E0" }}>Ku Giciro</span><br />
+          Kibereye Bose
+        </h1>
+        <p style={{
+          color: "rgba(255,255,255,0.9)",
+          fontSize: "16px",
+          lineHeight: 1.7,
+          marginBottom: "36px",
+          maxWidth: "440px",
+        }}>
+          Turabashikiriza ibinyobwa vyiza kandi vyizewe. Turafise ibinyobwa vyambiye n'ibitambiye vy'ubwoko butandukanye kandi biboneka hafi yawe.
+        </p>
+        <div style={{ display: "flex", gap: "16px", flexWrap: "wrap" }}>
+          <Link to="/shop" style={{
             background: "#fff",
+            color: "#FF6B35",
+            padding: "14px 32px",
             borderRadius: "50px",
-            padding: "6px 6px 6px 20px",
-            boxShadow: "0 8px 32px rgba(0,0,0,0.15)",
-            marginBottom: "32px",
+            textDecoration: "none",
+            fontWeight: "800",
+            fontSize: "15px",
+            boxShadow: "0 8px 24px rgba(0,0,0,0.15)",
           }}>
-            <input
-              type="text"
-              placeholder="Rondera ikinyobwa..."
-              value={search}
-              onChange={e => setSearch(e.target.value)}
-              style={{
-                flex: 1,
-                border: "none",
-                outline: "none",
-                fontSize: "14px",
-                color: "#333",
-                background: "transparent",
-              }}
-            />
-            <Link
-              to={`/shop?search=${search}`}
-              style={{
-                background: "linear-gradient(135deg, #FF6B35, #F7931E)",
-                color: "#fff",
-                padding: "10px 24px",
-                borderRadius: "50px",
-                textDecoration: "none",
-                fontWeight: "700",
-                fontSize: "14px",
-                whiteSpace: "nowrap",
-              }}
-            >
-              Rondera
-            </Link>
-          </div>
-
-          {/* Stats */}
-          <div style={{ display: "flex", gap: "32px", flexWrap: "wrap" }}>
-            {[
-              { num: "4+", label: "Amashami" },
-              { num: "100+", label: "Ibinyobwa" },
-              { num: "1000+", label: "Abakiriya" },
-            ].map((s, i) => (
-              <div key={i} style={{ textAlign: "center" }}>
-                <div style={{ fontSize: "28px", fontWeight: "900", color: "#fff" }}>{s.num}</div>
-                <div style={{ fontSize: "12px", color: "rgba(255,255,255,0.8)", textTransform: "uppercase", letterSpacing: "0.1em" }}>{s.label}</div>
-              </div>
-            ))}
-          </div>
+            Reba Ibinyobwa →
+          </Link>
+          <Link to="/about" style={{
+            background: "rgba(255,255,255,0.2)",
+            color: "#fff",
+            padding: "14px 32px",
+            borderRadius: "50px",
+            textDecoration: "none",
+            fontWeight: "700",
+            fontSize: "15px",
+            border: "2px solid rgba(255,255,255,0.4)",
+          }}>
+            Turi Bande
+          </Link>
         </div>
 
-        {/* Right - Slider */}
-        <div style={{ flex: 1, minWidth: "300px", maxWidth: "500px", zIndex: 1 }}>
-          <BarnnerCard />
+        {/* Stats */}
+        <div style={{ display: "flex", gap: "40px", marginTop: "48px", flexWrap: "wrap" }}>
+          {[
+            { num: "4+", label: "Amashami" },
+            { num: "100+", label: "Ibinyobwa" },
+            { num: "1,000+", label: "Abakiriya" },
+          ].map((s, i) => (
+            <div key={i}>
+              <div style={{ fontSize: "32px", fontWeight: "900", color: "#fff" }}>{s.num}</div>
+              <div style={{ fontSize: "12px", color: "rgba(255,255,255,0.75)", textTransform: "uppercase", letterSpacing: "0.1em", marginTop: "4px" }}>{s.label}</div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Right - Big hero image */}
+      <div style={{
+        flex: 1,
+        minWidth: "280px",
+        maxWidth: "540px",
+        zIndex: 2,
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        position: "relative",
+      }}>
+        {/* Background glow */}
+        <div style={{
+          position: "absolute",
+          width: "380px",
+          height: "380px",
+          background: "rgba(255,255,255,0.12)",
+          borderRadius: "50%",
+          zIndex: 0,
+        }} />
+        {/* Main image */}
+        <img
+          src="https://images.unsplash.com/photo-1569529465841-dfecdab7503b?w=600"
+          alt="GIGO Premium Drinks"
+          style={{
+            width: "100%",
+            maxWidth: "420px",
+            height: "480px",
+            objectFit: "cover",
+            borderRadius: "30px",
+            boxShadow: "0 40px 80px rgba(0,0,0,0.3)",
+            position: "relative",
+            zIndex: 1,
+          }}
+        />
+        {/* Floating badge */}
+        <div style={{
+          position: "absolute",
+          bottom: "40px",
+          left: "-20px",
+          background: "#fff",
+          borderRadius: "16px",
+          padding: "14px 20px",
+          boxShadow: "0 8px 32px rgba(0,0,0,0.15)",
+          zIndex: 3,
+          display: "flex",
+          alignItems: "center",
+          gap: "10px",
+        }}>
+          <span style={{ fontSize: "24px" }}>🍾</span>
+          <div>
+            <div style={{ fontWeight: "800", fontSize: "13px", color: "#1a1a2e" }}>Premium Quality</div>
+            <div style={{ fontSize: "11px", color: "#999" }}>100% Certified</div>
+          </div>
+        </div>
+        {/* Top badge */}
+        <div style={{
+          position: "absolute",
+          top: "30px",
+          right: "-10px",
+          background: "#FF6B35",
+          borderRadius: "16px",
+          padding: "12px 18px",
+          boxShadow: "0 8px 32px rgba(255,107,53,0.4)",
+          zIndex: 3,
+        }}>
+          <div style={{ fontWeight: "800", fontSize: "13px", color: "#fff" }}>Fast Delivery</div>
+          <div style={{ fontSize: "11px", color: "rgba(255,255,255,0.8)" }}>Bujumbura & More</div>
         </div>
       </div>
     </div>
