@@ -33,13 +33,12 @@ const SLIDES = [
 
 const BarnnerCard = () => {
   return (
-    <div style={{ padding: "20px 0" }}>
+    <div style={{ padding: "20px 0", display: "flex", justifyContent: "center" }}>
       <Swiper
         effect="cards"
         grabCursor={true}
         modules={[EffectCards, Autoplay]}
         autoplay={{ delay: 3000, disableOnInteraction: false }}
-        className="mySwiper"
         style={{ width: "280px", height: "360px" }}
       >
         {SLIDES.map((slide, i) => (
@@ -52,16 +51,9 @@ const BarnnerCard = () => {
             <img
               src={slide.img}
               alt={slide.name}
-              style={{
-                width: "100%",
-                height: "280px",
-                objectFit: "cover",
-              }}
+              style={{ width: "100%", height: "280px", objectFit: "cover" }}
             />
-            <div style={{
-              padding: "16px",
-              background: "#fff",
-            }}>
+            <div style={{ padding: "16px", background: "#fff" }}>
               <div style={{ fontWeight: "700", fontSize: "14px", color: "#333", marginBottom: "4px" }}>
                 {slide.name}
               </div>
