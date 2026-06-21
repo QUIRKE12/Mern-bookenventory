@@ -141,9 +141,78 @@ const RESPONSIVE_CSS = `
     }
     .gigo-kpi-grid {
       grid-template-columns: repeat(2, 1fr) !important;
+      gap: 10px !important;
     }
     .gigo-2col-grid {
       grid-template-columns: 1fr !important;
+    }
+    .gigo-content {
+      padding: 14px 12px !important;
+    }
+    .gigo-kpi-card {
+      padding: 12px !important;
+    }
+    .gigo-kpi-card .gigo-kpi-val {
+      font-size: 19px !important;
+    }
+    .gigo-kpi-card .gigo-kpi-icon {
+      font-size: 16px !important;
+      margin-bottom: 6px !important;
+    }
+    .gigo-kpi-card .gigo-kpi-label {
+      font-size: 9.5px !important;
+    }
+    .gigo-stat-card {
+      padding: 12px 14px !important;
+    }
+    .gigo-stat-card .gigo-stat-val {
+      font-size: 19px !important;
+    }
+    .gigo-stat-card .gigo-stat-label {
+      font-size: 9.5px !important;
+    }
+    .gigo-section-header {
+      flex-direction: column !important;
+      align-items: stretch !important;
+      gap: 10px !important;
+    }
+    .gigo-section-header > div:last-child {
+      flex-direction: column !important;
+      width: 100% !important;
+    }
+    .gigo-section-header input,
+    .gigo-section-header select,
+    .gigo-section-header button {
+      width: 100% !important;
+    }
+    .gigo-table-scroll {
+      overflow-x: auto !important;
+      -webkit-overflow-scrolling: touch !important;
+    }
+    .gigo-table-scroll table {
+      min-width: 640px !important;
+    }
+    table.gigo-table {
+      display: block !important;
+      overflow-x: auto !important;
+      -webkit-overflow-scrolling: touch !important;
+      white-space: nowrap !important;
+      border-radius: inherit;
+    }
+    table.gigo-table thead,
+    table.gigo-table tbody {
+      display: table !important;
+      width: 100% !important;
+      min-width: 560px !important;
+    }
+    .gigo-tabs-scroll {
+      flex-wrap: nowrap !important;
+      overflow-x: auto !important;
+      -webkit-overflow-scrolling: touch !important;
+      padding-bottom: 2px;
+    }
+    .gigo-tabs-scroll button {
+      flex-shrink: 0 !important;
     }
   }
 `;
@@ -212,11 +281,11 @@ function Dashboard({ token }) {
 
       <div className="gigo-kpi-grid" style={S.grid4}>
         {kpiCards.map((k, i) => (
-          <div key={i} style={S.kpiCard}>
+          <div key={i} className="gigo-kpi-card" style={S.kpiCard}>
             <div style={S.kpiBar(k.color)} />
-            <span style={S.kpiIcon(k.color)}>{k.icon}</span>
-            <div style={S.kpiVal}>{k.value}</div>
-            <div style={S.kpiLabel}>{k.label}</div>
+            <span className="gigo-kpi-icon" style={S.kpiIcon(k.color)}>{k.icon}</span>
+            <div className="gigo-kpi-val" style={S.kpiVal}>{k.value}</div>
+            <div className="gigo-kpi-label" style={S.kpiLabel}>{k.label}</div>
             <div style={S.kpiDelta(k.up)}><span>{k.up ? "▲" : "▼"}</span>{k.delta}</div>
           </div>
         ))}
@@ -225,7 +294,7 @@ function Dashboard({ token }) {
       <div className="gigo-2col-grid" style={S.grid2}>
         <div style={S.card}>
           <div style={S.cardHeader}><div style={S.cardTitle}>Recent Orders</div></div>
-          <table style={S.table}>
+          <table className="gigo-table" style={S.table}>
             <thead>
               <tr>
                 <th style={S.th}>Customer</th>
@@ -359,7 +428,7 @@ function Products({ token }) {
 
   return (
     <div>
-      <div style={S.sectionHeader}>
+      <div className="gigo-section-header" style={S.sectionHeader}>
         <div>
           <div style={S.sectionTitle}>Product Management</div>
           <div style={{ fontSize: "12px", color: C.textMuted, marginTop: "2px" }}>{products.length} products</div>
@@ -372,7 +441,7 @@ function Products({ token }) {
       {msg && <div style={S.alert(msg.type)}>{msg.text}</div>}
       {loading ? <Spinner /> : (
         <div style={S.card}>
-          <table style={S.table}>
+          <table className="gigo-table" style={S.table}>
             <thead>
               <tr>
                 <th style={S.th}>Product</th>
@@ -508,7 +577,7 @@ function Inventory({ token }) {
 
   return (
     <div>
-      <div style={S.sectionHeader}>
+      <div className="gigo-section-header" style={S.sectionHeader}>
         <div>
           <div style={S.sectionTitle}>Inventory Management</div>
           <div style={{ fontSize: "12px", color: C.textMuted, marginTop: "2px" }}>Real-time stock tracking</div>
@@ -535,16 +604,16 @@ function Inventory({ token }) {
           { label: "Low Stock", value: lowCount, color: C.accent },
           { label: "Critical / Out", value: critical, color: C.red },
         ].map((s, i) => (
-          <div key={i} style={{ ...S.card, padding: "16px 20px" }}>
-            <div style={{ fontSize: "24px", fontWeight: "800", color: s.color }}>{s.value}</div>
-            <div style={{ fontSize: "11px", color: C.textMuted, textTransform: "uppercase", letterSpacing: "0.08em", marginTop: "4px" }}>{s.label}</div>
+          <div key={i} className="gigo-stat-card" style={{ ...S.card, padding: "16px 20px" }}>
+            <div className="gigo-stat-val" style={{ fontSize: "24px", fontWeight: "800", color: s.color }}>{s.value}</div>
+            <div className="gigo-stat-label" style={{ fontSize: "11px", color: C.textMuted, textTransform: "uppercase", letterSpacing: "0.08em", marginTop: "4px" }}>{s.label}</div>
           </div>
         ))}
       </div>
       {loading ? <Spinner /> : (
         <div style={S.card}>
           <div style={S.cardHeader}><div style={S.cardTitle}>Stock Levels</div></div>
-          <table style={S.table}>
+          <table className="gigo-table" style={S.table}>
             <thead>
               <tr>
                 <th style={S.th}>Product</th>
@@ -656,7 +725,7 @@ function Orders({ token }) {
 
   return (
     <div>
-      <div style={S.sectionHeader}>
+      <div className="gigo-section-header" style={S.sectionHeader}>
         <div>
           <div style={S.sectionTitle}>Orders</div>
           <div style={{ fontSize: "12px", color: C.textMuted, marginTop: "2px" }}>{orders.length} orders</div>
@@ -665,7 +734,7 @@ function Orders({ token }) {
       {msg && <div style={S.alert(msg.type)}>{msg.text}</div>}
       <div style={S.card}>
         <div style={S.cardHeader}>
-          <div style={{ display: "flex", gap: "6px", flexWrap: "wrap" }}>
+          <div className="gigo-tabs-scroll" style={{ display: "flex", gap: "6px", flexWrap: "wrap" }}>
             {tabs.map(t => (
               <button key={t} onClick={() => setFilter(t)} style={{ padding: "6px 14px", borderRadius: "6px", fontSize: "12px", fontWeight: "600", cursor: "pointer", background: filter === t ? C.accent : "transparent", color: filter === t ? C.bg : C.textMuted, border: `1px solid ${filter === t ? C.accent : C.border}` }}>
                 {t.charAt(0).toUpperCase() + t.slice(1)}
@@ -674,7 +743,7 @@ function Orders({ token }) {
           </div>
         </div>
         {loading ? <Spinner /> : (
-          <table style={S.table}>
+          <table className="gigo-table" style={S.table}>
             <thead>
               <tr>
                 <th style={S.th}>Customer</th>
@@ -751,7 +820,7 @@ function Branches({ token }) {
 
   return (
     <div>
-      <div style={S.sectionHeader}>
+      <div className="gigo-section-header" style={S.sectionHeader}>
         <div>
           <div style={S.sectionTitle}>Branch Management</div>
           <div style={{ fontSize: "12px", color: C.textMuted, marginTop: "2px" }}>{branches.length} branches</div>
@@ -879,7 +948,7 @@ function Users({ token }) {
 
   return (
     <div>
-      <div style={S.sectionHeader}>
+      <div className="gigo-section-header" style={S.sectionHeader}>
         <div>
           <div style={S.sectionTitle}>Users & Roles</div>
           <div style={{ fontSize: "12px", color: C.textMuted, marginTop: "2px" }}>{users.length} team members</div>
@@ -890,7 +959,7 @@ function Users({ token }) {
         <div style={S.card}>
           <div style={S.cardHeader}><div style={S.cardTitle}>Team Members</div></div>
           {loading ? <Spinner /> : (
-            <table style={S.table}>
+            <table className="gigo-table" style={S.table}>
               <thead>
                 <tr>
                   <th style={S.th}>Name</th>
@@ -1011,7 +1080,7 @@ function Reports({ token }) {
 
   return (
     <div>
-      <div style={S.sectionHeader}>
+      <div className="gigo-section-header" style={S.sectionHeader}>
         <div><div style={S.sectionTitle}>Reports & Analytics</div></div>
       </div>
       <div className="gigo-kpi-grid" style={{ ...S.grid2, marginBottom: "16px" }}>
@@ -1043,7 +1112,7 @@ function Reports({ token }) {
             <div style={{ textAlign: "center" }}><div style={{ fontSize: "24px", fontWeight: "800", color: C.blue }}>{Object.keys(daily.summary?.byBranch || {}).length}</div><div style={{ fontSize: "11px", color: C.textMuted, marginTop: "4px", textTransform: "uppercase" }}>Active Branches</div></div>
           </div>
           {daily.summary?.byBranch && (
-            <table style={S.table}>
+            <table className="gigo-table" style={S.table}>
               <thead><tr><th style={S.th}>Branch</th><th style={S.th}>Orders</th><th style={S.th}>Revenue</th></tr></thead>
               <tbody>
                 {Object.entries(daily.summary.byBranch).map(([branch, d], i) => (
@@ -1070,7 +1139,7 @@ function Reports({ token }) {
           {monthly.topProducts?.length > 0 && (
             <>
               <div style={{ ...S.cardHeader, borderTop: `1px solid ${C.border}` }}><div style={S.cardTitle}>Top Products</div></div>
-              <table style={S.table}>
+              <table className="gigo-table" style={S.table}>
                 <thead><tr><th style={S.th}>Product</th><th style={S.th}>Units Sold</th><th style={S.th}>Revenue</th></tr></thead>
                 <tbody>
                   {monthly.topProducts.map((p, i) => (
@@ -1090,7 +1159,7 @@ function Reports({ token }) {
       {branchPerf && active === "branch" && (
         <div style={S.card}>
           <div style={S.cardHeader}><div style={S.cardTitle}>Branch Performance — This Month</div></div>
-          <table style={S.table}>
+          <table className="gigo-table" style={S.table}>
             <thead>
               <tr>
                 <th style={S.th}>Branch</th>
@@ -1257,7 +1326,7 @@ export default function GigoManagement() {
             </span>
           </div>
         </div>
-        <div style={S.content}>{PAGE_MAP[active]}</div>
+        <div className="gigo-content" style={S.content}>{PAGE_MAP[active]}</div>
       </main>
     </div>
   );
