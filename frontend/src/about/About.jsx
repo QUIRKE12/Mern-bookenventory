@@ -8,7 +8,7 @@ const About = () => {
           TURI BA NDE?
         </h1>
         <p className="text-lg text-gray-600 max-w-3xl mx-auto">
-          Kaze muri <strong>GIGO COMPANY LIMITED</strong>. Turi ishirahamwe
+          Kaze muri <strong>GIGO BUSINESS COMPANY</strong>. Turi ishirahamwe
           ryihariye mu gukora no gukwiragiza ibinyobwa vy'ubwoko butandukanye.
           Dutanga ibinyobwa vyiza, vyizewe kandi ku giciro kibereye abakiriya
           bose. Intumbero yacu ni ugushikana ibinyobwa bikunzwe ku bantu bose
@@ -34,7 +34,7 @@ const About = () => {
 
       <section className="bg-blue-100 py-12 px-6 rounded-lg mb-16">
         <h2 className="text-3xl lg:text-4xl font-semibold text-blue-700 text-center mb-8">
-          KUKI WOHITAMWO GIGO COMPANY?
+          KUKI WOHITAMWO GIGO BUSINESS COMPANY?
         </h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8 text-center">
           <div className="space-y-4">
@@ -70,7 +70,7 @@ const About = () => {
         </h2>
         <p className="text-lg text-gray-600 mb-6 max-w-3xl mx-auto">
           Ba umwe mu bakiriya n'abafatanyabikorwa ba
-          <strong> GIGO COMPANY LIMITED</strong>. Twama twiteguriye
+          <strong> GIGO BUSINESS COMPANY</strong>. Twama twiteguriye
           kubashikiriza ibinyobwa vyiza kandi ku giciro kibereye bose.
         </p>
         <button className="bg-blue-700 text-white font-semibold px-8 py-3 rounded-full hover:bg-blue-800 transition-all duration-300">
