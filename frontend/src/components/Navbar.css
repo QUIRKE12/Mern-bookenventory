@@ -245,8 +245,8 @@
   backdrop-filter: blur(2px);
 }
 
-/* ── Spacer so content doesn't hide under fixed nav ── */
-body {
+/* ── Spacer: only applied inside App layout via .gigo-layout class ── */
+.gigo-layout {
   padding-top: var(--gigo-nav-height);
 }
 
