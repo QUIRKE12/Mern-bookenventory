@@ -15,7 +15,6 @@ const Banner = () => {
       position: "relative",
       overflow: "hidden",
     }}>
-      {/* Background circles */}
       <div style={{ position: "absolute", top: "-100px", right: "-100px", width: "500px", height: "500px", background: "rgba(255,255,255,0.06)", borderRadius: "50%", zIndex: 0 }} />
       <div style={{ position: "absolute", bottom: "-100px", left: "20%", width: "350px", height: "350px", background: "rgba(255,255,255,0.04)", borderRadius: "50%", zIndex: 0 }} />
 
@@ -29,7 +28,6 @@ const Banner = () => {
         flexWrap: "wrap",
         zIndex: 2,
       }}>
-        {/* Left content */}
         <div style={{ flex: "1 1 280px", zIndex: 2, maxWidth: "550px" }}>
           <h1 style={{
             fontSize: "clamp(28px, 5vw, 62px)",
@@ -79,7 +77,6 @@ const Banner = () => {
             </Link>
           </div>
 
-          {/* Stats */}
           <div style={{ display: "flex", gap: "32px", marginTop: "48px", flexWrap: "wrap" }}>
             {[
               { num: "4+", label: t("statBranches") },
@@ -94,7 +91,6 @@ const Banner = () => {
           </div>
         </div>
 
-        {/* Right - Big hero image */}
         <div style={{
           flex: "1 1 280px",
           maxWidth: "500px",
@@ -127,7 +123,6 @@ const Banner = () => {
               zIndex: 1,
             }}
           />
-          {/* Floating badge bottom */}
           <div style={{
             position: "absolute",
             bottom: "20px",
@@ -147,7 +142,6 @@ const Banner = () => {
               <div style={{ fontSize: "10px", color: "#999" }}>{t("badgePremiumSubtitle")}</div>
             </div>
           </div>
-          {/* Floating badge top */}
           <div style={{
             position: "absolute",
             top: "20px",
@@ -164,7 +158,6 @@ const Banner = () => {
         </div>
       </div>
 
-      {/* Responsive CSS */}
       <style>{`
         @media (max-width: 768px) {
           .hero-image { display: none; }
