@@ -77,25 +77,6 @@ const Blog = () => {
         </div>
       </section>
 
-      <section className="mb-16">
-        <h2 className="text-3xl lg:text-4xl font-semibold text-blue-700 text-center mb-6">
-          IBICE BITANDUKANYE
-        </h2>
-        <div className="flex flex-wrap justify-center gap-8">
-          <a href="#" className="text-blue-700 hover:text-blue-900 font-semibold text-xl">
-            Ibinyobwa Vyambiye
-          </a>
-          <a href="#" className="text-blue-700 hover:text-blue-900 font-semibold text-xl">
-            Ibinyobwa Bitambiye
-          </a>
-          <a href="#" className="text-blue-700 hover:text-blue-900 font-semibold text-xl">
-            Amananiza
-          </a>
-          <a href="#" className="text-blue-700 hover:text-blue-900 font-semibold text-xl">
-            Amatangazo
-          </a>
-        </div>
-      </section>
 
       <section className="bg-blue-100 py-12 text-center rounded-lg">
         <h2 className="text-3xl lg:text-4xl font-semibold text-blue-700 mb-4">
