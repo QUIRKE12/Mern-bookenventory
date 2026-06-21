@@ -5,6 +5,7 @@ import { LanguageContext } from "../contexts/LanguageContext";
 const Banner = () => {
   const { t } = useContext(LanguageContext);
 
+  
   return (
     <div style={{
       background: "linear-gradient(135deg, #FF6B35 0%, #F7931E 100%)",
