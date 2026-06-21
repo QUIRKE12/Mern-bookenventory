@@ -46,7 +46,7 @@ export default function Navbar() {
         {/* Logo */}
         <Link to="/" className="gigo-logo">
           <div className="gigo-logo-icon">⚡</div>
-          <span className="gigo-logo-text">GIGO COMPANY</span>
+          <span className="gigo-logo-text">GIGO BISINESS COMPANY</span>
         </Link>
 
         {/* Desktop nav links */}
