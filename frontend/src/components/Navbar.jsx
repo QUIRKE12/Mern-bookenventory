@@ -6,7 +6,7 @@ import "./Navbar.css";
 const navLinks = [
   { to: "/",       label: "Ahabanza" },
   { to: "/shop",   label: "Ibicuruzwa" },
-  { to: "/about",  label: "Ibyacu" },
+  { to: "/about",  label: "Ibitwerekeye" },
   { to: "/blog",   label: "Amakuru" },
 ];
 
