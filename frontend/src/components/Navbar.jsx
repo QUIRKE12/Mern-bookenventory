@@ -147,7 +147,7 @@ export default function Navbar() {
           ) : null}
         </ul>
 
-        <li className="gigo-mobile-lang">
+        <div className="gigo-mobile-lang">
           {languageOptions.map((opt) => (
             <button
               key={opt.code}
@@ -157,7 +157,7 @@ export default function Navbar() {
               {opt.label}
             </button>
           ))}
-        </li>
+        </div>
 
         <div className="gigo-mobile-auth">
           {user ? (
