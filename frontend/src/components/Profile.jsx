@@ -46,10 +46,10 @@ export default function Profile() {
           padding: "32px 24px 48px",
         }}>
           <p style={{ fontSize: "12px", fontWeight: 600, color: "#0D1B2A", letterSpacing: "1px", margin: 0 }}>
-            GIGO COMPANY
+            GIGO BUSINESS COMPANY
           </p>
           <h2 style={{ fontSize: "20px", fontWeight: 600, color: "#0D1B2A", margin: "4px 0 0" }}>
-            Konti Yanjye
+            Konti Yanje
           </h2>
         </div>
 
@@ -125,7 +125,7 @@ export default function Profile() {
                 cursor: "pointer",
               }}
             >
-              Reba Amabuye Yanjye
+              Reba Commande Zanje
             </button>
 
             {/* Show dashboard link for staff */}
