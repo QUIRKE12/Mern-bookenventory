@@ -115,9 +115,13 @@ const S = {
 
 // ── RESPONSIVE CSS (mobile sidebar + grid) ───────────────────────────────────
 const RESPONSIVE_CSS = `
+  html, body { overflow-x: hidden; background: #0D1B2A; }
   .gigo-hamburger { display: none; }
   .gigo-backdrop { display: none; }
   @media (max-width: 880px) {
+    .gigo-main {
+      overflow-x: hidden;
+    }
     .gigo-sidebar {
       transform: translateX(-100%);
       transition: transform 0.25s ease;
