@@ -115,7 +115,7 @@ const S = {
 
 // ── RESPONSIVE CSS (mobile sidebar + grid) ───────────────────────────────────
 const RESPONSIVE_CSS = `
-  html, body { overflow-x: hidden; background: #0D1B2A; }
+  .gigo-app { overflow-x: hidden; }
   .gigo-hamburger { display: none; }
   .gigo-backdrop { display: none; }
   @media (max-width: 880px) {
@@ -1259,7 +1259,7 @@ export default function GigoManagement() {
   };
 
   return (
-    <div style={S.app}>
+    <div className="gigo-app" style={S.app}>
       <style>{RESPONSIVE_CSS}</style>
 
       <div
