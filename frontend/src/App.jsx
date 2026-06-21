@@ -1,7 +1,7 @@
 import { Outlet } from "react-router-dom";
 import Navbar from "./components/Navbar";
 import MyFooter from "./components/MyFooter";
-import ScrollToTop from "./components/ScrollToTop";
+import ScrollToTop from "./components/Scrolltotop";  // match exact filename;
 
 function App() {
   return (
