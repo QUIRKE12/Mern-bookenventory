@@ -6,7 +6,7 @@ function App() {
   return (
     <>
       <Navbar />
-      <div className="min-h-screen">
+      <div className="gigo-layout min-h-screen">
         <Outlet />
       </div>
       <MyFooter />
