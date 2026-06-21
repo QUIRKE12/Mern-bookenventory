@@ -1,6 +1,6 @@
 import React, { useContext, useState } from "react";
 import { AuthContext } from "../contexts/AuthContext";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate, useLocation, Link } from "react-router-dom";
 
 const C = {
   bg: "#0D1B2A",
@@ -20,7 +20,9 @@ const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
   const navigate  = useNavigate();
   const location  = useLocation();
-  const from      = location.state?.from || "/dashboard";
+
+  // Customers go to "/" after login, staff go to where they came from
+  const from = location.state?.from?.pathname || "/";
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -112,6 +114,17 @@ const Login = () => {
               {loading ? "Turiko Twinjira..." : "Injira"}
             </button>
           </form>
+
+          {/* Signup link */}
+          <p style={{ textAlign: "center", marginTop: "20px", fontSize: "13px", color: C.textMuted }}>
+            Nta konti ufite?{" "}
+            <Link
+              to="/signup"
+              style={{ color: C.accent, fontWeight: "600", textDecoration: "none" }}
+            >
+              Iyandikishe hano
+            </Link>
+          </p>
         </div>
 
         <div style={{ textAlign: "center", marginTop: "20px", fontSize: "12px", color: C.textMuted }}>
