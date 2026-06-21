@@ -1,35 +1,58 @@
+import { useState } from "react";
+import { Link } from "react-router-dom";
 import BarnnerCard from "./BarnnerCard";
 
 const Banner = () => {
+  const [search, setSearch] = useState("");
+
   return (
-    <div className="px-4 lg:px-24 bg-teal-100 flex items-center justify-center">
-      <div className="flex flex-col md:flex-row justify-between items-center gap-12 py-20 w-full">
-        <div className="md:w-1/2 space-y-6">
-          <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold leading-snug text-black">
-            Kaze muri{" "}
-            <span className="text-blue-700">
-              GIGO COMPANY LIMITED
-            </span>
-          </h2>
-          <p className="md:w-4/5 text-gray-600">
-            Turabashikiriza ibinyobwa vyiza kandi vyizewe ku giciro kibereye
-            bose. Turafise ibinyobwa vyambiye n'ibitambiye vy'ubwoko
-            butandukanye kandi biboneka hafi yawe.
+    <div style={{
+      background: "linear-gradient(135deg, #FF6B35 0%, #F7931E 100%)",
+      minHeight: "85vh",
+      display: "flex",
+      alignItems: "center",
+      padding: "80px 5% 60px",
+      position: "relative",
+      overflow: "hidden",
+    }}>
+      <div style={{ position: "absolute", top: "-50px", right: "-50px", width: "400px", height: "400px", background: "rgba(255,255,255,0.05)", borderRadius: "50%" }} />
+      <div style={{ position: "absolute", bottom: "-80px", left: "30%", width: "300px", height: "300px", background: "rgba(255,255,255,0.05)", borderRadius: "50%" }} />
+
+      <div style={{ display: "flex", flexDirection: "row", justifyContent: "space-between", alignItems: "center", width: "100%", gap: "40px", flexWrap: "wrap" }}>
+        <div style={{ flex: 1, minWidth: "280px", zIndex: 1 }}>
+          <div style={{ display: "inline-block", background: "rgba(255,255,255,0.2)", padding: "6px 16px", borderRadius: "20px", color: "#fff", fontSize: "13px", fontWeight: "600", marginBottom: "20px" }}>
+            🍾 Ibinyobwa Vyiza Mu Burundi
+          </div>
+          <h1 style={{ fontSize: "clamp(28px, 5vw, 58px)", fontWeight: "900", color: "#fff", lineHeight: 1.1, marginBottom: "20px", fontFamily: "'Inter', sans-serif" }}>
+            Ibinyobwa Vyiza<br />
+            <span style={{ color: "#FFF3E0" }}>Kaze Muri</span><br />
+            GIGO COMPANY
+          </h1>
+          <p style={{ color: "rgba(255,255,255,0.85)", fontSize: "16px", lineHeight: 1.6, marginBottom: "32px", maxWidth: "480px" }}>
+            Turabashikiriza ibinyobwa vyiza kandi vyizewe ku giciro kibereye bose. Turafise ibinyobwa vyambiye n'ibitambiye vy'ubwoko butandukanye.
           </p>
-          <div className="flex w-full max-w-md">
+          <div style={{ display: "flex", maxWidth: "480px", background: "#fff", borderRadius: "50px", padding: "6px 6px 6px 20px", boxShadow: "0 8px 32px rgba(0,0,0,0.15)", marginBottom: "32px" }}>
             <input
-              type="search"
-              name="search"
-              id="search"
+              type="text"
               placeholder="Rondera ikinyobwa..."
-              className="py-2 px-2 w-full border border-gray-300 rounded-l-md outline-none"
+              value={search}
+              onChange={e => setSearch(e.target.value)}
+              style={{ flex: 1, border: "none", outline: "none", fontSize: "14px", color: "#333", background: "transparent" }}
             />
-            <button className="bg-blue-700 px-6 py-2 text-white font-medium hover:bg-black transition-all ease-in duration-200 rounded-r-md">
+            <Link to={`/shop?search=${search}`} style={{ background: "linear-gradient(135deg, #FF6B35, #F7931E)", color: "#fff", padding: "10px 24px", borderRadius: "50px", textDecoration: "none", fontWeight: "700", fontSize: "14px", whiteSpace: "nowrap" }}>
               Rondera
-            </button>
+            </Link>
+          </div>
+          <div style={{ display: "flex", gap: "32px", flexWrap: "wrap" }}>
+            {[{ num: "4+", label: "Amashami" }, { num: "100+", label: "Ibinyobwa" }, { num: "1000+", label: "Abakiriya" }].map((s, i) => (
+              <div key={i} style={{ textAlign: "center" }}>
+                <div style={{ fontSize: "28px", fontWeight: "900", color: "#fff" }}>{s.num}</div>
+                <div style={{ fontSize: "12px", color: "rgba(255,255,255,0.8)", textTransform: "uppercase", letterSpacing: "0.1em" }}>{s.label}</div>
+              </div>
+            ))}
           </div>
         </div>
-        <div className="w-full md:w-1/2 flex justify-center">
+        <div style={{ flex: 1, minWidth: "280px", maxWidth: "500px", zIndex: 1, display: "flex", justifyContent: "center" }}>
           <BarnnerCard />
         </div>
       </div>
