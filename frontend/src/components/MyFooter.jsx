@@ -19,7 +19,7 @@ const MyFooter = () => {
         {/* Brand */}
         <div>
           <div style={{ fontSize: "20px", fontWeight: "900", color: "#FF6B35", marginBottom: "8px" }}>
-            🍾 GIGO COMPANY LTD
+            🍾 GIGO BUSINESS COMPANY LTD
           </div>
           <div style={{ fontSize: "13px", color: "#8A9BB0", maxWidth: "220px", lineHeight: 1.6 }}>
             Ibinyobwa vyiza kandi vyizewe ku giciro kibereye bose.
@@ -73,7 +73,7 @@ const MyFooter = () => {
         gap: "12px",
       }}>
         <div style={{ color: "#8A9BB0", fontSize: "12px" }}>
-          © {new Date().getFullYear()} GIGO COMPANY LIMITED
+          © {new Date().getFullYear()} GIGO BUSINESS COMPANY 
         </div>
         <div style={{ display: "flex", gap: "16px" }}>
           {[BsFacebook, BsInstagram, BsTwitter, BsWhatsapp].map((Icon, i) => (
