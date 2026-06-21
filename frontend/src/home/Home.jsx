@@ -1,15 +1,13 @@
 import Banner from "./Banner";
 import BestSellerProducts from "./BestSellerProducts";
-import OtherProducts from "./OtherProducts";
-import PromoBanner from "./PromoBanner";
+import FavProducts from "./FavProducts";
 
 const Home = () => {
   return (
     <div style={{ background: "#fff", minHeight: "100vh" }}>
       <Banner />
       <BestSellerProducts />
-      <PromoBanner />
-      <OtherProducts />
+      <FavProducts />
     </div>
   );
 };
