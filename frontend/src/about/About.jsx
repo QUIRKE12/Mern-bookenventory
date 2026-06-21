@@ -9,9 +9,9 @@ const About = () => {
         </h1>
         <p className="text-lg text-gray-600 max-w-3xl mx-auto">
           Kaze muri <strong>GIGO BUSINESS COMPANY</strong>. Turi ishirahamwe
-          ryihariye mu gukora no gukwiragiza ibinyobwa vy'ubwoko butandukanye.
-          Dutanga ibinyobwa vyiza, vyizewe kandi ku giciro kibereye abakiriya
-          bose. Intumbero yacu ni ugushikana ibinyobwa bikunzwe ku bantu bose
+          ryihariye mu gukora no gukwiragiza ivyokunywa vy'ubwoko butandukanye.
+          Dutanga ivyokunywa vyiza, vyizewe kandi ku giciro kibereye abakiriya
+          bose. Intumbero yacu ni ugushikana ivyokunywa bikunzwe ku bantu bose
           mu buryo bworoshe kandi bwihuta.
         </p>
       </section>
@@ -21,11 +21,11 @@ const About = () => {
           INTEGO YACU
         </h2>
         <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-          Gutuma umukiriya aronka ibinyobwa yipfuza ku giciro ciza kandi hafi
+          Gutuma umukiriya aronka ivyokunywa yipfuza ku giciro ciza kandi hafi
           yiwe igihe cose.
         </p>
         <ul className="list-disc list-inside text-lg text-gray-600 mt-4 mx-auto max-w-2xl text-left">
-          <li>Gutanga ibinyobwa vyiza kandi vyizewe.</li>
+          <li>Gutanga ivyokunywa vyiza kandi vyizewe.</li>
           <li>Gushikira abakiriya mu gihugu cose.</li>
           <li>Gutanga ibiciro vyiza kandi bibereye bose.</li>
           <li>Gutanga serivisi yihuta kandi y'umwizero.</li>
@@ -40,13 +40,13 @@ const About = () => {
           <div className="space-y-4">
             <h3 className="text-xl font-bold text-blue-700">IBICIRO VYIZA</h3>
             <p className="text-gray-600">
-              Dutanga ibinyobwa ku biciro vyiza kandi bishoboka kuri bose.
+              Dutanga ivyokunywa ku biciro vyiza kandi bishoboka kuri bose.
             </p>
           </div>
           <div className="space-y-4">
             <h3 className="text-xl font-bold text-blue-700">UBWOKO BUTANDUKANYE</h3>
             <p className="text-gray-600">
-              Turafise ibinyobwa vyambiye n'ibitambiye vy'ubwoko bwinshi.
+              Turafise ivyokunywa vyambiye n'ibitambiye vy'ubwoko bwinshi.
             </p>
           </div>
           <div className="space-y-4">
@@ -71,7 +71,7 @@ const About = () => {
         <p className="text-lg text-gray-600 mb-6 max-w-3xl mx-auto">
           Ba umwe mu bakiriya n'abafatanyabikorwa ba
           <strong> GIGO BUSINESS COMPANY</strong>. Twama twiteguriye
-          kubashikiriza ibinyobwa vyiza kandi ku giciro kibereye bose.
+          kubashikiriza ivyokunywa vyiza kandi ku giciro kibereye bose.
         </p>
         <button className="bg-blue-700 text-white font-semibold px-8 py-3 rounded-full hover:bg-blue-800 transition-all duration-300">
           TANGURA NONAHA
