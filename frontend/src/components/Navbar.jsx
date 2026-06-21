@@ -6,12 +6,12 @@ import "./Navbar.css";
 const navLinks = [
   { to: "/",       label: "Ahabanza" },
   { to: "/shop",   label: "Ibicuruzwa" },
-  { to: "/about",  label: "Ibitwerekeye" },
+  { to: "/about",  label: "Ibyacu" },
   { to: "/blog",   label: "Amakuru" },
 ];
 
 export default function Navbar() {
-  const { user, logOut }  = useContext(AuthContext);
+  const { user, logout } = useContext(AuthContext);
   const [menuOpen, setMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const location = useLocation();
@@ -29,7 +29,7 @@ export default function Navbar() {
 
   const handleLogout = async () => {
     try {
-      await logOut();
+      await logout();
       navigate("/");
     } catch (err) {
       console.error(err);
@@ -46,7 +46,7 @@ export default function Navbar() {
         {/* Logo */}
         <Link to="/" className="gigo-logo">
           <div className="gigo-logo-icon">⚡</div>
-          <span className="gigo-logo-text">GIGO BUSINESS COMPANY</span>
+          <span className="gigo-logo-text">GIGO COMPANY</span>
         </Link>
 
         {/* Desktop nav links */}
