@@ -11,6 +11,7 @@ import ManageProducts from "../dashboard/ManageProducts";
 import EditProduct from "../dashboard/EditProduct";
 import GigoManagement from "../dashboard/GigoManagement";
 import Login from "../components/Login";
+import Profile from "../components/Profile";
 import PrivateRoute from "../PrivateRoute/PrivateRoute";
 import ManagerRoute from "../PrivateRoute/ManagerRoute";
 import OwnerRoute from "../PrivateRoute/OwnerRoute";
@@ -43,10 +44,26 @@ const router = createBrowserRouter([
       { path: "/product/:id", element: <SingleProduct />, loader: fetchProductData },
       { path: "/about", element: <About /> },
       { path: "/blog", element: <Blog /> },
-      { path: "/orders", element: <Orders /> },
+      {
+        path: "/orders",
+        element: (
+          <PrivateRoute>
+            <Orders />
+          </PrivateRoute>
+        ),
+      },
+      {
+        path: "/profile",
+        element: (
+          <PrivateRoute>
+            <Profile />
+          </PrivateRoute>
+        ),
+      },
     ],
   },
-  { path: "/sign-up", element: <Signup /> },
+  { path: "/signup", element: <Signup /> },   // fixed: was /sign-up
+  { path: "/sign-up", element: <Navigate to="/signup" replace /> }, // redirect old links
   { path: "/login", element: <Login /> },
   { path: "/logout", element: <Logout /> },
   { path: "/unauthorized", element: <Unauthorized /> },
