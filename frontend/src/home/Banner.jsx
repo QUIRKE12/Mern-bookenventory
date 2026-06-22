@@ -1,6 +1,10 @@
 import { Link } from "react-router-dom";
+import { useContext } from "react";
+import { LanguageContext } from "../contexts/LanguageContext";
 
 const Banner = () => {
+  const { t } = useContext(LanguageContext);
+
   return (
     <div style={{
       background: "linear-gradient(135deg, #FF6B35 0%, #F7931E 100%)",
@@ -35,9 +39,9 @@ const Banner = () => {
             marginBottom: "20px",
             fontFamily: "'Inter', sans-serif",
           }}>
-            Ivyokunywa Vyiza<br />
-            <span style={{ color: "#FFF3E0" }}>Ku Giciro</span><br />
-            Kibereye Bose
+            {t("heroTitleLine1")}<br />
+            <span style={{ color: "#FFF3E0" }}>{t("heroTitleLine2")}</span><br />
+            {t("heroTitleLine3")}
           </h1>
           <p style={{
             color: "rgba(255,255,255,0.9)",
@@ -46,7 +50,7 @@ const Banner = () => {
             marginBottom: "36px",
             maxWidth: "440px",
           }}>
-            Turabashikiriza ivyokunywa vyiza kandi vyizewe. Turafise ibinyobwa vyambiye n'ibitambiye vy'ubwoko butandukanye kandi biboneka hafi yawe.
+            {t("heroSubtitle")}
           </p>
           <div style={{ display: "flex", gap: "16px", flexWrap: "wrap" }}>
             <Link to="/shop" style={{
@@ -59,7 +63,7 @@ const Banner = () => {
               fontSize: "15px",
               boxShadow: "0 8px 24px rgba(0,0,0,0.15)",
             }}>
-              Reba Ivyokunywa →
+              {t("heroBtnShop")}
             </Link>
             <Link to="/about" style={{
               background: "rgba(255,255,255,0.2)",
@@ -71,16 +75,16 @@ const Banner = () => {
               fontSize: "15px",
               border: "2px solid rgba(255,255,255,0.4)",
             }}>
-              Turi Bande
+              {t("heroBtnAbout")}
             </Link>
           </div>
 
           {/* Stats */}
           <div style={{ display: "flex", gap: "32px", marginTop: "48px", flexWrap: "wrap" }}>
             {[
-              { num: "4+", label: "Amashami" },
-              { num: "100+", label: "Ibinyobwa" },
-              { num: "1,000+", label: "Abakiriya" },
+              { num: "4+",     label: t("statBranches") },
+              { num: "100+",   label: t("statProducts") },
+              { num: "1,000+", label: t("statCustomers") },
             ].map((s, i) => (
               <div key={i}>
                 <div style={{ fontSize: "clamp(22px, 4vw, 32px)", fontWeight: "900", color: "#fff" }}>{s.num}</div>
@@ -139,8 +143,8 @@ const Banner = () => {
           }}>
             <span style={{ fontSize: "20px" }}>🍾</span>
             <div>
-              <div style={{ fontWeight: "800", fontSize: "12px", color: "#1a1a2e" }}>Premium Quality</div>
-              <div style={{ fontSize: "10px", color: "#999" }}>100% Certified</div>
+              <div style={{ fontWeight: "800", fontSize: "12px", color: "#1a1a2e" }}>{t("badgePremiumTitle")}</div>
+              <div style={{ fontSize: "10px", color: "#999" }}>{t("badgePremiumSubtitle")}</div>
             </div>
           </div>
           {/* Floating badge top */}
@@ -154,8 +158,8 @@ const Banner = () => {
             boxShadow: "0 8px 32px rgba(255,107,53,0.4)",
             zIndex: 3,
           }}>
-            <div style={{ fontWeight: "800", fontSize: "12px", color: "#fff" }}>Fast Delivery</div>
-            <div style={{ fontSize: "10px", color: "rgba(255,255,255,0.8)" }}>Bujumbura & More</div>
+            <div style={{ fontWeight: "800", fontSize: "12px", color: "#fff" }}>{t("badgeDeliveryTitle")}</div>
+            <div style={{ fontSize: "10px", color: "rgba(255,255,255,0.8)" }}>{t("badgeDeliverySubtitle")}</div>
           </div>
         </div>
       </div>
