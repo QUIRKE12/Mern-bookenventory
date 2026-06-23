@@ -1,12 +1,14 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useContext } from "react";
 import { Link } from "react-router-dom";
+import { LanguageContext } from "../contexts/LanguageContext";
 
-const CATEGORIES = ["Vyose", "Alcoholic", "Non-Alcoholic", "Food", "Other"];
+const CATEGORIES = ["Alcoholic", "Non-Alcoholic", "Food", "Other"];
 
 const BestSellerProducts = () => {
+  const { t } = useContext(LanguageContext);
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [activeCategory, setActiveCategory] = useState("Vyose");
+  const [activeCategory, setActiveCategory] = useState("all");
   const [hovered, setHovered] = useState(null);
 
   useEffect(() => {
@@ -16,7 +18,7 @@ const BestSellerProducts = () => {
       .catch(() => setLoading(false));
   }, []);
 
-  const filtered = activeCategory === "Vyose"
+  const filtered = activeCategory === "all"
     ? products
     : products.filter(p => p.category === activeCategory);
 
@@ -25,14 +27,28 @@ const BestSellerProducts = () => {
       {/* Header */}
       <div style={{ marginBottom: "40px" }}>
         <div style={{ display: "inline-block", background: "#FFF3E0", color: "#FF6B35", padding: "5px 14px", borderRadius: "20px", fontSize: "12px", fontWeight: "700", marginBottom: "12px" }}>
-          🏆 Ibikunzwe Cyane
+          {t("bestSellerBadge")}
         </div>
         <h2 style={{ fontSize: "clamp(22px, 4vw, 34px)", fontWeight: "900", color: "#1a1a2e", marginBottom: "20px" }}>
-          Ibinyobwa Byacu
+          {t("bestSellerTitle")}
         </h2>
 
         {/* Category tabs */}
         <div style={{ display: "flex", gap: "10px", flexWrap: "wrap" }}>
+          {/* All tab */}
+          <button
+            onClick={() => setActiveCategory("all")}
+            style={{
+              padding: "8px 20px", borderRadius: "50px", border: "none",
+              cursor: "pointer", fontWeight: "700", fontSize: "13px",
+              background: activeCategory === "all" ? "linear-gradient(135deg, #FF6B35, #F7931E)" : "#fff",
+              color: activeCategory === "all" ? "#fff" : "#666",
+              boxShadow: activeCategory === "all" ? "0 4px 15px rgba(255,107,53,0.3)" : "0 2px 8px rgba(0,0,0,0.08)",
+              transition: "all 0.2s",
+            }}
+          >
+            {t("categoryAll")}
+          </button>
           {CATEGORIES.map(cat => (
             <button
               key={cat}
@@ -58,11 +74,11 @@ const BestSellerProducts = () => {
 
       {loading ? (
         <div style={{ textAlign: "center", padding: "60px", color: "#999", fontSize: "16px" }}>
-          Loading...
+          {t("loading")}
         </div>
       ) : filtered.length === 0 ? (
         <div style={{ textAlign: "center", padding: "60px", color: "#999" }}>
-          Nta binyobwa bibonetse muri iyi kategori
+          {t("noProducts")}
         </div>
       ) : (
         <div style={{
@@ -115,7 +131,7 @@ const BestSellerProducts = () => {
                         fontWeight: "700", fontSize: "13px",
                         boxShadow: "0 4px 20px rgba(255,107,53,0.4)",
                       }}>
-                        🛒 Gura Nonaha
+                        {t("buyNow")}
                       </div>
                     </div>
                   )}
@@ -140,7 +156,7 @@ const BestSellerProducts = () => {
                       padding: "6px 14px", borderRadius: "50px",
                       fontSize: "11px", fontWeight: "700",
                     }}>
-                      Gura →
+                      {t("buyBtn")}
                     </span>
                   </div>
                 </div>
@@ -158,7 +174,7 @@ const BestSellerProducts = () => {
           textDecoration: "none", fontWeight: "700", fontSize: "15px",
           boxShadow: "0 8px 24px rgba(255,107,53,0.3)",
         }}>
-          Reba Ibinyobwa Byose →
+          {t("viewAll")}
         </Link>
       </div>
     </div>
