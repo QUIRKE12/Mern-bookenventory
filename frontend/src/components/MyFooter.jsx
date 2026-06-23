@@ -1,7 +1,10 @@
 import { BsFacebook, BsInstagram, BsTwitter, BsWhatsapp } from "react-icons/bs";
 import { Link } from "react-router-dom";
+import { useContext } from "react";
+import { LanguageContext } from "../contexts/LanguageContext";
 
 const MyFooter = () => {
+  const { t } = useContext(LanguageContext);
   return (
     <footer style={{
       background: "#1a1a2e",
@@ -22,7 +25,7 @@ const MyFooter = () => {
             🍾 GIGO BUSINESS COMPANY LTD
           </div>
           <div style={{ fontSize: "13px", color: "#8A9BB0", maxWidth: "220px", lineHeight: 1.6 }}>
-            Ibinyobwa vyiza kandi vyizewe ku giciro kibereye bose.
+            {t("footerTagline")}
           </div>
         </div>
 
@@ -30,12 +33,12 @@ const MyFooter = () => {
         <div style={{ display: "flex", gap: "48px", flexWrap: "wrap" }}>
           <div>
             <div style={{ fontSize: "12px", fontWeight: "700", color: "#fff", textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: "12px" }}>
-              Links
+              {t("footerLinks")}
             </div>
             {[
-              { label: "Ahabanza", path: "/" },
-              { label: "Ibinyobwa", path: "/shop" },
-              { label: "Turi Bande", path: "/about" },
+              { label: t("footerHome"), path: "/" },
+              { label: t("footerProducts"), path: "/shop" },
+              { label: t("footerAbout"), path: "/about" },
             ].map((item, i) => (
               <div key={i} style={{ marginBottom: "8px" }}>
                 <Link to={item.path} style={{ color: "#8A9BB0", textDecoration: "none", fontSize: "13px" }}>
@@ -47,7 +50,7 @@ const MyFooter = () => {
 
           <div>
             <div style={{ fontSize: "12px", fontWeight: "700", color: "#fff", textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: "12px" }}>
-              Twandikire
+              {t("footerContact")}
             </div>
             {[
               "+257 XX XX XX XX",
