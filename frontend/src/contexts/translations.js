@@ -27,6 +27,27 @@ export const translations = {
     badgePremiumSubtitle: "Vyemejwe 100%",
     badgeDeliveryTitle: "Gutwara Vyihuse",
     badgeDeliverySubtitle: "Bujumbura & Ahandi",
+    // BestSellerProducts
+    bestSellerBadge: "🏆 Ibikunzwe Cyane",
+    bestSellerTitle: "Ibinyobwa Byacu",
+    categoryAll: "Vyose",
+    loading: "Gukurura...",
+    noProducts: "Nta binyobwa bibonetse muri iyi kategori",
+    buyNow: "🛒 Gura Nonaha",
+    buyBtn: "Gura →",
+    viewAll: "Reba Ibinyobwa Vyose →",
+    // Footer
+    footerTagline: "Ivyokunywa vyiza kandi vyizewe ku giciro kibereye bose.",
+    footerLinks: "Inyungu",
+    footerContact: "Twandikire",
+    footerHome: "Ahabanza",
+    footerProducts: "Ibinyobwa",
+    footerAbout: "Turi Bande",
+    // Shop
+    shopTitle: "Iduka Ryacu",
+    shopSubtitle: "Ibinyobwa vyose bibonetse",
+    searchPlaceholder: "Rondera ikinyobwa...",
+    filterAll: "Vyose",
   },
   // ── English ─────────────────────────────────────────
   en: {
@@ -55,6 +76,27 @@ export const translations = {
     badgePremiumSubtitle: "100% Certified",
     badgeDeliveryTitle: "Fast Delivery",
     badgeDeliverySubtitle: "Bujumbura & More",
+    // BestSellerProducts
+    bestSellerBadge: "🏆 Best Sellers",
+    bestSellerTitle: "Our Products",
+    categoryAll: "All",
+    loading: "Loading...",
+    noProducts: "No products found in this category",
+    buyNow: "🛒 Buy Now",
+    buyBtn: "Buy →",
+    viewAll: "View All Products →",
+    // Footer
+    footerTagline: "Quality, trusted beverages at prices everyone can afford.",
+    footerLinks: "Links",
+    footerContact: "Contact Us",
+    footerHome: "Home",
+    footerProducts: "Products",
+    footerAbout: "About Us",
+    // Shop
+    shopTitle: "Our Shop",
+    shopSubtitle: "All available products",
+    searchPlaceholder: "Search for a drink...",
+    filterAll: "All",
   },
   // ── French ──────────────────────────────────────────
   fr: {
@@ -83,6 +125,27 @@ export const translations = {
     badgePremiumSubtitle: "100% Certifié",
     badgeDeliveryTitle: "Livraison Rapide",
     badgeDeliverySubtitle: "Bujumbura & Plus",
+    // BestSellerProducts
+    bestSellerBadge: "🏆 Meilleures Ventes",
+    bestSellerTitle: "Nos Produits",
+    categoryAll: "Tous",
+    loading: "Chargement...",
+    noProducts: "Aucun produit trouvé dans cette catégorie",
+    buyNow: "🛒 Acheter Maintenant",
+    buyBtn: "Acheter →",
+    viewAll: "Voir Tous les Produits →",
+    // Footer
+    footerTagline: "Des boissons de qualité et fiables à des prix accessibles à tous.",
+    footerLinks: "Liens",
+    footerContact: "Contactez-nous",
+    footerHome: "Accueil",
+    footerProducts: "Produits",
+    footerAbout: "À propos",
+    // Shop
+    shopTitle: "Notre Boutique",
+    shopSubtitle: "Tous les produits disponibles",
+    searchPlaceholder: "Rechercher une boisson...",
+    filterAll: "Tous",
   },
 };
 
