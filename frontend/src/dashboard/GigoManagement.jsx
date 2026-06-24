@@ -1,6 +1,8 @@
 import { useState, useEffect, useCallback } from "react";
 import { useContext } from "react";
 import { AuthContext } from "../contexts/AuthContext";
+import { LanguageContext } from "../contexts/LanguageContext";
+import { translations } from "../contexts/translations";
 import { useNavigate } from "react-router-dom";
 
 // ── CONFIG ────────────────────────────────────────────────────────────────────
@@ -1220,6 +1222,10 @@ const PAGE_LABELS = {
 // ── APP SHELL ─────────────────────────────────────────────────────────────────
 export default function GigoManagement() {
   const { user, token } = useContext(AuthContext);
+  const { language } = useContext(LanguageContext);
+  // Dashboard only supports EN/FR — if user chose Kirundi on public site, fall back to French
+  const dashLang = language === "rn" ? "fr" : language;
+  const t = useCallback((key) => translations[dashLang]?.[key] ?? translations["en"]?.[key] ?? key, [dashLang]);
   const navigate = useNavigate();
   const [active, setActive] = useState("dashboard");
   const [lowStockCount, setLowStockCount] = useState(0);
