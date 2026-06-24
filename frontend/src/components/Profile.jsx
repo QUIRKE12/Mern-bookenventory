@@ -1,9 +1,11 @@
 import { useContext, useState } from "react";
+import { LanguageContext } from "../contexts/LanguageContext";
 import { AuthContext } from "../contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
 
 export default function Profile() {
   const { user, logout } = useContext(AuthContext);
+  const { t } = useContext(LanguageContext);
   const navigate = useNavigate();
   const [loggingOut, setLoggingOut] = useState(false);
 
@@ -49,7 +51,7 @@ export default function Profile() {
             GIGO BUSINESS COMPANY
           </p>
           <h2 style={{ fontSize: "20px", fontWeight: 600, color: "#0D1B2A", margin: "4px 0 0" }}>
-            Konti Yanje
+            {t("profileTitle")}
           </h2>
         </div>
 
@@ -86,12 +88,12 @@ export default function Profile() {
 
           {/* Detail rows */}
           {[
-            { label: "Amazina",        value: user?.displayName || "—" },
-            { label: "Imeyili",        value: user?.email },
-            { label: "Uruhare",        value: user?.role === "owner" ? "Nyir'ubwite" : user?.role === "branch_manager" ? "Umuyobozi" : "Umukiriya" },
+            { label: t("profileName"),        value: user?.displayName || "—" },
+            { label: t("profileEmail"),        value: user?.email },
+            { label: t("profileRole"),        value: user?.role === "owner" ? t("roleOwner") : user?.role === "branch_manager" ? t("roleBranchManager") : t("roleCustomer") },
             {
               label: "Konti yemejwe",
-              value: user?.emailVerified ? "Yemejwe ✓" : "Ntiyemejwe",
+              value: user?.emailVerified ? t("profileVerifiedYes") : t("profileVerifiedNo"),
               valueColor: user?.emailVerified ? "#4ade80" : "#f87171",
             },
           ].map((row) => (
@@ -125,7 +127,7 @@ export default function Profile() {
                 cursor: "pointer",
               }}
             >
-              Reba Commande Zanje
+              {t("profileViewOrders")}
             </button>
 
             {/* Show dashboard link for staff */}
@@ -144,7 +146,7 @@ export default function Profile() {
                   cursor: "pointer",
                 }}
               >
-                Injira muri Dashboard
+                {t("profileDashboard")}
               </button>
             )}
 
@@ -164,7 +166,7 @@ export default function Profile() {
                 opacity: loggingOut ? 0.7 : 1,
               }}
             >
-              {loggingOut ? "Turiko turasohoka..." : "Sohoka"}
+              {loggingOut ? t("profileLoggingOut") : t("profileLogout")}
             </button>
           </div>
         </div>
