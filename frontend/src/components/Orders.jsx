@@ -1,5 +1,6 @@
 import { useContext, useEffect, useState } from "react";
 import { AuthContext } from "../contexts/AuthContext";
+import { LanguageContext } from "../contexts/LanguageContext";
 
 const API = import.meta.env.VITE_API_URL;
 
@@ -34,6 +35,7 @@ const badge = (st) => {
 
 const Orders = () => {
   const { user, token } = useContext(AuthContext);
+  const { t } = useContext(LanguageContext);
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
   const [msg, setMsg] = useState(null);
@@ -74,7 +76,7 @@ const Orders = () => {
 
   // ── CANCEL ORDER ──────────────────────────────────────────────────────────
   const handleCancel = async (orderId) => {
-    if (!window.confirm("Urashaka guhagarika iki komande?")) return;
+    if (!window.confirm(t("ordersCancelConfirm"))) return;
     try {
       const res = await fetch(`${API}/orders/${orderId}/cancel`, {
         method: "PATCH",
@@ -82,14 +84,14 @@ const Orders = () => {
       });
       const data = await res.json();
       if (data.success) {
-        showMsg("success", "Komande yahagaritswe!");
+        showMsg("success", t("ordersCancelled"));
         load();
       } else {
-        showMsg("error", data.error || "Byanze!");
+        showMsg("error", t("ordersFailed"));
       }
     } catch (error) {
       console.error(error);
-      showMsg("error", "Ikibazo cyabaye!");
+      showMsg("error", t("ordersError"));
     }
   };
 
@@ -120,15 +122,15 @@ const Orders = () => {
       });
       const data = await res.json();
       if (data.success) {
-        showMsg("success", "Komande yahindutse!");
+        showMsg("success", t("ordersUpdated"));
         setShowEdit(false);
         load();
       } else {
-        showMsg("error", data.error || "Byanze!");
+        showMsg("error", t("ordersFailed"));
       }
     } catch (error) {
       console.error(error);
-      showMsg("error", "Ikibazo cyabaye!");
+      showMsg("error", t("ordersError"));
     }
   };
 
@@ -155,18 +157,18 @@ const Orders = () => {
         setShowPayment(false);
         load();
       } else {
-        showMsg("error", data.error || "Byanze!");
+        showMsg("error", t("ordersFailed"));
       }
     } catch (error) {
       console.error(error);
-      showMsg("error", "Ikibazo cyabaye!");
+      showMsg("error", t("ordersError"));
     }
   };
 
   if (loading) {
     return (
       <div style={{ display: "flex", alignItems: "center", justifyContent: "center", minHeight: "100vh", background: C.bg, color: C.textMuted, fontSize: "14px" }}>
-        Loading...
+        {t("loading")}
       </div>
     );
   }
@@ -178,10 +180,10 @@ const Orders = () => {
         {/* Header */}
         <div style={{ marginBottom: "24px" }}>
           <h1 style={{ fontSize: "24px", fontWeight: "800", color: C.text, marginBottom: "4px" }}>
-            🛒 Amakomande Yawe
+            {t("ordersTitle")}
           </h1>
           <p style={{ color: C.textMuted, fontSize: "13px" }}>
-            {orders.length} amakomande yanditswe
+            {orders.length} order(s)
           </p>
         </div>
 
@@ -196,8 +198,8 @@ const Orders = () => {
         {orders.length === 0 ? (
           <div style={{ textAlign: "center", padding: "60px 20px", background: C.surface, borderRadius: "12px", border: `1px solid ${C.border}` }}>
             <div style={{ fontSize: "48px", marginBottom: "16px" }}>📦</div>
-            <div style={{ fontSize: "16px", fontWeight: "700", color: C.text, marginBottom: "8px" }}>Nta makomande urafise</div>
-            <div style={{ fontSize: "13px", color: C.textMuted }}>Gura ibinyobwa mu iduka!</div>
+            <div style={{ fontSize: "16px", fontWeight: "700", color: C.text, marginBottom: "8px" }}>{t("ordersNone")}</div>
+            <div style={{ fontSize: "13px", color: C.textMuted }}></div>
           </div>
         ) : (
           <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
@@ -308,7 +310,7 @@ const Orders = () => {
           onClick={e => e.target === e.currentTarget && setShowEdit(false)}>
           <div style={{ background: C.surface, borderRadius: "16px", border: `1px solid ${C.border}`, padding: "28px", width: "480px", maxWidth: "90vw", maxHeight: "85vh", overflowY: "auto" }}>
             <div style={{ fontSize: "16px", fontWeight: "800", marginBottom: "20px", color: C.text }}>
-              ✏️ Hindura Komande
+              {t("ordersEdit")}
             </div>
             {editProducts.map((p, i) => (
               <div key={i} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "12px 0", borderBottom: `1px solid ${C.border}` }}>
