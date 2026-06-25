@@ -19,6 +19,7 @@ const LanguageProvider = ({ children }) => {
     language,
     setLanguage,
     t,
+    translations,
   };
 
   return (
