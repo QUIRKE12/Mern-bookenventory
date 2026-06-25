@@ -437,10 +437,10 @@ function Products({ token }) {
       <div className="gigo-section-header" style={S.sectionHeader}>
         <div>
           <div style={S.sectionTitle}>Product Management</div>
-          <div style={{ fontSize: "12px", color: C.textMuted, marginTop: "2px" }}>{products.length} products</div>
+          <div style={{ fontSize: "12px", color: C.textMuted, marginTop: "2px" }}>{products.length} {t("productsCount") || "products"}</div>
         </div>
         <div style={{ display: "flex", gap: "10px" }}>
-          <input style={{ ...S.input, width: "200px" }} placeholder=t("search") || "Search..." value={search} onChange={e => setSearch(e.target.value)} />
+          <input style={{ ...S.input, width: "200px" }} placeholder={t("search") || "Search..."} value={search} onChange={e => setSearch(e.target.value)} />
           <button style={S.btn("primary")} onClick={openAdd}>+ Add Product</button>
         </div>
       </div>
@@ -734,7 +734,7 @@ function Orders({ token }) {
       <div className="gigo-section-header" style={S.sectionHeader}>
         <div>
           <div style={S.sectionTitle}>Orders</div>
-          <div style={{ fontSize: "12px", color: C.textMuted, marginTop: "2px" }}>{orders.length} orders</div>
+          <div style={{ fontSize: "12px", color: C.textMuted, marginTop: "2px" }}>{orders.length} {t("ordersCount") || "orders"}</div>
         </div>
       </div>
       {msg && <div style={S.alert(msg.type)}>{msg.text}</div>}
@@ -829,7 +829,7 @@ function Branches({ token }) {
       <div className="gigo-section-header" style={S.sectionHeader}>
         <div>
           <div style={S.sectionTitle}>Branch Management</div>
-          <div style={{ fontSize: "12px", color: C.textMuted, marginTop: "2px" }}>{branches.length} branches</div>
+          <div style={{ fontSize: "12px", color: C.textMuted, marginTop: "2px" }}>{branches.length} {t("branchesCount") || "branches"}</div>
         </div>
         <button style={S.btn("primary")} onClick={openAdd}>+ Add Branch</button>
       </div>
@@ -957,7 +957,7 @@ function Users({ token }) {
       <div className="gigo-section-header" style={S.sectionHeader}>
         <div>
           <div style={S.sectionTitle}>Users & Roles</div>
-          <div style={{ fontSize: "12px", color: C.textMuted, marginTop: "2px" }}>{users.length} team members</div>
+          <div style={{ fontSize: "12px", color: C.textMuted, marginTop: "2px" }}>{users.length} {t("teamMembers") || "team members"}</div>
         </div>
       </div>
       {msg && <div style={S.alert(msg.type)}>{msg.text}</div>}
