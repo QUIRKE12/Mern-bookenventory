@@ -1222,8 +1222,8 @@ const PAGE_LABELS = {
 // ── APP SHELL ─────────────────────────────────────────────────────────────────
 export default function GigoManagement() {
   const { user, token } = useContext(AuthContext);
-  const { language } = useContext(LanguageContext);
-  // Dashboard only supports EN/FR — if user chose Kirundi on public site, fall back to French
+  const { language, setLanguage, translations } = useContext(LanguageContext);
+  // Dashboard only supports EN/FR — Kirundi maps to French
   const dashLang = language === "rn" ? "fr" : language;
   const t = useCallback((key) => translations[dashLang]?.[key] ?? translations["en"]?.[key] ?? key, [dashLang]);
   const navigate = useNavigate();
