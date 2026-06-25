@@ -85,14 +85,14 @@ const S = {
   td: { padding: "12px 16px", fontSize: "13px", color: C.text, borderBottom: `1px solid ${C.border}`, verticalAlign: "middle" },
   badge2: (st) => {
     const m = {
-      t("active") || t("statusActive") || "Active": { bg: C.greenDim, col: C.green }, "active": { bg: C.greenDim, col: C.green },
+      "Active": { bg: C.greenDim, col: C.green }, "active": { bg: C.greenDim, col: C.green },
       "Completed": { bg: C.greenDim, col: C.green }, "delivered": { bg: C.greenDim, col: C.green },
-      t("inStockLabel") || "In Stock": { bg: C.greenDim, col: C.green }, "paid": { bg: C.greenDim, col: C.green },
-      t("ordersStatusProcessing") || "Processing": { bg: C.blueDim, col: C.blue }, "processing": { bg: C.blueDim, col: C.blue },
+      "In Stock": { bg: C.greenDim, col: C.green }, "paid": { bg: C.greenDim, col: C.green },
+      "Processing": { bg: C.blueDim, col: C.blue }, "processing": { bg: C.blueDim, col: C.blue },
       "pending_approval": { bg: C.blueDim, col: C.blue },
-      t("ordersStatusPending") || "Pending": { bg: "rgba(245,166,35,0.15)", col: C.accent }, "pending": { bg: "rgba(245,166,35,0.15)", col: C.accent },
-      t("lowStockLabel") || t("lowStockLabel") || "Low Stock": { bg: "rgba(245,166,35,0.15)", col: C.accent },
-      t("inactive") || t("statusInactive") || "Inactive": { bg: C.redDim, col: C.red }, "inactive": { bg: C.redDim, col: C.red },
+      "Pending": { bg: "rgba(245,166,35,0.15)", col: C.accent }, "pending": { bg: "rgba(245,166,35,0.15)", col: C.accent },
+      "Low Stock": { bg: "rgba(245,166,35,0.15)", col: C.accent },
+      "Inactive": { bg: C.redDim, col: C.red }, "inactive": { bg: C.redDim, col: C.red },
       "Critical": { bg: C.redDim, col: C.red }, "Out of Stock": { bg: C.redDim, col: C.red },
       "cancelled": { bg: C.redDim, col: C.red }, "unpaid": { bg: C.redDim, col: C.red },
     };
