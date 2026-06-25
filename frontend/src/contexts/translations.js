@@ -155,6 +155,15 @@ export const translations = {
     unauthorizedGoHome: "Subira Ahabanza",
     ordersEdit: "Hindura Komande",
     unauthorizedGoBack: "Garuka Inyuma",
+    // Dashboard nav
+    dashboard: "Dashboard",
+    inventory: "Inventory",
+    branches: "Branches",
+    users: "Users & Roles",
+    reports: "Reports",
+    menu: "Menu",
+    clickToLogout: "Sohoka",
+    managementSystem: "Management System",
   },
   // ── English ─────────────────────────────────────────
   en: {
@@ -311,6 +320,15 @@ export const translations = {
     unauthorizedGoHome: "Go Home",
     ordersEdit: "Edit Order",
     unauthorizedGoBack: "Go Back",
+    // Dashboard nav
+    dashboard: "Dashboard",
+    inventory: "Inventory",
+    branches: "Branches",
+    users: "Users & Roles",
+    reports: "Reports",
+    menu: "Menu",
+    clickToLogout: "Sign Out",
+    managementSystem: "Management System",
   },
   // ── French ──────────────────────────────────────────
   fr: {
@@ -467,6 +485,15 @@ export const translations = {
     unauthorizedGoHome: "Accueil",
     ordersEdit: "Modifier la commande",
     unauthorizedGoBack: "Retour",
+    // Dashboard nav
+    dashboard: "Tableau de bord",
+    inventory: "Inventaire",
+    branches: "Succursales",
+    users: "Utilisateurs & Rôles",
+    reports: "Rapports",
+    menu: "Menu",
+    clickToLogout: "Déconnexion",
+    managementSystem: "Système de gestion",
   },
 };
 
