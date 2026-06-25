@@ -43,8 +43,8 @@ const timeAgo = (d) => {
 const stockStatus = (p) => {
   if (!p.stock || p.stock === 0) return "Out of Stock";
   if (p.stock <= p.minStockLevel) return "Critical";
-  if (p.stock <= p.minStockLevel * 2) return t("lowStockLabel") || t("lowStockLabel") || "Low Stock";
-  return t("inStockLabel") || "In Stock";
+  if (p.stock <= p.minStockLevel * 2) return "Low Stock";
+  return "In Stock";
 };
 
 // ── STYLES ────────────────────────────────────────────────────────────────────
@@ -586,8 +586,8 @@ function Inventory({ token }) {
     else setMsg({ type: "error", text: d.error || "Failed" });
   };
 
-  const inStock = products.filter(p => stockStatus(p) === t("inStockLabel") || "In Stock").length;
-  const lowCount = products.filter(p => stockStatus(p) === t("lowStockLabel") || t("lowStockLabel") || "Low Stock").length;
+  const inStock = products.filter(p => stockStatus(p) === "In Stock").length;
+  const lowCount = products.filter(p => stockStatus(p) === "Low Stock").length;
   const critical = products.filter(p => ["Critical", "Out of Stock"].includes(stockStatus(p))).length;
 
   return (
@@ -653,7 +653,7 @@ function Inventory({ token }) {
                     <td style={S.td}>
                       <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
                         <div style={{ width: "60px", height: "6px", borderRadius: "3px", background: C.border, overflow: "hidden" }}>
-                          <div style={{ height: "100%", width: `${Math.min(((p.stock || 0) / max) * 100, 100)}%`, background: st === "Critical" || st === "Out of Stock" ? C.red : st === t("lowStockLabel") || t("lowStockLabel") || "Low Stock" ? C.accent : C.green, borderRadius: "3px" }} />
+                          <div style={{ height: "100%", width: `${Math.min(((p.stock || 0) / max) * 100, 100)}%`, background: st === "Critical" || st === "Out of Stock" ? C.red : st === "Low Stock" ? C.accent : C.green, borderRadius: "3px" }} />
                         </div>
                         <span style={{ fontWeight: "700", color: st === "Critical" || st === "Out of Stock" ? C.red : st === t("lowStockLabel") || t("lowStockLabel") || "Low Stock" ? C.accent : C.text }}>{fmt(p.stock || 0)}</span>
                       </div>
