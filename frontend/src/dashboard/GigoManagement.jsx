@@ -246,6 +246,9 @@ function SparkBar({ data }) {
 
 // ── DASHBOARD PAGE ────────────────────────────────────────────────────────────
 function Dashboard({ token }) {
+  const { language, translations } = useContext(LanguageContext);
+  const dashLang = language === "rn" ? "fr" : language;
+  const t = useCallback((key) => translations[dashLang]?.[key] ?? translations["en"]?.[key] ?? key, [dashLang, translations]);
   const [stats, setStats] = useState(null);
   const [loading, setLoading] = useState(true);
 
@@ -385,6 +388,9 @@ function Dashboard({ token }) {
 
 // ── PRODUCTS PAGE ─────────────────────────────────────────────────────────────
 function Products({ token }) {
+  const { language, translations } = useContext(LanguageContext);
+  const dashLang = language === "rn" ? "fr" : language;
+  const t = useCallback((key) => translations[dashLang]?.[key] ?? translations["en"]?.[key] ?? key, [dashLang, translations]);
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
@@ -543,6 +549,9 @@ function Products({ token }) {
 
 // ── INVENTORY PAGE ────────────────────────────────────────────────────────────
 function Inventory({ token }) {
+  const { language, translations } = useContext(LanguageContext);
+  const dashLang = language === "rn" ? "fr" : language;
+  const t = useCallback((key) => translations[dashLang]?.[key] ?? translations["en"]?.[key] ?? key, [dashLang, translations]);
   const [products, setProducts] = useState([]);
   const [lowStock, setLowStock] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -697,6 +706,9 @@ function Inventory({ token }) {
 
 // ── ORDERS PAGE ───────────────────────────────────────────────────────────────
 function Orders({ token }) {
+  const { language, translations } = useContext(LanguageContext);
+  const dashLang = language === "rn" ? "fr" : language;
+  const t = useCallback((key) => translations[dashLang]?.[key] ?? translations["en"]?.[key] ?? key, [dashLang, translations]);
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState("all");
@@ -795,6 +807,9 @@ function Orders({ token }) {
 
 // ── BRANCHES PAGE ─────────────────────────────────────────────────────────────
 function Branches({ token }) {
+  const { language, translations } = useContext(LanguageContext);
+  const dashLang = language === "rn" ? "fr" : language;
+  const t = useCallback((key) => translations[dashLang]?.[key] ?? translations["en"]?.[key] ?? key, [dashLang, translations]);
   const [branches, setBranches] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
@@ -908,6 +923,9 @@ function Branches({ token }) {
 
 // ── USERS PAGE ────────────────────────────────────────────────────────────────
 function Users({ token }) {
+  const { language, translations } = useContext(LanguageContext);
+  const dashLang = language === "rn" ? "fr" : language;
+  const t = useCallback((key) => translations[dashLang]?.[key] ?? translations["en"]?.[key] ?? key, [dashLang, translations]);
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
@@ -1058,6 +1076,9 @@ function Users({ token }) {
 
 // ── REPORTS PAGE ──────────────────────────────────────────────────────────────
 function Reports({ token }) {
+  const { language, translations } = useContext(LanguageContext);
+  const dashLang = language === "rn" ? "fr" : language;
+  const t = useCallback((key) => translations[dashLang]?.[key] ?? translations["en"]?.[key] ?? key, [dashLang, translations]);
   const [daily, setDaily] = useState(null);
   const [monthly, setMonthly] = useState(null);
   const [branchPerf, setBranchPerf] = useState(null);
@@ -1257,7 +1278,7 @@ export default function GigoManagement() {
     );
   }
 
-  const pageProps = { token, t };
+  const pageProps = { token };
   const PAGE_MAP = {
     dashboard: <Dashboard {...pageProps} />,
     products:  <Products {...pageProps} />,
