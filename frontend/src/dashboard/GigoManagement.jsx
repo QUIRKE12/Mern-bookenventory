@@ -20,7 +20,7 @@ const C = {
 };
 
 const MONTH_NAMES = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
-const BRANCHES = ["Bujumbura HQ","Kampala","Uganda","DRC"];
+const BRANCHES = ["Bujumbura HQ","Kenya","Uganda","DRC"];
 const ROLES = ["owner","branch_manager","sales_manager","warehouse_manager","cashier","employee"];
 const CATEGORIES = ["Alcoholic","Non-Alcoholic","Food","Other"];
 
@@ -1220,16 +1220,20 @@ const PAGE_LABELS = {
 };
 
 // ── APP SHELL ─────────────────────────────────────────────────────────────────
+// ── APP SHELL ─────────────────────────────────────────────────────────────────
 export default function GigoManagement() {
   const { user, token } = useContext(AuthContext);
   const { language, setLanguage, translations } = useContext(LanguageContext);
-  // Dashboard only supports EN/FR — Kirundi maps to French
-  const dashLang = language === "rn" ? "fr" : language;
-  const t = useCallback((key) => translations[dashLang]?.[key] ?? translations["en"]?.[key] ?? key, [dashLang]);
   const navigate = useNavigate();
   const [active, setActive] = useState("dashboard");
   const [lowStockCount, setLowStockCount] = useState(0);
-  const [sidebarOpen, setSidebarOpen] = useState(false);
+
+  // Dashboard only supports EN/FR — Kirundi maps to French
+  const dashLang = language === "rn" ? "fr" : language;
+  const t = useCallback(
+    (key) => translations[dashLang]?.[key] ?? translations["en"]?.[key] ?? key,
+    [dashLang, translations]
+  );
 
   useEffect(() => {
     if (!user && !token) navigate("/login", { replace: true });
@@ -1253,27 +1257,40 @@ export default function GigoManagement() {
     );
   }
 
-  const pageProps = { token };
+  const pageProps = { token, t };
   const PAGE_MAP = {
     dashboard: <Dashboard {...pageProps} />,
-    products: <Products {...pageProps} />,
+    products:  <Products {...pageProps} />,
     inventory: <Inventory {...pageProps} />,
-    orders: <Orders {...pageProps} />,
-    branches: <Branches {...pageProps} />,
-    users: <Users {...pageProps} />,
-    reports: <Reports {...pageProps} />,
+    orders:    <Orders {...pageProps} />,
+    branches:  <Branches {...pageProps} />,
+    users:     <Users {...pageProps} />,
+    reports:   <Reports {...pageProps} />,
+  };
+
+  const NAV_ITEMS = [
+    { id: "dashboard", icon: "⬡", label: t("dashboard") || "Dashboard" },
+    { id: "products",  icon: "▦", label: t("products") },
+    { id: "inventory", icon: "◫", label: t("inventory") || "Inventory" },
+    { id: "orders",    icon: "◈", label: t("orders") },
+    { id: "branches",  icon: "◉", label: t("branches") || "Branches" },
+    { id: "users",     icon: "◎", label: t("users") || "Users & Roles" },
+    { id: "reports",   icon: "◧", label: t("reports") || "Reports" },
+  ];
+
+  const PAGE_LABELS = {
+    dashboard: t("dashboard") || "Dashboard Overview",
+    products:  t("products"),
+    inventory: t("inventory") || "Inventory",
+    orders:    t("orders"),
+    branches:  t("branches") || "Branches",
+    users:     t("users") || "Users & Roles",
+    reports:   t("reports") || "Reports & Analytics",
   };
 
   return (
-    <div className="gigo-app" style={S.app}>
-      <style>{RESPONSIVE_CSS}</style>
-
-      <div
-        className={`gigo-backdrop ${sidebarOpen ? "gigo-backdrop-open" : ""}`}
-        onClick={() => setSidebarOpen(false)}
-      />
-
-      <aside className={`gigo-sidebar ${sidebarOpen ? "gigo-sidebar-open" : ""}`} style={S.sidebar}>
+    <div style={S.app}>
+      <aside style={S.sidebar}>
         <div style={S.logo}>
           <div style={S.logoTop}>
             <div style={S.logoIcon}>G</div>
@@ -1282,13 +1299,9 @@ export default function GigoManagement() {
           <div style={S.logoSub}>Management System</div>
         </div>
         <nav style={S.nav}>
-          <div style={S.navLabel}>Main Menu</div>
+          <div style={S.navLabel}>Menu</div>
           {NAV_ITEMS.map(item => (
-            <div
-              key={item.id}
-              style={S.navItem(active === item.id)}
-              onClick={() => { setActive(item.id); setSidebarOpen(false); }}
-            >
+            <div key={item.id} style={S.navItem(active === item.id)} onClick={() => setActive(item.id)}>
               <span style={S.navIcon}>{item.icon}</span>
               {item.label}
               {item.id === "inventory" && lowStockCount > 0 && (
@@ -1298,31 +1311,22 @@ export default function GigoManagement() {
           ))}
         </nav>
         <div style={S.sidebarFooter}>
-          <div style={S.userCard} onClick={logout} title="Click to logout">
+          <div style={S.userCard} onClick={logout} title={t("logout")}>
             <div style={S.avatar}>{user?.email?.slice(0, 2).toUpperCase() || "OW"}</div>
             <div style={{ flex: 1, minWidth: 0 }}>
               <div style={{ fontSize: "12px", fontWeight: "700", color: C.text, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
                 {user?.email || "Owner"}
               </div>
-              <div style={{ fontSize: "10px", color: C.textMuted }}>Click to logout</div>
+              <div style={{ fontSize: "10px", color: C.textMuted }}>{t("logout")}</div>
             </div>
             <span style={{ color: C.textMuted, fontSize: "12px" }}>⏻</span>
           </div>
         </div>
       </aside>
 
-      <main className="gigo-main" style={S.main}>
+      <main style={S.main}>
         <div style={S.topbar}>
-          <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
-            <div
-              className="gigo-hamburger"
-              onClick={() => setSidebarOpen(true)}
-              style={{ alignItems: "center", justifyContent: "center", width: "32px", height: "32px", borderRadius: "8px", cursor: "pointer", fontSize: "18px", color: C.text }}
-            >
-              ☰
-            </div>
-            <div style={S.pageTitle}>{PAGE_LABELS[active]}</div>
-          </div>
+          <div style={S.pageTitle}>{PAGE_LABELS[active]}</div>
           <div style={S.topbarRight}>
             {lowStockCount > 0 && (
               <div style={{ position: "relative", cursor: "pointer" }} onClick={() => setActive("inventory")}>
@@ -1330,13 +1334,34 @@ export default function GigoManagement() {
                 <span style={{ ...S.badge, position: "absolute", top: "-4px", right: "-6px" }}>{lowStockCount}</span>
               </div>
             )}
+            {/* Language switcher — EN / FR only (rn maps to fr) */}
+            <div style={{ display: "flex", gap: "4px" }}>
+              {["en", "fr"].map(lang => {
+                const isActive = language === lang || (language === "rn" && lang === "fr");
+                return (
+                  <button
+                    key={lang}
+                    onClick={() => setLanguage(lang)}
+                    style={{
+                      padding: "4px 10px", borderRadius: "6px", fontSize: "11px", fontWeight: "700",
+                      cursor: "pointer", border: `1px solid ${isActive ? C.accent : C.border}`,
+                      background: isActive ? C.accent : "transparent",
+                      color: isActive ? C.bg : C.textMuted,
+                      textTransform: "uppercase", letterSpacing: "0.06em",
+                    }}
+                  >
+                    {lang}
+                  </button>
+                );
+              })}
+            </div>
             <div style={{ width: "1px", height: "20px", background: C.border }} />
             <span style={{ fontSize: "12px", color: C.textMuted }}>
-              {new Date().toLocaleDateString("en-RW", { weekday: "short", day: "numeric", month: "short", year: "numeric" })}
+              {new Date().toLocaleDateString(dashLang === "fr" ? "fr-RW" : "en-RW", { weekday: "short", day: "numeric", month: "short", year: "numeric" })}
             </span>
           </div>
         </div>
-        <div className="gigo-content" style={S.content}>{PAGE_MAP[active]}</div>
+        <div style={S.content}>{PAGE_MAP[active]}</div>
       </main>
     </div>
   );
