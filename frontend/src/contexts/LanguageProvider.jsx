@@ -12,7 +12,7 @@ const LanguageProvider = ({ children }) => {
   }, [language]);
 
   const t = (key) => {
-    return translations[language]?.[key] ?? translations.rn[key] ?? key;
+    return translations[language]?.[key] ?? translations.fr?.[key] ?? translations.en?.[key] ?? key;
   };
 
   const languageInfo = {
