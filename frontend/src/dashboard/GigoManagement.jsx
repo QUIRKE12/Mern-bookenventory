@@ -248,7 +248,7 @@ function SparkBar({ data }) {
 function Dashboard({ token }) {
   const { language, translations } = useContext(LanguageContext);
   const dashLang = language === "rn" ? "fr" : language;
-  const t = useCallback((key) => translations[dashLang]?.[key] ?? translations["en"]?.[key] ?? key, [dashLang, translations]);
+  const t = (key) => translations[dashLang]?.[key] ?? translations["en"]?.[key] ?? key;
   const [stats, setStats] = useState(null);
   const [loading, setLoading] = useState(true);
 
@@ -273,10 +273,10 @@ function Dashboard({ token }) {
   }));
 
   const kpiCards = [
-    { label: t("revenueThisMonth") || "Revenue This Month", value: `FRw ${fmtM(kpis.revenueThisMonth || 0)}`, delta: kpis.revenueDelta ? `${kpis.revenueDelta > 0 ? "+" : ""}${kpis.revenueDelta}% vs last month` : t("noPrevData") || "No prev data", up: (kpis.revenueDelta || 0) >= 0, icon: "◈", color: C.accent },
-    { label: t("ordersThisMonth") || "Orders This Month", value: fmt(kpis.ordersThisMonth || 0), delta: kpis.ordersDelta ? `${kpis.ordersDelta > 0 ? "+" : ""}${kpis.ordersDelta}% vs last month` : t("noPrevData") || "No prev data", up: (kpis.ordersDelta || 0) >= 0, icon: "▦", color: C.green },
-    { label: t("totalProducts") || t("totalProducts") || "Total Products", value: fmt(kpis.totalProducts || 0), delta: t("registered") || "Registered", up: true, icon: "◫", color: C.blue },
-    { label: t("lowStockAlerts") || "Low Stock Alerts", value: fmt(kpis.lowStockAlerts || 0), delta: (kpis.lowStockAlerts || 0) > 0 ? t("needsAttention") || "Needs attention" : t("allGood") || "All good", up: (kpis.lowStockAlerts || 0) === 0, icon: "⚠", color: C.red },
+    { label: "Revenue This Month", value: `FRw ${fmtM(kpis.revenueThisMonth || 0)}`, delta: kpis.revenueDelta ? `${kpis.revenueDelta > 0 ? "+" : ""}${kpis.revenueDelta}% vs last month` : "No prev data", up: (kpis.revenueDelta || 0) >= 0, icon: "◈", color: C.accent },
+    { label: "Orders This Month", value: fmt(kpis.ordersThisMonth || 0), delta: kpis.ordersDelta ? `${kpis.ordersDelta > 0 ? "+" : ""}${kpis.ordersDelta}% vs last month` : "No prev data", up: (kpis.ordersDelta || 0) >= 0, icon: "▦", color: C.green },
+    { label: "Total Products", value: fmt(kpis.totalProducts || 0), delta: "Registered", up: true, icon: "◫", color: C.blue },
+    { label: "Low Stock Alerts", value: fmt(kpis.lowStockAlerts || 0), delta: (kpis.lowStockAlerts || 0) > 0 ? "Needs attention" : "All good", up: (kpis.lowStockAlerts || 0) === 0, icon: "⚠", color: C.red },
   ];
 
   const maxSold = bestSellers[0]?.totalSold || 1;
@@ -285,7 +285,7 @@ function Dashboard({ token }) {
     <div>
       <div style={{ marginBottom: "20px" }}>
         <div style={{ fontSize: "22px", fontWeight: "800", color: C.text, marginBottom: "4px" }}>Good morning, Owner 👋</div>
-        <div style={{ fontSize: "13px", color: C.textMuted }}>{t("dashboardSubtitle") || "Here's what's happening across your branches today —"} {now.toLocaleDateString("en-RW", { weekday: "long", day: "numeric", month: "long", year: "numeric" })}</div>
+        <div style={{ fontSize: "13px", color: C.textMuted }}>Here's what's happening across your branches today — {now.toLocaleDateString("en-RW", { weekday: "long", day: "numeric", month: "long", year: "numeric" })}</div>
       </div>
 
       <div className="gigo-kpi-grid" style={S.grid4}>
@@ -390,7 +390,7 @@ function Dashboard({ token }) {
 function Products({ token }) {
   const { language, translations } = useContext(LanguageContext);
   const dashLang = language === "rn" ? "fr" : language;
-  const t = useCallback((key) => translations[dashLang]?.[key] ?? translations["en"]?.[key] ?? key, [dashLang, translations]);
+  const t = (key) => translations[dashLang]?.[key] ?? translations["en"]?.[key] ?? key;
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
@@ -426,15 +426,15 @@ function Products({ token }) {
     const body = { ...form, price: Number(form.price), stock: Number(form.stock), minStockLevel: Number(form.minStockLevel) };
     const r = await fetch(url, { method, headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` }, body: JSON.stringify(body) });
     const d = await r.json();
-    if (d.success || d.product) { setMsg({ type: "success", text: editing ? t("productUpdated") || "Product updated!" : t("productAdded") || "Product added!" }); setShowModal(false); load(); }
+    if (d.success || d.product) { setMsg({ type: "success", text: editing ? "Product updated!" : "Product added!" }); setShowModal(false); load(); }
     else setMsg({ type: "error", text: d.error || "Failed" });
   };
 
   const del = async (id) => {
-    if (!window.confirm(t("confirmDeleteProduct") || "Delete this product?")) return;
+    if (!window.confirm("Delete this product?")) return;
     const r = await fetch(`${API}/product/${id}`, { method: "DELETE", headers: { Authorization: `Bearer ${token}` } });
     const d = await r.json();
-    if (d.success) { setMsg({ type: "success", text: t("deleted") || "Deleted!" }); load(); }
+    if (d.success) { setMsg({ type: "success", text: "Deleted!" }); load(); }
     else setMsg({ type: "error", text: d.error || "Failed" });
   };
 
@@ -443,10 +443,10 @@ function Products({ token }) {
       <div className="gigo-section-header" style={S.sectionHeader}>
         <div>
           <div style={S.sectionTitle}>Product Management</div>
-          <div style={{ fontSize: "12px", color: C.textMuted, marginTop: "2px" }}>{products.length} {t("productsCount") || "products"}</div>
+          <div style={{ fontSize: "12px", color: C.textMuted, marginTop: "2px" }}>{products.length} products</div>
         </div>
         <div style={{ display: "flex", gap: "10px" }}>
-          <input style={{ ...S.input, width: "200px" }} placeholder={t("search") || "Search..."} value={search} onChange={e => setSearch(e.target.value)} />
+          <input style={{ ...S.input, width: "200px" }} placeholder="Search..." value={search} onChange={e => setSearch(e.target.value)} />
           <button style={S.btn("primary")} onClick={openAdd}>+ Add Product</button>
         </div>
       </div>
@@ -504,15 +504,15 @@ function Products({ token }) {
       {showModal && (
         <div style={S.modal} onClick={e => e.target === e.currentTarget && setShowModal(false)}>
           <div style={S.modalBox}>
-            <div style={S.modalTitle}>{editing ? t("editProduct") || "Edit Product" : t("addNewProduct") || "Add New Product"}</div>
+            <div style={S.modalTitle}>{editing ? "Edit Product" : "Add New Product"}</div>
             {[
-              { label: t("productName") || "Product Name", key: "productName", type: "text" },
-              { label: t("brandName") || "Brand Name", key: "brandName", type: "text" },
-              { label: t("imageURL") || "Image URL", key: "imageURL", type: "text", placeholder: "https://..." },
-              { label: t("description") || "Description", key: "description", type: "text" },
-              { label: t("price") || t("priceLabel") || "Price", key: "price", type: "number" },
-              { label: t("stockQuantity") || "Stock Quantity", key: "stock", type: "number" },
-              { label: t("minStockLevel") || t("minStockLevel") || "Min Stock Level", key: "minStockLevel", type: "number" },
+              { label: "Product Name", key: "productName", type: "text" },
+              { label: "Brand Name", key: "brandName", type: "text" },
+              { label: "Image URL", key: "imageURL", type: "text", placeholder: "https://..." },
+              { label: "Description", key: "description", type: "text" },
+              { label: "Price (FRw)", key: "price", type: "number" },
+              { label: "Stock Quantity", key: "stock", type: "number" },
+              { label: "Min Stock Level (alert threshold)", key: "minStockLevel", type: "number" },
             ].map(f => (
               <div key={f.key} style={S.formRow}>
                 <label style={S.formLabel}>{f.label}</label>
@@ -538,7 +538,7 @@ function Products({ token }) {
             )}
             <div style={{ display: "flex", gap: "10px", justifyContent: "flex-end", marginTop: "8px" }}>
               <button style={S.btn("ghost")} onClick={() => setShowModal(false)}>Cancel</button>
-              <button style={S.btn("primary")} onClick={save}>{editing ? t("saveChanges") || "Save Changes" : t("addProduct") || "Add Product"}</button>
+              <button style={S.btn("primary")} onClick={save}>{editing ? "Save Changes" : "Add Product"}</button>
             </div>
           </div>
         </div>
@@ -551,7 +551,7 @@ function Products({ token }) {
 function Inventory({ token }) {
   const { language, translations } = useContext(LanguageContext);
   const dashLang = language === "rn" ? "fr" : language;
-  const t = useCallback((key) => translations[dashLang]?.[key] ?? translations["en"]?.[key] ?? key, [dashLang, translations]);
+  const t = (key) => translations[dashLang]?.[key] ?? translations["en"]?.[key] ?? key;
   const [products, setProducts] = useState([]);
   const [lowStock, setLowStock] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -614,10 +614,10 @@ function Inventory({ token }) {
       )}
       <div className="gigo-kpi-grid" style={{ ...S.grid4, marginBottom: "20px" }}>
         {[
-          { label: t("totalProducts") || t("totalProducts") || "Total Products", value: products.length, color: C.blue },
-          { label: t("inStockLabel") || "In Stock", value: inStock, color: C.green },
-          { label: t("lowStockLabel") || t("lowStockLabel") || "Low Stock", value: lowCount, color: C.accent },
-          { label: t("criticalOut") || "Critical / Out", value: critical, color: C.red },
+          { label: "Total Products", value: products.length, color: C.blue },
+          { label: "In Stock", value: inStock, color: C.green },
+          { label: "Low Stock", value: lowCount, color: C.accent },
+          { label: "Critical / Out", value: critical, color: C.red },
         ].map((s, i) => (
           <div key={i} className="gigo-stat-card" style={{ ...S.card, padding: "16px 20px" }}>
             <div className="gigo-stat-val" style={{ fontSize: "24px", fontWeight: "800", color: s.color }}>{s.value}</div>
@@ -655,7 +655,7 @@ function Inventory({ token }) {
                         <div style={{ width: "60px", height: "6px", borderRadius: "3px", background: C.border, overflow: "hidden" }}>
                           <div style={{ height: "100%", width: `${Math.min(((p.stock || 0) / max) * 100, 100)}%`, background: st === "Critical" || st === "Out of Stock" ? C.red : st === "Low Stock" ? C.accent : C.green, borderRadius: "3px" }} />
                         </div>
-                        <span style={{ fontWeight: "700", color: st === "Critical" || st === "Out of Stock" ? C.red : st === t("lowStockLabel") || t("lowStockLabel") || "Low Stock" ? C.accent : C.text }}>{fmt(p.stock || 0)}</span>
+                        <span style={{ fontWeight: "700", color: st === "Critical" || st === "Out of Stock" ? C.red : st === "Low Stock" ? C.accent : C.text }}>{fmt(p.stock || 0)}</span>
                       </div>
                     </td>
                     <td style={{ ...S.td, color: C.textMuted }}>{p.minStockLevel || 10}</td>
@@ -677,7 +677,7 @@ function Inventory({ token }) {
       {showModal && (
         <div style={S.modal} onClick={e => e.target === e.currentTarget && setShowModal(false)}>
           <div style={S.modalBox}>
-            <div style={S.modalTitle}>{modalType === "in" ? t("stockInTitle") || "Stock In — Add Stock" : t("stockOutTitle") || "Stock Out — Remove Stock"}</div>
+            <div style={S.modalTitle}>{modalType === "in" ? "Stock In — Add Stock" : "Stock Out — Remove Stock"}</div>
             <div style={S.formRow}>
               <label style={S.formLabel}>Product</label>
               <select style={S.select} value={selectedProduct?._id || ""} onChange={e => setSelectedProduct(products.find(p => p._id === e.target.value) || null)}>
@@ -691,7 +691,7 @@ function Inventory({ token }) {
             </div>
             <div style={S.formRow}>
               <label style={S.formLabel}>Reason</label>
-              <input style={S.input} type="text" placeholder={modalType === "in" ? t("reasonRestockPlaceholder") || "e.g. Restock" : t("reasonSalePlaceholder") || "e.g. Sale, Damaged"} value={reason} onChange={e => setReason(e.target.value)} />
+              <input style={S.input} type="text" placeholder={modalType === "in" ? "e.g. Restock" : "e.g. Sale, Damaged"} value={reason} onChange={e => setReason(e.target.value)} />
             </div>
             <div style={{ display: "flex", gap: "10px", justifyContent: "flex-end", marginTop: "8px" }}>
               <button style={S.btn("ghost")} onClick={() => setShowModal(false)}>Cancel</button>
@@ -708,7 +708,7 @@ function Inventory({ token }) {
 function Orders({ token }) {
   const { language, translations } = useContext(LanguageContext);
   const dashLang = language === "rn" ? "fr" : language;
-  const t = useCallback((key) => translations[dashLang]?.[key] ?? translations["en"]?.[key] ?? key, [dashLang, translations]);
+  const t = (key) => translations[dashLang]?.[key] ?? translations["en"]?.[key] ?? key;
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState("all");
@@ -728,14 +728,14 @@ function Orders({ token }) {
   const updateStatus = async (id, status) => {
     const r = await fetch(`${API}/orders/${id}`, { method: "PATCH", headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` }, body: JSON.stringify({ status }) });
     const d = await r.json();
-    if (d.success) { setMsg({ type: "success", text: t("statusUpdated") || "Status updated!" }); load(); }
+    if (d.success) { setMsg({ type: "success", text: "Status updated!" }); load(); }
     else setMsg({ type: "error", text: d.error || "Failed" });
   };
 
   const approvePayment = async (id) => {
     const r = await fetch(`${API}/orders/${id}/approve-payment`, { method: "PATCH", headers: { Authorization: `Bearer ${token}` } });
     const d = await r.json();
-    if (d.success) { setMsg({ type: "success", text: t("paymentApproved") || "Payment approved!" }); load(); }
+    if (d.success) { setMsg({ type: "success", text: "Payment approved!" }); load(); }
     else setMsg({ type: "error", text: d.error || "Failed" });
   };
 
@@ -746,7 +746,7 @@ function Orders({ token }) {
       <div className="gigo-section-header" style={S.sectionHeader}>
         <div>
           <div style={S.sectionTitle}>Orders</div>
-          <div style={{ fontSize: "12px", color: C.textMuted, marginTop: "2px" }}>{orders.length} {t("ordersCount") || "orders"}</div>
+          <div style={{ fontSize: "12px", color: C.textMuted, marginTop: "2px" }}>{orders.length} orders</div>
         </div>
       </div>
       {msg && <div style={S.alert(msg.type)}>{msg.text}</div>}
@@ -809,7 +809,7 @@ function Orders({ token }) {
 function Branches({ token }) {
   const { language, translations } = useContext(LanguageContext);
   const dashLang = language === "rn" ? "fr" : language;
-  const t = useCallback((key) => translations[dashLang]?.[key] ?? translations["en"]?.[key] ?? key, [dashLang, translations]);
+  const t = (key) => translations[dashLang]?.[key] ?? translations["en"]?.[key] ?? key;
   const [branches, setBranches] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
@@ -835,7 +835,7 @@ function Branches({ token }) {
     const url = editing ? `${API}/branches/${editing._id}` : `${API}/branches`;
     const r = await fetch(url, { method, headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` }, body: JSON.stringify(form) });
     const d = await r.json();
-    if (d.success || d.branch) { setMsg({ type: "success", text: editing ? t("branchUpdated") || "Branch updated!" : t("branchAdded") || "Branch added!" }); setShowModal(false); load(); }
+    if (d.success || d.branch) { setMsg({ type: "success", text: editing ? "Branch updated!" : "Branch added!" }); setShowModal(false); load(); }
     else setMsg({ type: "error", text: d.error || "Failed" });
   };
 
@@ -844,7 +844,7 @@ function Branches({ token }) {
       <div className="gigo-section-header" style={S.sectionHeader}>
         <div>
           <div style={S.sectionTitle}>Branch Management</div>
-          <div style={{ fontSize: "12px", color: C.textMuted, marginTop: "2px" }}>{branches.length} {t("branchesCount") || "branches"}</div>
+          <div style={{ fontSize: "12px", color: C.textMuted, marginTop: "2px" }}>{branches.length} branches</div>
         </div>
         <button style={S.btn("primary")} onClick={openAdd}>+ Add Branch</button>
       </div>
@@ -865,9 +865,9 @@ function Branches({ token }) {
               </div>
               <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "12px", marginBottom: "16px" }}>
                 {[
-                  { label: t("staff") || t("staff") || "Staff", value: b.stats?.staffCount ?? 0 },
-                  { label: t("ordersLabel") || "Orders", value: fmt(b.stats?.orderCount ?? 0) },
-                  { label: t("revenue") || t("revenue") || "Revenue", value: `FRw ${fmtM(b.stats?.totalRevenue ?? 0)}` },
+                  { label: "Staff", value: b.stats?.staffCount ?? 0 },
+                  { label: "Orders", value: fmt(b.stats?.orderCount ?? 0) },
+                  { label: "Revenue", value: `FRw ${fmtM(b.stats?.totalRevenue ?? 0)}` },
                 ].map((s, j) => (
                   <div key={j} style={{ textAlign: "center", background: C.bg, borderRadius: "8px", padding: "10px 6px" }}>
                     <div style={{ fontWeight: "800", fontSize: "15px", color: j === 2 ? C.green : C.text }}>{s.value}</div>
@@ -887,7 +887,7 @@ function Branches({ token }) {
       {showModal && (
         <div style={S.modal} onClick={e => e.target === e.currentTarget && setShowModal(false)}>
           <div style={S.modalBox}>
-            <div style={S.modalTitle}>{editing ? t("editBranch") || "Edit Branch" : t("addBranch") || "Add Branch"}</div>
+            <div style={S.modalTitle}>{editing ? "Edit Branch" : "Add Branch"}</div>
             <div style={S.formRow}>
               <label style={S.formLabel}>Branch Name</label>
               {editing ? (
@@ -900,10 +900,10 @@ function Branches({ token }) {
               )}
             </div>
             {[
-              { label: t("managerName") || "Manager Name", key: "managerName" },
-              { label: t("managerEmail") || "Manager Email", key: "managerEmail" },
-              { label: t("location") || "Location", key: "location" },
-              { label: t("phone") || "Phone", key: "phone" },
+              { label: "Manager Name", key: "managerName" },
+              { label: "Manager Email", key: "managerEmail" },
+              { label: "Location", key: "location" },
+              { label: "Phone", key: "phone" },
             ].map(f => (
               <div key={f.key} style={S.formRow}>
                 <label style={S.formLabel}>{f.label}</label>
@@ -912,7 +912,7 @@ function Branches({ token }) {
             ))}
             <div style={{ display: "flex", gap: "10px", justifyContent: "flex-end", marginTop: "8px" }}>
               <button style={S.btn("ghost")} onClick={() => setShowModal(false)}>Cancel</button>
-              <button style={S.btn("primary")} onClick={save}>{editing ? t("saveChanges") || "Save Changes" : t("addBranch") || "Add Branch"}</button>
+              <button style={S.btn("primary")} onClick={save}>{editing ? "Save Changes" : "Add Branch"}</button>
             </div>
           </div>
         </div>
@@ -925,7 +925,7 @@ function Branches({ token }) {
 function Users({ token }) {
   const { language, translations } = useContext(LanguageContext);
   const dashLang = language === "rn" ? "fr" : language;
-  const t = useCallback((key) => translations[dashLang]?.[key] ?? translations["en"]?.[key] ?? key, [dashLang, translations]);
+  const t = (key) => translations[dashLang]?.[key] ?? translations["en"]?.[key] ?? key;
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
@@ -948,26 +948,26 @@ function Users({ token }) {
   const save = async () => {
     const r = await fetch(`${API}/users/${editing._id}`, { method: "PATCH", headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` }, body: JSON.stringify(form) });
     const d = await r.json();
-    if (d.success) { setMsg({ type: "success", text: t("userUpdated") || "User updated!" }); setShowModal(false); load(); }
+    if (d.success) { setMsg({ type: "success", text: "User updated!" }); setShowModal(false); load(); }
     else setMsg({ type: "error", text: d.error || "Failed" });
   };
 
   const del = async (id) => {
-    if (!window.confirm(t("confirmDeleteUser") || "Delete this user?")) return;
+    if (!window.confirm("Delete this user?")) return;
     const r = await fetch(`${API}/users/${id}`, { method: "DELETE", headers: { Authorization: `Bearer ${token}` } });
     const d = await r.json();
-    if (d.success) { setMsg({ type: "success", text: t("userDeleted") || "User deleted!" }); load(); }
+    if (d.success) { setMsg({ type: "success", text: "User deleted!" }); load(); }
     else setMsg({ type: "error", text: d.error || "Failed" });
   };
 
   const roleDesc = {
-    owner: t("roleOwnerDesc") || "Full system access",
-    branch_manager: t("roleBranchDesc") || "Branch-level access",
-    sales_manager: t("roleSalesDesc") || "Sales & orders",
-    warehouse_manager: t("roleWarehouseDesc") || "Inventory access",
-    cashier: t("roleCashierDesc") || "Sales & orders only",
-    employee: t("roleEmployeeDesc") || "Limited access",
-    customer: t("roleCustomerDesc") || "Customer access",
+    owner: "Full system access",
+    branch_manager: "Branch-level access",
+    sales_manager: "Sales & orders",
+    warehouse_manager: "Inventory access",
+    cashier: "Sales & orders only",
+    employee: "Limited access",
+    customer: "Customer access",
   };
 
   return (
@@ -975,7 +975,7 @@ function Users({ token }) {
       <div className="gigo-section-header" style={S.sectionHeader}>
         <div>
           <div style={S.sectionTitle}>Users & Roles</div>
-          <div style={{ fontSize: "12px", color: C.textMuted, marginTop: "2px" }}>{users.length} {t("teamMembers") || "team members"}</div>
+          <div style={{ fontSize: "12px", color: C.textMuted, marginTop: "2px" }}>{users.length} team members</div>
         </div>
       </div>
       {msg && <div style={S.alert(msg.type)}>{msg.text}</div>}
@@ -1078,7 +1078,7 @@ function Users({ token }) {
 function Reports({ token }) {
   const { language, translations } = useContext(LanguageContext);
   const dashLang = language === "rn" ? "fr" : language;
-  const t = useCallback((key) => translations[dashLang]?.[key] ?? translations["en"]?.[key] ?? key, [dashLang, translations]);
+  const t = (key) => translations[dashLang]?.[key] ?? translations["en"]?.[key] ?? key;
   const [daily, setDaily] = useState(null);
   const [monthly, setMonthly] = useState(null);
   const [branchPerf, setBranchPerf] = useState(null);
@@ -1112,10 +1112,10 @@ function Reports({ token }) {
       </div>
       <div className="gigo-kpi-grid" style={{ ...S.grid2, marginBottom: "16px" }}>
         {[
-          { type: "daily", title: t("dailySalesReport") || "Daily Sales Report", icon: "◈", desc: "Today's sales summary across all branches", color: C.green },
-          { type: "monthly", title: t("monthlyFinancialReport") || "Monthly Financial Report", icon: "◧", desc: `Report for ${MONTH_NAMES[new Date().getMonth()]} ${new Date().getFullYear()}`, color: C.accent },
-          { type: "branch", title: t("branchPerformance") || "Branch Performance", icon: "◉", desc: "Compare revenue and orders by branch", color: C.blue },
-          { type: "weekly", title: t("weeklyReport") || "Weekly Report", icon: "◫", desc: t("weeklyReportDesc") || "Last 7 days summary", color: C.red },
+          { type: "daily", title: "Daily Sales Report", icon: "◈", desc: "Today's sales summary across all branches", color: C.green },
+          { type: "monthly", title: "Monthly Financial Report", icon: "◧", desc: `Report for ${MONTH_NAMES[new Date().getMonth()]} ${new Date().getFullYear()}`, color: C.accent },
+          { type: "branch", title: "Branch Performance", icon: "◉", desc: "Compare revenue and orders by branch", color: C.blue },
+          { type: "weekly", title: "Weekly Report", icon: "◫", desc: "Last 7 days summary", color: C.red },
         ].map((r, i) => (
           <div key={i} style={{ ...S.card, padding: "20px", display: "flex", gap: "16px", alignItems: "flex-start" }}>
             <div style={{ fontSize: "28px", color: r.color, marginTop: "2px" }}>{r.icon}</div>
@@ -1123,7 +1123,7 @@ function Reports({ token }) {
               <div style={{ fontWeight: "700", marginBottom: "4px" }}>{r.title}</div>
               <div style={{ fontSize: "12px", color: C.textMuted, marginBottom: "14px" }}>{r.desc}</div>
               <button style={S.btn("primary")} onClick={() => generate(r.type)} disabled={loading && active === r.type}>
-                {loading && active === r.type ? t("generating") || "Generating..." : t("generate") || "Generate"}
+                {loading && active === r.type ? "Generating..." : "Generate"}
               </button>
             </div>
           </div>
@@ -1222,10 +1222,10 @@ function Reports({ token }) {
 // ── NAV CONFIG ────────────────────────────────────────────────────────────────
 const NAV_ITEMS = [
   { id: "dashboard", icon: "⬡", label: "Dashboard" },
-  { id: t("productsCount") || "products", icon: "▦", label: "Products" },
+  { id: "products", icon: "▦", label: "Products" },
   { id: "inventory", icon: "◫", label: "Inventory" },
-  { id: t("ordersCount") || "orders", icon: "◈", label: t("ordersLabel") || "Orders" },
-  { id: t("branchesCount") || "branches", icon: "◉", label: t("branchesLabel") || "Branches" },
+  { id: "orders", icon: "◈", label: "Orders" },
+  { id: "branches", icon: "◉", label: "Branches" },
   { id: "users", icon: "◎", label: "Users & Roles" },
   { id: "reports", icon: "◧", label: "Reports" },
 ];
@@ -1234,10 +1234,10 @@ const PAGE_LABELS = {
   dashboard: "Dashboard Overview",
   products: "Products",
   inventory: "Inventory",
-  orders: t("ordersLabel") || "Orders",
-  branches: t("branchesLabel") || "Branches",
+  orders: "Orders",
+  branches: "Branches",
   users: "Users & Roles",
-  reports: t("reportsAnalytics") || "Reports & Analytics",
+  reports: "Reports & Analytics",
 };
 
 // ── APP SHELL ─────────────────────────────────────────────────────────────────
@@ -1249,12 +1249,8 @@ export default function GigoManagement() {
   const [active, setActive] = useState("dashboard");
   const [lowStockCount, setLowStockCount] = useState(0);
 
-  // Dashboard only supports EN/FR — Kirundi maps to French
   const dashLang = language === "rn" ? "fr" : language;
-  const t = useCallback(
-    (key) => translations[dashLang]?.[key] ?? translations["en"]?.[key] ?? key,
-    [dashLang, translations]
-  );
+  const t = (key) => translations[dashLang]?.[key] ?? translations["en"]?.[key] ?? key;
 
   useEffect(() => {
     if (!user && !token) navigate("/login", { replace: true });
@@ -1278,6 +1274,26 @@ export default function GigoManagement() {
     );
   }
 
+  const NAV_ITEMS = [
+    { id: "dashboard", icon: "⬡", label: t("dashboard") || "Dashboard" },
+    { id: "products",  icon: "▦", label: t("products") },
+    { id: "inventory", icon: "◫", label: t("inventory") || "Inventory" },
+    { id: "orders",    icon: "◈", label: t("orders") },
+    { id: "branches",  icon: "◉", label: t("branches") || "Branches" },
+    { id: "users",     icon: "◎", label: t("users") || "Users & Roles" },
+    { id: "reports",   icon: "◧", label: t("reports") || "Reports" },
+  ];
+
+  const PAGE_LABELS = {
+    dashboard: t("dashboard") || "Dashboard",
+    products:  t("products"),
+    inventory: t("inventory") || "Inventory",
+    orders:    t("orders"),
+    branches:  t("branches") || "Branches",
+    users:     t("users") || "Users & Roles",
+    reports:   t("reports") || "Reports",
+  };
+
   const pageProps = { token };
   const PAGE_MAP = {
     dashboard: <Dashboard {...pageProps} />,
@@ -1289,26 +1305,6 @@ export default function GigoManagement() {
     reports:   <Reports {...pageProps} />,
   };
 
-  const NAV_ITEMS = [
-    { id: "dashboard", icon: "⬡", label: t("dashboard") || "Dashboard" },
-    { id: t("productsCount") || "products",  icon: "▦", label: t(t("productsCount") || "products") },
-    { id: "inventory", icon: "◫", label: t("inventory") || "Inventory" },
-    { id: t("ordersCount") || "orders",    icon: "◈", label: t(t("ordersCount") || "orders") },
-    { id: t("branchesCount") || "branches",  icon: "◉", label: t(t("branchesCount") || "branches") || t("branchesLabel") || "Branches" },
-    { id: "users",     icon: "◎", label: t("users") || "Users & Roles" },
-    { id: "reports",   icon: "◧", label: t("reports") || "Reports" },
-  ];
-
-  const PAGE_LABELS = {
-    dashboard: t("dashboard") || "Dashboard Overview",
-    products:  t(t("productsCount") || "products"),
-    inventory: t("inventory") || "Inventory",
-    orders:    t(t("ordersCount") || "orders"),
-    branches:  t(t("branchesCount") || "branches") || t("branchesLabel") || "Branches",
-    users:     t("users") || "Users & Roles",
-    reports:   t("reports") || t("reportsAnalytics") || "Reports & Analytics",
-  };
-
   return (
     <div style={S.app}>
       <aside style={S.sidebar}>
@@ -1317,10 +1313,10 @@ export default function GigoManagement() {
             <div style={S.logoIcon}>G</div>
             <div style={S.logoText}>GIGO CO.</div>
           </div>
-          <div style={S.logoSub}>Management System</div>
+          <div style={S.logoSub}>{t("managementSystem") || "Management System"}</div>
         </div>
         <nav style={S.nav}>
-          <div style={S.navLabel}>Menu</div>
+          <div style={S.navLabel}>{t("menu") || "Menu"}</div>
           {NAV_ITEMS.map(item => (
             <div key={item.id} style={S.navItem(active === item.id)} onClick={() => setActive(item.id)}>
               <span style={S.navIcon}>{item.icon}</span>
@@ -1355,22 +1351,11 @@ export default function GigoManagement() {
                 <span style={{ ...S.badge, position: "absolute", top: "-4px", right: "-6px" }}>{lowStockCount}</span>
               </div>
             )}
-            {/* Language switcher — EN / FR only (rn maps to fr) */}
             <div style={{ display: "flex", gap: "4px" }}>
               {["en", "fr"].map(lang => {
                 const isActive = language === lang || (language === "rn" && lang === "fr");
                 return (
-                  <button
-                    key={lang}
-                    onClick={() => setLanguage(lang)}
-                    style={{
-                      padding: "4px 10px", borderRadius: "6px", fontSize: "11px", fontWeight: "700",
-                      cursor: "pointer", border: `1px solid ${isActive ? C.accent : C.border}`,
-                      background: isActive ? C.accent : "transparent",
-                      color: isActive ? C.bg : C.textMuted,
-                      textTransform: "uppercase", letterSpacing: "0.06em",
-                    }}
-                  >
+                  <button key={lang} onClick={() => setLanguage(lang)} style={{ padding: "4px 10px", borderRadius: "6px", fontSize: "11px", fontWeight: "700", cursor: "pointer", border: `1px solid ${isActive ? C.accent : C.border}`, background: isActive ? C.accent : "transparent", color: isActive ? C.bg : C.textMuted, textTransform: "uppercase" }}>
                     {lang}
                   </button>
                 );
@@ -1378,7 +1363,7 @@ export default function GigoManagement() {
             </div>
             <div style={{ width: "1px", height: "20px", background: C.border }} />
             <span style={{ fontSize: "12px", color: C.textMuted }}>
-              {new Date().toLocaleDateString(dashLang === "fr" ? "fr-RW" : "en-RW", { weekday: "short", day: "numeric", month: "short", year: "numeric" })}
+              {new Date().toLocaleDateString(dashLang === "fr" ? "fr-FR" : "en-US", { weekday: "short", day: "numeric", month: "short", year: "numeric" })}
             </span>
           </div>
         </div>
