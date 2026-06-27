@@ -13,6 +13,13 @@ export const translations = {
     signup: "Iyandikishe",
     logout: "Sohoka",
     user: "Umukoresha",
+    // ── Nav keys used by GigoManagement shell ──
+    dashboard: "Ikibaho",
+    inventory: "Ububiko",
+    branches: "Amashami",
+    users: "Abakoresha & Inzego",
+    reports: "Raporo",
+    menu: "Menyu Nkuru",
     // Hero / Banner section
     heroTitleLine1: "Ivyokunywa Vyiza",
     heroTitleLine2: "Ku Giciro",
@@ -189,6 +196,7 @@ export const translations = {
     ordersEdit: "Hindura Komande",
     unauthorizedGoBack: "Garuka Inyuma",
   },
+
   // ── English ─────────────────────────────────────────
   en: {
     home: "Home",
@@ -202,6 +210,13 @@ export const translations = {
     signup: "Sign Up",
     logout: "Sign Out",
     user: "User",
+    // ── Nav keys used by GigoManagement shell ──
+    dashboard: "Dashboard",
+    inventory: "Inventory",
+    branches: "Branches",
+    users: "Users & Roles",
+    reports: "Reports",
+    menu: "Main Menu",
     // Hero / Banner section
     heroTitleLine1: "Premium Drinks",
     heroTitleLine2: "At Prices",
@@ -378,6 +393,7 @@ export const translations = {
     ordersEdit: "Edit Order",
     unauthorizedGoBack: "Go Back",
   },
+
   // ── French ──────────────────────────────────────────
   fr: {
     home: "Accueil",
@@ -391,6 +407,13 @@ export const translations = {
     signup: "S'inscrire",
     logout: "Déconnexion",
     user: "Utilisateur",
+    // ── Nav keys used by GigoManagement shell ──
+    dashboard: "Tableau de Bord",
+    inventory: "Inventaire",
+    branches: "Succursales",
+    users: "Utilisateurs & Rôles",
+    reports: "Rapports",
+    menu: "Menu",
     // Hero / Banner section
     heroTitleLine1: "Boissons Premium",
     heroTitleLine2: "À Prix",
