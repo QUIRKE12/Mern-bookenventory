@@ -1,10 +1,14 @@
-import { useState, useEffect, useCallback, useContext } from "react";
+import { useState, useEffect, useCallback } from "react";
+import { useContext } from "react";
 import { AuthContext } from "../contexts/AuthContext";
 import { LanguageContext } from "../contexts/LanguageContext";
+import { translations } from "../contexts/translations";
 import { useNavigate } from "react-router-dom";
 
+// ── CONFIG ────────────────────────────────────────────────────────────────────
 const API = "https://gigo-backend-4iea.onrender.com";
 
+// ── DESIGN TOKENS ─────────────────────────────────────────────────────────────
 const C = {
   bg: "#0D1B2A", surface: "#1E2D3D", surfaceHover: "#243547",
   accent: "#F5A623", accentDim: "rgba(245,166,35,0.15)", accentGlow: "rgba(245,166,35,0.35)",
@@ -16,14 +20,15 @@ const C = {
 };
 
 const MONTH_NAMES = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
-const BRANCHES = ["Bujumbura HQ","Kampala","Uganda","DRC"];
+const BRANCHES = ["Bujumbura HQ","Kenya","Uganda","DRC"];
 const ROLES = ["owner","branch_manager","sales_manager","warehouse_manager","cashier","employee"];
 const CATEGORIES = ["Alcoholic","Non-Alcoholic","Food","Other"];
 
+// ── HELPERS ───────────────────────────────────────────────────────────────────
 const fmt = (n) => new Intl.NumberFormat("fr-RW").format(Math.round(n || 0));
 const fmtM = (n) => {
   const num = Number(n);
-  if (isNaN(num)) return "0";
+  if (isNaN(num) || num === undefined || num === null) return "0";
   if (num >= 1_000_000) return `${(num / 1_000_000).toFixed(1)}M`;
   if (num >= 1000) return `${(num / 1000).toFixed(0)}K`;
   return String(Math.round(num));
@@ -42,6 +47,7 @@ const stockStatus = (p) => {
   return "In Stock";
 };
 
+// ── STYLES ────────────────────────────────────────────────────────────────────
 const S = {
   app: { fontFamily: "'Inter','Segoe UI',system-ui,sans-serif", background: C.bg, minHeight: "100vh", display: "flex", color: C.text, fontSize: "14px" },
   sidebar: { width: "220px", flexShrink: 0, background: C.surface, borderRight: `1px solid ${C.border}`, display: "flex", flexDirection: "column", position: "fixed", top: 0, left: 0, height: "100vh", zIndex: 100 },
@@ -106,36 +112,118 @@ const S = {
   formRow: { marginBottom: "14px" },
   formLabel: { fontSize: "11px", color: C.textMuted, textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: "5px", display: "block" },
   spinner: { display: "flex", alignItems: "center", justifyContent: "center", padding: "40px", color: C.textMuted, fontSize: "13px" },
-  alert: (type) => ({ padding: "10px 16px", borderRadius: "8px", fontSize: "12px", fontWeight: "600", marginBottom: "14px", background: type === "error" ? C.redDim : C.greenDim, color: type === "error" ? C.red : C.green, border: `1px solid ${type === "error" ? C.red : C.green}` }),
+  alert: (t) => ({ padding: "10px 16px", borderRadius: "8px", fontSize: "12px", fontWeight: "600", marginBottom: "14px", background: t === "error" ? C.redDim : C.greenDim, color: t === "error" ? C.red : C.green, border: `1px solid ${t === "error" ? C.red : C.green}` }),
 };
 
+// ── RESPONSIVE CSS (mobile sidebar + grid) ───────────────────────────────────
 const RESPONSIVE_CSS = `
   .gigo-app { overflow-x: hidden; }
   .gigo-hamburger { display: none; }
   .gigo-backdrop { display: none; }
   @media (max-width: 880px) {
-    .gigo-sidebar { transform: translateX(-100%); transition: transform 0.25s ease; box-shadow: 2px 0 24px rgba(0,0,0,0.4); }
-    .gigo-sidebar.gigo-sidebar-open { transform: translateX(0); }
-    .gigo-main { margin-left: 0 !important; overflow-x: hidden; }
-    .gigo-hamburger { display: flex; }
-    .gigo-backdrop.gigo-backdrop-open { display: block; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 90; }
-    .gigo-kpi-grid { grid-template-columns: repeat(2, 1fr) !important; gap: 10px !important; }
-    .gigo-2col-grid { grid-template-columns: 1fr !important; }
-    .gigo-content { padding: 14px 12px !important; }
-    .gigo-section-header { flex-direction: column !important; align-items: stretch !important; gap: 10px !important; }
-    table.gigo-table { display: block !important; overflow-x: auto !important; white-space: nowrap !important; }
-    .gigo-tabs-scroll { flex-wrap: nowrap !important; overflow-x: auto !important; padding-bottom: 2px; }
-    .gigo-tabs-scroll button { flex-shrink: 0 !important; }
+    .gigo-main {
+      overflow-x: hidden;
+    }
+    .gigo-sidebar {
+      transform: translateX(-100%);
+      transition: transform 0.25s ease;
+      box-shadow: 2px 0 24px rgba(0,0,0,0.4);
+    }
+    .gigo-sidebar.gigo-sidebar-open {
+      transform: translateX(0);
+    }
+    .gigo-main {
+      margin-left: 0 !important;
+    }
+    .gigo-hamburger {
+      display: flex;
+    }
+    .gigo-backdrop.gigo-backdrop-open {
+      display: block;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.5);
+      z-index: 90;
+    }
+    .gigo-kpi-grid {
+      grid-template-columns: repeat(2, 1fr) !important;
+      gap: 10px !important;
+    }
+    .gigo-2col-grid {
+      grid-template-columns: 1fr !important;
+    }
+    .gigo-content {
+      padding: 14px 12px !important;
+    }
+    .gigo-kpi-card {
+      padding: 12px !important;
+    }
+    .gigo-kpi-card .gigo-kpi-val {
+      font-size: 19px !important;
+    }
+    .gigo-kpi-card .gigo-kpi-icon {
+      font-size: 16px !important;
+      margin-bottom: 6px !important;
+    }
+    .gigo-kpi-card .gigo-kpi-label {
+      font-size: 9.5px !important;
+    }
+    .gigo-stat-card {
+      padding: 12px 14px !important;
+    }
+    .gigo-stat-card .gigo-stat-val {
+      font-size: 19px !important;
+    }
+    .gigo-stat-card .gigo-stat-label {
+      font-size: 9.5px !important;
+    }
+    .gigo-section-header {
+      flex-direction: column !important;
+      align-items: stretch !important;
+      gap: 10px !important;
+    }
+    .gigo-section-header > div:last-child {
+      flex-direction: column !important;
+      width: 100% !important;
+    }
+    .gigo-section-header input,
+    .gigo-section-header select,
+    .gigo-section-header button {
+      width: 100% !important;
+    }
+    .gigo-table-scroll {
+      overflow-x: auto !important;
+      -webkit-overflow-scrolling: touch !important;
+    }
+    .gigo-table-scroll table {
+      min-width: 640px !important;
+    }
+    table.gigo-table {
+      display: block !important;
+      overflow-x: auto !important;
+      -webkit-overflow-scrolling: touch !important;
+      white-space: nowrap !important;
+      border-radius: inherit;
+    }
+    table.gigo-table thead,
+    table.gigo-table tbody {
+      display: table !important;
+      width: 100% !important;
+      min-width: 560px !important;
+    }
+    .gigo-tabs-scroll {
+      flex-wrap: nowrap !important;
+      overflow-x: auto !important;
+      -webkit-overflow-scrolling: touch !important;
+      padding-bottom: 2px;
+    }
+    .gigo-tabs-scroll button {
+      flex-shrink: 0 !important;
+    }
   }
 `;
 
-// ── HELPERS ───────────────────────────────────────────────────────────────────
-function useT() {
-  const { language, translations } = useContext(LanguageContext);
-  const dashLang = language === "rn" ? "fr" : language;
-  return (key) => translations[dashLang]?.[key] ?? translations["en"]?.[key] ?? key;
-}
-
+// ── SHARED COMPONENTS ─────────────────────────────────────────────────────────
 function Spinner() { return <div style={S.spinner}>Loading...</div>; }
 
 function SparkBar({ data }) {
@@ -156,12 +244,15 @@ function SparkBar({ data }) {
   );
 }
 
-// ── DASHBOARD ─────────────────────────────────────────────────────────────────
+// ── DASHBOARD PAGE ────────────────────────────────────────────────────────────
 function Dashboard({ token }) {
-  const t = useT();
+  const { language, translations } = useContext(LanguageContext);
+  const dashLang = language === "rn" ? "fr" : language;
+  const t = (key) => translations[dashLang]?.[key] ?? translations["en"]?.[key] ?? key;
   const [stats, setStats] = useState(null);
   const [loading, setLoading] = useState(true);
 
+  // ✅ FIXED: Removed the stray fetch() call that was outside useEffect
   useEffect(() => {
     fetch(`${API}/stats/dashboard`, { headers: { Authorization: `Bearer ${token}` } })
       .then(r => r.json())
@@ -170,10 +261,11 @@ function Dashboard({ token }) {
   }, [token]);
 
   if (loading) return <Spinner />;
-  if (!stats) return <div style={S.alert("error")}>{t("failedLoadDashboard") || "Failed to load dashboard data."}</div>;
+  if (!stats) return <div style={S.alert("error")}>Failed to load dashboard data.</div>;
 
   const { kpis = {}, monthlyRevenue = [], bestSellers = [], recentOrders = [] } = stats;
   const now = new Date();
+
   const chartData = monthlyRevenue.map(m => ({
     month: MONTH_NAMES[(m._id.month || 1) - 1],
     value: Math.round(((m.total || 0) / 1_000_000) * 10) / 10,
@@ -181,10 +273,10 @@ function Dashboard({ token }) {
   }));
 
   const kpiCards = [
-    { label: t("revenueThisMonth") || "Revenue This Month", value: `FRw ${fmtM(kpis.revenueThisMonth || 0)}`, delta: kpis.revenueDelta ? `${kpis.revenueDelta > 0 ? "+" : ""}${kpis.revenueDelta}% vs last month` : t("noPrevData") || "No prev data", up: (kpis.revenueDelta || 0) >= 0, icon: "◈", color: C.accent },
-    { label: t("ordersThisMonth") || "Orders This Month", value: fmt(kpis.ordersThisMonth || 0), delta: kpis.ordersDelta ? `${kpis.ordersDelta > 0 ? "+" : ""}${kpis.ordersDelta}% vs last month` : t("noPrevData") || "No prev data", up: (kpis.ordersDelta || 0) >= 0, icon: "▦", color: C.green },
-    { label: t("totalProducts") || "Total Products", value: fmt(kpis.totalProducts || 0), delta: t("registered") || "Registered", up: true, icon: "◫", color: C.blue },
-    { label: t("lowStockAlerts") || "Low Stock Alerts", value: fmt(kpis.lowStockAlerts || 0), delta: (kpis.lowStockAlerts || 0) > 0 ? t("needsAttention") || "Needs attention" : t("allGood") || "All good", up: (kpis.lowStockAlerts || 0) === 0, icon: "⚠", color: C.red },
+    { label: t("revenueThisMonth"), value: `FRw ${fmtM(kpis.revenueThisMonth || 0)}`, delta: kpis.revenueDelta ? `${kpis.revenueDelta > 0 ? "+" : ""}${kpis.revenueDelta}% vs last month` : t("noPrevData"), up: (kpis.revenueDelta || 0) >= 0, icon: "◈", color: C.accent },
+    { label: t("ordersThisMonth"), value: fmt(kpis.ordersThisMonth || 0), delta: kpis.ordersDelta ? `${kpis.ordersDelta > 0 ? "+" : ""}${kpis.ordersDelta}% vs last month` : t("noPrevData"), up: (kpis.ordersDelta || 0) >= 0, icon: "▦", color: C.green },
+    { label: t("totalProducts"), value: fmt(kpis.totalProducts || 0), delta: t("registered"), up: true, icon: "◫", color: C.blue },
+    { label: t("lowStockAlerts"), value: fmt(kpis.lowStockAlerts || 0), delta: (kpis.lowStockAlerts || 0) > 0 ? t("needsAttention") : t("allGood"), up: (kpis.lowStockAlerts || 0) === 0, icon: "⚠", color: C.red },
   ];
 
   const maxSold = bestSellers[0]?.totalSold || 1;
@@ -192,8 +284,8 @@ function Dashboard({ token }) {
   return (
     <div>
       <div style={{ marginBottom: "20px" }}>
-        <div style={{ fontSize: "22px", fontWeight: "800", color: C.text, marginBottom: "4px" }}>{t("goodMorning") || "Good morning, Owner 👋"}</div>
-        <div style={{ fontSize: "13px", color: C.textMuted }}>{t("dashboardSubtitle") || "Here's what's happening across your branches today"} — {now.toLocaleDateString(t("locale") || "en-RW", { weekday: "long", day: "numeric", month: "long", year: "numeric" })}</div>
+        <div style={{ fontSize: "22px", fontWeight: "800", color: C.text, marginBottom: "4px" }}>{t("dashboardGreeting")}</div>
+        <div style={{ fontSize: "13px", color: C.textMuted }}>{t("dashboardSubtitle")} — {now.toLocaleDateString(dashLang === "fr" ? "fr-FR" : "en-RW", { weekday: "long", day: "numeric", month: "long", year: "numeric" })}</div>
       </div>
 
       <div className="gigo-kpi-grid" style={S.grid4}>
@@ -210,19 +302,26 @@ function Dashboard({ token }) {
 
       <div className="gigo-2col-grid" style={S.grid2}>
         <div style={S.card}>
-          <div style={S.cardHeader}><div style={S.cardTitle}>{t("recentOrders") || "Recent Orders"}</div></div>
+          <div style={S.cardHeader}><div style={S.cardTitle}>{t("recentOrders")}</div></div>
           <table className="gigo-table" style={S.table}>
-            <thead><tr>
-              <th style={S.th}>{t("customer") || "Customer"}</th>
-              <th style={S.th}>{t("branch") || "Branch"}</th>
-              <th style={S.th}>{t("total") || "Total"}</th>
-              <th style={S.th}>{t("statusLabel") || "Status"}</th>
-            </tr></thead>
+            <thead>
+              <tr>
+                <th style={S.th}>{t("customer")}</th>
+                <th style={S.th}>{t("branch")}</th>
+                <th style={S.th}>{t("total")}</th>
+                <th style={S.th}>{t("status")}</th>
+              </tr>
+            </thead>
             <tbody>
-              {recentOrders.length === 0 && <tr><td colSpan={4} style={{ ...S.td, textAlign: "center", color: C.textMuted }}>{t("noOrdersYet") || "No orders yet"}</td></tr>}
+              {recentOrders.length === 0 && (
+                <tr><td colSpan={4} style={{ ...S.td, textAlign: "center", color: C.textMuted }}>{t("noOrders")}</td></tr>
+              )}
               {recentOrders.map((o, i) => (
                 <tr key={i}>
-                  <td style={S.td}><div style={{ fontWeight: "600" }}>{o.customerName}</div><div style={{ fontSize: "11px", color: C.textMuted }}>{timeAgo(o.createdAt)}</div></td>
+                  <td style={S.td}>
+                    <div style={{ fontWeight: "600" }}>{o.customerName}</div>
+                    <div style={{ fontSize: "11px", color: C.textMuted }}>{timeAgo(o.createdAt)}</div>
+                  </td>
                   <td style={{ ...S.td, color: C.textMuted, fontSize: "12px" }}>{o.branch}</td>
                   <td style={{ ...S.td, fontWeight: "700", color: C.accent }}>FRw {fmt(o.totalAmount)}</td>
                   <td style={S.td}><span style={S.badge2(o.status)}>{o.status}</span></td>
@@ -234,11 +333,13 @@ function Dashboard({ token }) {
 
         <div style={S.card}>
           <div style={S.cardHeader}>
-            <div style={S.cardTitle}>{t("bestSellingProducts") || "Best Selling Products"}</div>
-            <span style={{ fontSize: "11px", color: C.textMuted }}>{t("thisMonth") || "This month"}</span>
+            <div style={S.cardTitle}>{t("bestSelling")}</div>
+            <span style={{ fontSize: "11px", color: C.textMuted }}>{t("thisMonth")}</span>
           </div>
           <div style={{ padding: "8px 0" }}>
-            {bestSellers.length === 0 && <div style={{ padding: "20px", color: C.textMuted, fontSize: "13px", textAlign: "center" }}>{t("noSalesData") || "No sales data yet"}</div>}
+            {bestSellers.length === 0 && (
+              <div style={{ padding: "20px", color: C.textMuted, fontSize: "13px", textAlign: "center" }}>{t("noSales")}</div>
+            )}
             {bestSellers.map((p, i) => (
               <div key={i} style={{ padding: "12px 20px", borderBottom: `1px solid ${C.border}` }}>
                 <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "6px" }}>
@@ -257,7 +358,7 @@ function Dashboard({ token }) {
 
       <div style={S.card}>
         <div style={S.cardHeader}>
-          <div style={S.cardTitle}>{t("monthlyRevenue") || "Monthly Revenue"}</div>
+          <div style={S.cardTitle}>{t("monthlyRevenue")}</div>
           <span style={{ fontSize: "11px", color: C.green, fontWeight: "700" }}>
             {kpis.revenueDelta && kpis.revenueDelta > 0 ? `▲ +${kpis.revenueDelta}% vs last month` : ""}
           </span>
@@ -269,13 +370,15 @@ function Dashboard({ token }) {
               <div style={{ display: "flex", gap: "6px", marginTop: "12px" }}>
                 {chartData.map((d, i) => (
                   <div key={i} style={{ flex: 1, textAlign: "center" }}>
-                    <div style={{ fontWeight: "700", fontSize: "12px", color: i === chartData.length - 1 ? C.accent : C.text }}>FRw {fmtM(d.total)}</div>
+                    <div style={{ fontWeight: "700", fontSize: "12px", color: i === chartData.length - 1 ? C.accent : C.text }}>
+                      FRw {fmtM(d.total)}
+                    </div>
                   </div>
                 ))}
               </div>
             </>
           ) : (
-            <div style={{ color: C.textMuted, fontSize: "13px", padding: "16px 0" }}>{t("noRevenueData") || "No revenue data yet"}</div>
+            <div style={{ color: C.textMuted, fontSize: "13px", padding: "16px 0" }}>{t("noRevenue")}</div>
           )}
         </div>
       </div>
@@ -283,9 +386,11 @@ function Dashboard({ token }) {
   );
 }
 
-// ── PRODUCTS ──────────────────────────────────────────────────────────────────
+// ── PRODUCTS PAGE ─────────────────────────────────────────────────────────────
 function Products({ token }) {
-  const t = useT();
+  const { language, translations } = useContext(LanguageContext);
+  const dashLang = language === "rn" ? "fr" : language;
+  const t = (key) => translations[dashLang]?.[key] ?? translations["en"]?.[key] ?? key;
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
@@ -304,8 +409,16 @@ function Products({ token }) {
 
   useEffect(() => { load(); }, [load]);
 
-  const openAdd = () => { setEditing(null); setForm({ productName: "", brandName: "", imageURL: "", category: "", description: "", price: "", branch: "", stock: "0", minStockLevel: "10" }); setShowModal(true); };
-  const openEdit = (p) => { setEditing(p); setForm({ productName: p.productName, brandName: p.brandName, imageURL: p.imageURL, category: p.category, description: p.description, price: p.price, branch: p.branch, stock: p.stock || 0, minStockLevel: p.minStockLevel || 10 }); setShowModal(true); };
+  const openAdd = () => {
+    setEditing(null);
+    setForm({ productName: "", brandName: "", imageURL: "", category: "", description: "", price: "", branch: "", stock: "0", minStockLevel: "10" });
+    setShowModal(true);
+  };
+  const openEdit = (p) => {
+    setEditing(p);
+    setForm({ productName: p.productName, brandName: p.brandName, imageURL: p.imageURL, category: p.category, description: p.description, price: p.price, branch: p.branch, stock: p.stock || 0, minStockLevel: p.minStockLevel || 10 });
+    setShowModal(true);
+  };
 
   const save = async () => {
     const method = editing ? "PATCH" : "POST";
@@ -313,15 +426,15 @@ function Products({ token }) {
     const body = { ...form, price: Number(form.price), stock: Number(form.stock), minStockLevel: Number(form.minStockLevel) };
     const r = await fetch(url, { method, headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` }, body: JSON.stringify(body) });
     const d = await r.json();
-    if (d.success || d.product) { setMsg({ type: "success", text: editing ? t("productUpdated") || "Product updated!" : t("productAdded") || "Product added!" }); setShowModal(false); load(); }
+    if (d.success || d.product) { setMsg({ type: "success", text: editing ? "Product updated!" : "Product added!" }); setShowModal(false); load(); }
     else setMsg({ type: "error", text: d.error || "Failed" });
   };
 
   const del = async (id) => {
-    if (!window.confirm(t("confirmDeleteProduct") || "Delete this product?")) return;
+    if (!window.confirm("Delete this product?")) return;
     const r = await fetch(`${API}/product/${id}`, { method: "DELETE", headers: { Authorization: `Bearer ${token}` } });
     const d = await r.json();
-    if (d.success) { setMsg({ type: "success", text: t("deleted") || "Deleted!" }); load(); }
+    if (d.success) { setMsg({ type: "success", text: "Deleted!" }); load(); }
     else setMsg({ type: "error", text: d.error || "Failed" });
   };
 
@@ -329,35 +442,41 @@ function Products({ token }) {
     <div>
       <div className="gigo-section-header" style={S.sectionHeader}>
         <div>
-          <div style={S.sectionTitle}>{t("productManagement") || "Product Management"}</div>
-          <div style={{ fontSize: "12px", color: C.textMuted, marginTop: "2px" }}>{products.length} {t("productsCount") || "products"}</div>
+          <div style={S.sectionTitle}>Product Management</div>
+          <div style={{ fontSize: "12px", color: C.textMuted, marginTop: "2px" }}>{products.length} products</div>
         </div>
         <div style={{ display: "flex", gap: "10px" }}>
-          <input style={{ ...S.input, width: "200px" }} placeholder={t("search") || "Search..."} value={search} onChange={e => setSearch(e.target.value)} />
-          <button style={S.btn("primary")} onClick={openAdd}>+ {t("addProduct") || "Add Product"}</button>
+          <input style={{ ...S.input, width: "200px" }} placeholder="Search..." value={search} onChange={e => setSearch(e.target.value)} />
+          <button style={S.btn("primary")} onClick={openAdd}>+ Add Product</button>
         </div>
       </div>
       {msg && <div style={S.alert(msg.type)}>{msg.text}</div>}
       {loading ? <Spinner /> : (
         <div style={S.card}>
           <table className="gigo-table" style={S.table}>
-            <thead><tr>
-              <th style={S.th}>{t("product") || "Product"}</th>
-              <th style={S.th}>{t("categoryLabel") || "Category"}</th>
-              <th style={S.th}>{t("stockLabel") || "Stock"}</th>
-              <th style={S.th}>{t("priceLabel") || "Price"}</th>
-              <th style={S.th}>{t("statusLabel") || "Status"}</th>
-              <th style={S.th}>{t("actions") || "Actions"}</th>
-            </tr></thead>
+            <thead>
+              <tr>
+                <th style={S.th}>Product</th>
+                <th style={S.th}>Category</th>
+                <th style={S.th}>Stock</th>
+                <th style={S.th}>Price</th>
+                <th style={S.th}>Status</th>
+                <th style={S.th}>Actions</th>
+              </tr>
+            </thead>
             <tbody>
-              {products.length === 0 && <tr><td colSpan={6} style={{ ...S.td, textAlign: "center", color: C.textMuted }}>{t("noProductsFound") || "No products found"}</td></tr>}
+              {products.length === 0 && (
+                <tr><td colSpan={6} style={{ ...S.td, textAlign: "center", color: C.textMuted }}>No products found</td></tr>
+              )}
               {products.map((p, i) => {
                 const st = stockStatus(p);
                 return (
                   <tr key={i}>
                     <td style={S.td}>
                       <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-                        {p.imageURL && <img src={p.imageURL} alt="" style={{ width: "36px", height: "36px", borderRadius: "6px", objectFit: "cover" }} onError={e => e.target.style.display = "none"} />}
+                        {p.imageURL && (
+                          <img src={p.imageURL} alt="" style={{ width: "36px", height: "36px", borderRadius: "6px", objectFit: "cover", background: C.bg }} onError={e => e.target.style.display = "none"} />
+                        )}
                         <div>
                           <div style={{ fontWeight: "600" }}>{p.productName}</div>
                           <div style={{ fontSize: "11px", color: C.textMuted }}>{p.brandName}</div>
@@ -370,8 +489,8 @@ function Products({ token }) {
                     <td style={S.td}><span style={S.badge2(st)}>{st}</span></td>
                     <td style={S.td}>
                       <div style={{ display: "flex", gap: "6px" }}>
-                        <button style={{ ...S.btn("ghost"), padding: "5px 10px", fontSize: "11px" }} onClick={() => openEdit(p)}>{t("edit") || "Edit"}</button>
-                        <button style={{ ...S.btn("danger"), padding: "5px 10px", fontSize: "11px", background: C.redDim }} onClick={() => del(p._id)}>{t("delete") || "Delete"}</button>
+                        <button style={{ ...S.btn("ghost"), padding: "5px 10px", fontSize: "11px" }} onClick={() => openEdit(p)}>Edit</button>
+                        <button style={{ ...S.btn("danger"), padding: "5px 10px", fontSize: "11px", background: C.redDim }} onClick={() => del(p._id)}>Delete</button>
                       </div>
                     </td>
                   </tr>
@@ -381,18 +500,19 @@ function Products({ token }) {
           </table>
         </div>
       )}
+
       {showModal && (
         <div style={S.modal} onClick={e => e.target === e.currentTarget && setShowModal(false)}>
           <div style={S.modalBox}>
-            <div style={S.modalTitle}>{editing ? t("editProduct") || "Edit Product" : t("addNewProduct") || "Add New Product"}</div>
+            <div style={S.modalTitle}>{editing ? "Edit Product" : "Add New Product"}</div>
             {[
-              { label: t("productName") || "Product Name", key: "productName", type: "text" },
-              { label: t("brandName") || "Brand Name", key: "brandName", type: "text" },
-              { label: t("imageURL") || "Image URL", key: "imageURL", type: "text", placeholder: "https://..." },
-              { label: t("description") || "Description", key: "description", type: "text" },
-              { label: t("price") || "Price (FRw)", key: "price", type: "number" },
-              { label: t("stockQuantity") || "Stock Quantity", key: "stock", type: "number" },
-              { label: t("minStockLevel") || "Min Stock Level", key: "minStockLevel", type: "number" },
+              { label: "Product Name", key: "productName", type: "text" },
+              { label: "Brand Name", key: "brandName", type: "text" },
+              { label: "Image URL", key: "imageURL", type: "text", placeholder: "https://..." },
+              { label: "Description", key: "description", type: "text" },
+              { label: "Price (FRw)", key: "price", type: "number" },
+              { label: "Stock Quantity", key: "stock", type: "number" },
+              { label: "Min Stock Level (alert threshold)", key: "minStockLevel", type: "number" },
             ].map(f => (
               <div key={f.key} style={S.formRow}>
                 <label style={S.formLabel}>{f.label}</label>
@@ -400,23 +520,25 @@ function Products({ token }) {
               </div>
             ))}
             <div style={S.formRow}>
-              <label style={S.formLabel}>{t("categoryLabel") || "Category"}</label>
+              <label style={S.formLabel}>Category</label>
               <select style={S.select} value={form.category} onChange={e => setForm({ ...form, category: e.target.value })}>
-                <option value="">{t("selectCategory") || "Select category"}</option>
+                <option value="">Select category</option>
                 {CATEGORIES.map(c => <option key={c}>{c}</option>)}
               </select>
             </div>
             <div style={S.formRow}>
-              <label style={S.formLabel}>{t("branch") || "Branch"}</label>
+              <label style={S.formLabel}>Branch</label>
               <select style={S.select} value={form.branch} onChange={e => setForm({ ...form, branch: e.target.value })}>
-                <option value="">{t("selectBranch") || "Select branch"}</option>
+                <option value="">Select branch</option>
                 {BRANCHES.map(b => <option key={b}>{b}</option>)}
               </select>
             </div>
-            {form.imageURL && <img src={form.imageURL} alt="" style={{ width: "100%", height: "140px", objectFit: "cover", borderRadius: "8px", marginBottom: "14px" }} onError={e => e.target.style.display = "none"} />}
+            {form.imageURL && (
+              <img src={form.imageURL} alt="" style={{ width: "100%", height: "140px", objectFit: "cover", borderRadius: "8px", marginBottom: "14px", background: C.bg }} onError={e => e.target.style.display = "none"} />
+            )}
             <div style={{ display: "flex", gap: "10px", justifyContent: "flex-end", marginTop: "8px" }}>
-              <button style={S.btn("ghost")} onClick={() => setShowModal(false)}>{t("cancel") || "Cancel"}</button>
-              <button style={S.btn("primary")} onClick={save}>{editing ? t("saveChanges") || "Save Changes" : t("addProduct") || "Add Product"}</button>
+              <button style={S.btn("ghost")} onClick={() => setShowModal(false)}>Cancel</button>
+              <button style={S.btn("primary")} onClick={save}>{editing ? "Save Changes" : "Add Product"}</button>
             </div>
           </div>
         </div>
@@ -425,9 +547,11 @@ function Products({ token }) {
   );
 }
 
-// ── INVENTORY ─────────────────────────────────────────────────────────────────
+// ── INVENTORY PAGE ────────────────────────────────────────────────────────────
 function Inventory({ token }) {
-  const t = useT();
+  const { language, translations } = useContext(LanguageContext);
+  const dashLang = language === "rn" ? "fr" : language;
+  const t = (key) => translations[dashLang]?.[key] ?? translations["en"]?.[key] ?? key;
   const [products, setProducts] = useState([]);
   const [lowStock, setLowStock] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -470,12 +594,12 @@ function Inventory({ token }) {
     <div>
       <div className="gigo-section-header" style={S.sectionHeader}>
         <div>
-          <div style={S.sectionTitle}>{t("inventoryManagement") || "Inventory Management"}</div>
-          <div style={{ fontSize: "12px", color: C.textMuted, marginTop: "2px" }}>{t("realTimeStockTracking") || "Real-time stock tracking"}</div>
+          <div style={S.sectionTitle}>Inventory Management</div>
+          <div style={{ fontSize: "12px", color: C.textMuted, marginTop: "2px" }}>Real-time stock tracking</div>
         </div>
         <div style={{ display: "flex", gap: "10px" }}>
-          <button style={S.btn("ghost")} onClick={() => openModal("in")}>{t("stockIn") || "Stock In"}</button>
-          <button style={S.btn("primary")} onClick={() => openModal("out")}>{t("stockOut") || "Stock Out"}</button>
+          <button style={S.btn("ghost")} onClick={() => openModal("in")}>Stock In</button>
+          <button style={S.btn("primary")} onClick={() => openModal("out")}>Stock Out</button>
         </div>
       </div>
       {msg && <div style={S.alert(msg.type)}>{msg.text}</div>}
@@ -483,17 +607,17 @@ function Inventory({ token }) {
         <div style={{ background: C.redDim, border: `1px solid ${C.red}`, borderRadius: "10px", padding: "12px 18px", marginBottom: "20px", display: "flex", alignItems: "center", gap: "10px" }}>
           <span style={{ fontSize: "18px" }}>⚠</span>
           <div>
-            <span style={{ fontWeight: "700", color: C.red }}>{lowStock.length} {t("productsNeedAttention") || "products need attention"}</span>
-            <span style={{ color: C.textMuted, fontSize: "12px" }}> — {t("lowStockDetected") || "Low stock or critical levels detected."}</span>
+            <span style={{ fontWeight: "700", color: C.red }}>{lowStock.length} products need attention</span>
+            <span style={{ color: C.textMuted, fontSize: "12px" }}> — Low stock or critical levels detected.</span>
           </div>
         </div>
       )}
       <div className="gigo-kpi-grid" style={{ ...S.grid4, marginBottom: "20px" }}>
         {[
-          { label: t("totalProducts") || "Total Products", value: products.length, color: C.blue },
-          { label: t("inStockLabel") || "In Stock", value: inStock, color: C.green },
-          { label: t("lowStockLabel") || "Low Stock", value: lowCount, color: C.accent },
-          { label: t("criticalOut") || "Critical / Out", value: critical, color: C.red },
+          { label: "Total Products", value: products.length, color: C.blue },
+          { label: "In Stock", value: inStock, color: C.green },
+          { label: "Low Stock", value: lowCount, color: C.accent },
+          { label: "Critical / Out", value: critical, color: C.red },
         ].map((s, i) => (
           <div key={i} className="gigo-stat-card" style={{ ...S.card, padding: "16px 20px" }}>
             <div className="gigo-stat-val" style={{ fontSize: "24px", fontWeight: "800", color: s.color }}>{s.value}</div>
@@ -503,18 +627,22 @@ function Inventory({ token }) {
       </div>
       {loading ? <Spinner /> : (
         <div style={S.card}>
-          <div style={S.cardHeader}><div style={S.cardTitle}>{t("stockLevels") || "Stock Levels"}</div></div>
+          <div style={S.cardHeader}><div style={S.cardTitle}>Stock Levels</div></div>
           <table className="gigo-table" style={S.table}>
-            <thead><tr>
-              <th style={S.th}>{t("product") || "Product"}</th>
-              <th style={S.th}>{t("branch") || "Branch"}</th>
-              <th style={S.th}>{t("stockLabel") || "Stock"}</th>
-              <th style={S.th}>{t("minLevel") || "Min Level"}</th>
-              <th style={S.th}>{t("statusLabel") || "Status"}</th>
-              <th style={S.th}>{t("action") || "Action"}</th>
-            </tr></thead>
+            <thead>
+              <tr>
+                <th style={S.th}>Product</th>
+                <th style={S.th}>Branch</th>
+                <th style={S.th}>Stock</th>
+                <th style={S.th}>Min Level</th>
+                <th style={S.th}>Status</th>
+                <th style={S.th}>Action</th>
+              </tr>
+            </thead>
             <tbody>
-              {products.length === 0 && <tr><td colSpan={6} style={{ ...S.td, textAlign: "center", color: C.textMuted }}>{t("noProductsFound") || "No products found"}</td></tr>}
+              {products.length === 0 && (
+                <tr><td colSpan={6} style={{ ...S.td, textAlign: "center", color: C.textMuted }}>No products found</td></tr>
+              )}
               {products.map((p, i) => {
                 const st = stockStatus(p);
                 const max = Math.max(p.stock || 0, (p.minStockLevel || 10) * 4, 1);
@@ -534,8 +662,8 @@ function Inventory({ token }) {
                     <td style={S.td}><span style={S.badge2(st)}>{st}</span></td>
                     <td style={S.td}>
                       <div style={{ display: "flex", gap: "6px" }}>
-                        <button style={{ ...S.btn("primary"), padding: "5px 12px", fontSize: "11px" }} onClick={() => openModal("in", p)}>+ {t("stockIn") || "Stock In"}</button>
-                        <button style={{ ...S.btn("ghost"), padding: "5px 12px", fontSize: "11px" }} onClick={() => openModal("out", p)}>- {t("stockOut") || "Stock Out"}</button>
+                        <button style={{ ...S.btn("primary"), padding: "5px 12px", fontSize: "11px" }} onClick={() => openModal("in", p)}>+ Stock In</button>
+                        <button style={{ ...S.btn("ghost"), padding: "5px 12px", fontSize: "11px" }} onClick={() => openModal("out", p)}>- Stock Out</button>
                       </div>
                     </td>
                   </tr>
@@ -545,28 +673,29 @@ function Inventory({ token }) {
           </table>
         </div>
       )}
+
       {showModal && (
         <div style={S.modal} onClick={e => e.target === e.currentTarget && setShowModal(false)}>
           <div style={S.modalBox}>
-            <div style={S.modalTitle}>{modalType === "in" ? t("stockInTitle") || "Stock In — Add Stock" : t("stockOutTitle") || "Stock Out — Remove Stock"}</div>
+            <div style={S.modalTitle}>{modalType === "in" ? "Stock In — Add Stock" : "Stock Out — Remove Stock"}</div>
             <div style={S.formRow}>
-              <label style={S.formLabel}>{t("product") || "Product"}</label>
+              <label style={S.formLabel}>Product</label>
               <select style={S.select} value={selectedProduct?._id || ""} onChange={e => setSelectedProduct(products.find(p => p._id === e.target.value) || null)}>
-                <option value="">{t("selectCategory") || "Select product"}</option>
+                <option value="">Select product</option>
                 {products.map(p => <option key={p._id} value={p._id}>{p.productName} (stock: {p.stock || 0})</option>)}
               </select>
             </div>
             <div style={S.formRow}>
-              <label style={S.formLabel}>{t("quantity") || "Quantity"}</label>
+              <label style={S.formLabel}>Quantity</label>
               <input style={S.input} type="number" min="1" value={qty} onChange={e => setQty(e.target.value)} />
             </div>
             <div style={S.formRow}>
-              <label style={S.formLabel}>{t("reason") || "Reason"}</label>
-              <input style={S.input} type="text" placeholder={modalType === "in" ? t("reasonRestockPlaceholder") || "e.g. Restock" : t("reasonSalePlaceholder") || "e.g. Sale, Damaged"} value={reason} onChange={e => setReason(e.target.value)} />
+              <label style={S.formLabel}>Reason</label>
+              <input style={S.input} type="text" placeholder={modalType === "in" ? "e.g. Restock" : "e.g. Sale, Damaged"} value={reason} onChange={e => setReason(e.target.value)} />
             </div>
             <div style={{ display: "flex", gap: "10px", justifyContent: "flex-end", marginTop: "8px" }}>
-              <button style={S.btn("ghost")} onClick={() => setShowModal(false)}>{t("cancel") || "Cancel"}</button>
-              <button style={S.btn("primary")} onClick={submit}>{t("confirm") || "Confirm"}</button>
+              <button style={S.btn("ghost")} onClick={() => setShowModal(false)}>Cancel</button>
+              <button style={S.btn("primary")} onClick={submit}>Confirm</button>
             </div>
           </div>
         </div>
@@ -575,9 +704,11 @@ function Inventory({ token }) {
   );
 }
 
-// ── ORDERS ────────────────────────────────────────────────────────────────────
+// ── ORDERS PAGE ───────────────────────────────────────────────────────────────
 function Orders({ token }) {
-  const t = useT();
+  const { language, translations } = useContext(LanguageContext);
+  const dashLang = language === "rn" ? "fr" : language;
+  const t = (key) => translations[dashLang]?.[key] ?? translations["en"]?.[key] ?? key;
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState("all");
@@ -597,14 +728,14 @@ function Orders({ token }) {
   const updateStatus = async (id, status) => {
     const r = await fetch(`${API}/orders/${id}`, { method: "PATCH", headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` }, body: JSON.stringify({ status }) });
     const d = await r.json();
-    if (d.success) { setMsg({ type: "success", text: t("statusUpdated") || "Status updated!" }); load(); }
+    if (d.success) { setMsg({ type: "success", text: "Status updated!" }); load(); }
     else setMsg({ type: "error", text: d.error || "Failed" });
   };
 
   const approvePayment = async (id) => {
     const r = await fetch(`${API}/orders/${id}/approve-payment`, { method: "PATCH", headers: { Authorization: `Bearer ${token}` } });
     const d = await r.json();
-    if (d.success) { setMsg({ type: "success", text: t("paymentApproved") || "Payment approved!" }); load(); }
+    if (d.success) { setMsg({ type: "success", text: "Payment approved!" }); load(); }
     else setMsg({ type: "error", text: d.error || "Failed" });
   };
 
@@ -614,8 +745,8 @@ function Orders({ token }) {
     <div>
       <div className="gigo-section-header" style={S.sectionHeader}>
         <div>
-          <div style={S.sectionTitle}>{t("orders") || "Orders"}</div>
-          <div style={{ fontSize: "12px", color: C.textMuted, marginTop: "2px" }}>{orders.length} {t("ordersCount") || "orders"}</div>
+          <div style={S.sectionTitle}>Orders</div>
+          <div style={{ fontSize: "12px", color: C.textMuted, marginTop: "2px" }}>{orders.length} orders</div>
         </div>
       </div>
       {msg && <div style={S.alert(msg.type)}>{msg.text}</div>}
@@ -631,20 +762,27 @@ function Orders({ token }) {
         </div>
         {loading ? <Spinner /> : (
           <table className="gigo-table" style={S.table}>
-            <thead><tr>
-              <th style={S.th}>{t("customer") || "Customer"}</th>
-              <th style={S.th}>{t("branch") || "Branch"}</th>
-              <th style={S.th}>{t("total") || "Total"}</th>
-              <th style={S.th}>{t("statusLabel") || "Status"}</th>
-              <th style={S.th}>{t("payment") || "Payment"}</th>
-              <th style={S.th}>{t("date") || "Date"}</th>
-              <th style={S.th}>{t("actions") || "Actions"}</th>
-            </tr></thead>
+            <thead>
+              <tr>
+                <th style={S.th}>Customer</th>
+                <th style={S.th}>Branch</th>
+                <th style={S.th}>Total</th>
+                <th style={S.th}>Status</th>
+                <th style={S.th}>Payment</th>
+                <th style={S.th}>Date</th>
+                <th style={S.th}>Actions</th>
+              </tr>
+            </thead>
             <tbody>
-              {orders.length === 0 && <tr><td colSpan={7} style={{ ...S.td, textAlign: "center", color: C.textMuted }}>{t("noOrdersFound") || "No orders found"}</td></tr>}
+              {orders.length === 0 && (
+                <tr><td colSpan={7} style={{ ...S.td, textAlign: "center", color: C.textMuted }}>No orders found</td></tr>
+              )}
               {orders.map((o, i) => (
                 <tr key={i}>
-                  <td style={S.td}><div style={{ fontWeight: "600" }}>{o.customerName}</div><div style={{ fontSize: "11px", color: C.textMuted }}>{o.customerEmail}</div></td>
+                  <td style={S.td}>
+                    <div style={{ fontWeight: "600" }}>{o.customerName}</div>
+                    <div style={{ fontSize: "11px", color: C.textMuted }}>{o.customerEmail}</div>
+                  </td>
                   <td style={{ ...S.td, color: C.textMuted, fontSize: "12px" }}>{o.branch}</td>
                   <td style={{ ...S.td, fontWeight: "700", color: C.accent }}>FRw {fmt(o.totalAmount)}</td>
                   <td style={S.td}><span style={S.badge2(o.status)}>{o.status}</span></td>
@@ -652,9 +790,9 @@ function Orders({ token }) {
                   <td style={{ ...S.td, fontSize: "11px", color: C.textMuted }}>{timeAgo(o.createdAt)}</td>
                   <td style={S.td}>
                     <div style={{ display: "flex", gap: "4px", flexWrap: "wrap" }}>
-                      {o.status === "pending" && <button style={{ ...S.btn("ghost"), padding: "4px 8px", fontSize: "10px" }} onClick={() => updateStatus(o._id, "processing")}>{t("process") || "Process"}</button>}
-                      {o.status === "processing" && <button style={{ ...S.btn("primary"), padding: "4px 8px", fontSize: "10px" }} onClick={() => updateStatus(o._id, "delivered")}>{t("deliver") || "Deliver"}</button>}
-                      {o.paymentStatus === "pending_approval" && <button style={{ ...S.btn("primary"), padding: "4px 8px", fontSize: "10px" }} onClick={() => approvePayment(o._id)}>✓ {t("paid") || "Pay"}</button>}
+                      {o.status === "pending" && <button style={{ ...S.btn("ghost"), padding: "4px 8px", fontSize: "10px" }} onClick={() => updateStatus(o._id, "processing")}>Process</button>}
+                      {o.status === "processing" && <button style={{ ...S.btn("primary"), padding: "4px 8px", fontSize: "10px" }} onClick={() => updateStatus(o._id, "delivered")}>Deliver</button>}
+                      {o.paymentStatus === "pending_approval" && <button style={{ ...S.btn("primary"), padding: "4px 8px", fontSize: "10px" }} onClick={() => approvePayment(o._id)}>✓ Pay</button>}
                     </div>
                   </td>
                 </tr>
@@ -667,9 +805,11 @@ function Orders({ token }) {
   );
 }
 
-// ── BRANCHES ──────────────────────────────────────────────────────────────────
+// ── BRANCHES PAGE ─────────────────────────────────────────────────────────────
 function Branches({ token }) {
-  const t = useT();
+  const { language, translations } = useContext(LanguageContext);
+  const dashLang = language === "rn" ? "fr" : language;
+  const t = (key) => translations[dashLang]?.[key] ?? translations["en"]?.[key] ?? key;
   const [branches, setBranches] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
@@ -695,7 +835,7 @@ function Branches({ token }) {
     const url = editing ? `${API}/branches/${editing._id}` : `${API}/branches`;
     const r = await fetch(url, { method, headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` }, body: JSON.stringify(form) });
     const d = await r.json();
-    if (d.success || d.branch) { setMsg({ type: "success", text: editing ? t("branchUpdated") || "Branch updated!" : t("branchAdded") || "Branch added!" }); setShowModal(false); load(); }
+    if (d.success || d.branch) { setMsg({ type: "success", text: editing ? "Branch updated!" : "Branch added!" }); setShowModal(false); load(); }
     else setMsg({ type: "error", text: d.error || "Failed" });
   };
 
@@ -703,15 +843,17 @@ function Branches({ token }) {
     <div>
       <div className="gigo-section-header" style={S.sectionHeader}>
         <div>
-          <div style={S.sectionTitle}>{t("branchManagement") || "Branch Management"}</div>
-          <div style={{ fontSize: "12px", color: C.textMuted, marginTop: "2px" }}>{branches.length} {t("branchesCount") || "branches"}</div>
+          <div style={S.sectionTitle}>Branch Management</div>
+          <div style={{ fontSize: "12px", color: C.textMuted, marginTop: "2px" }}>{branches.length} branches</div>
         </div>
-        <button style={S.btn("primary")} onClick={openAdd}>+ {t("addBranch") || "Add Branch"}</button>
+        <button style={S.btn("primary")} onClick={openAdd}>+ Add Branch</button>
       </div>
       {msg && <div style={S.alert(msg.type)}>{msg.text}</div>}
       {loading ? <Spinner /> : (
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "16px" }}>
-          {branches.length === 0 && <div style={{ ...S.card, padding: "20px", color: C.textMuted, gridColumn: "1/-1", textAlign: "center" }}>{t("noBranches") || "No branches yet."}</div>}
+          {branches.length === 0 && (
+            <div style={{ ...S.card, padding: "20px", color: C.textMuted, gridColumn: "1/-1", textAlign: "center" }}>No branches yet. Add your first branch.</div>
+          )}
           {branches.map((b, i) => (
             <div key={i} style={{ ...S.card, padding: "20px" }}>
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "14px" }}>
@@ -723,9 +865,9 @@ function Branches({ token }) {
               </div>
               <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "12px", marginBottom: "16px" }}>
                 {[
-                  { label: t("staff") || "Staff", value: b.stats?.staffCount ?? 0 },
-                  { label: t("ordersLabel") || "Orders", value: fmt(b.stats?.orderCount ?? 0) },
-                  { label: t("revenue") || "Revenue", value: `FRw ${fmtM(b.stats?.totalRevenue ?? 0)}` },
+                  { label: "Staff", value: b.stats?.staffCount ?? 0 },
+                  { label: "Orders", value: fmt(b.stats?.orderCount ?? 0) },
+                  { label: "Revenue", value: `FRw ${fmtM(b.stats?.totalRevenue ?? 0)}` },
                 ].map((s, j) => (
                   <div key={j} style={{ textAlign: "center", background: C.bg, borderRadius: "8px", padding: "10px 6px" }}>
                     <div style={{ fontWeight: "800", fontSize: "15px", color: j === 2 ? C.green : C.text }}>{s.value}</div>
@@ -734,29 +876,34 @@ function Branches({ token }) {
                 ))}
               </div>
               {b.location && <div style={{ fontSize: "12px", color: C.textMuted, marginBottom: "12px" }}>📍 {b.location}</div>}
-              <button style={{ ...S.btn("ghost"), width: "100%" }} onClick={() => openEdit(b)}>{t("edit") || "Edit"}</button>
+              <div style={{ display: "flex", gap: "8px" }}>
+                <button style={{ ...S.btn("ghost"), flex: 1 }} onClick={() => openEdit(b)}>Edit</button>
+              </div>
             </div>
           ))}
         </div>
       )}
+
       {showModal && (
         <div style={S.modal} onClick={e => e.target === e.currentTarget && setShowModal(false)}>
           <div style={S.modalBox}>
-            <div style={S.modalTitle}>{editing ? t("editBranch") || "Edit Branch" : t("addBranch") || "Add Branch"}</div>
+            <div style={S.modalTitle}>{editing ? "Edit Branch" : "Add Branch"}</div>
             <div style={S.formRow}>
-              <label style={S.formLabel}>{t("branchName") || "Branch Name"}</label>
-              {editing ? <input style={S.input} value={form.name} disabled /> : (
+              <label style={S.formLabel}>Branch Name</label>
+              {editing ? (
+                <input style={S.input} value={form.name} disabled />
+              ) : (
                 <select style={S.select} value={form.name} onChange={e => setForm({ ...form, name: e.target.value })}>
-                  <option value="">{t("selectBranch") || "Select branch"}</option>
+                  <option value="">Select branch</option>
                   {BRANCHES.map(b => <option key={b}>{b}</option>)}
                 </select>
               )}
             </div>
             {[
-              { label: t("managerName") || "Manager Name", key: "managerName" },
-              { label: t("managerEmail") || "Manager Email", key: "managerEmail" },
-              { label: t("location") || "Location", key: "location" },
-              { label: t("phone") || "Phone", key: "phone" },
+              { label: "Manager Name", key: "managerName" },
+              { label: "Manager Email", key: "managerEmail" },
+              { label: "Location", key: "location" },
+              { label: "Phone", key: "phone" },
             ].map(f => (
               <div key={f.key} style={S.formRow}>
                 <label style={S.formLabel}>{f.label}</label>
@@ -764,8 +911,8 @@ function Branches({ token }) {
               </div>
             ))}
             <div style={{ display: "flex", gap: "10px", justifyContent: "flex-end", marginTop: "8px" }}>
-              <button style={S.btn("ghost")} onClick={() => setShowModal(false)}>{t("cancel") || "Cancel"}</button>
-              <button style={S.btn("primary")} onClick={save}>{editing ? t("saveChanges") || "Save Changes" : t("addBranch") || "Add Branch"}</button>
+              <button style={S.btn("ghost")} onClick={() => setShowModal(false)}>Cancel</button>
+              <button style={S.btn("primary")} onClick={save}>{editing ? "Save Changes" : "Add Branch"}</button>
             </div>
           </div>
         </div>
@@ -774,9 +921,11 @@ function Branches({ token }) {
   );
 }
 
-// ── USERS ─────────────────────────────────────────────────────────────────────
+// ── USERS PAGE ────────────────────────────────────────────────────────────────
 function Users({ token }) {
-  const t = useT();
+  const { language, translations } = useContext(LanguageContext);
+  const dashLang = language === "rn" ? "fr" : language;
+  const t = (key) => translations[dashLang]?.[key] ?? translations["en"]?.[key] ?? key;
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
@@ -799,55 +948,61 @@ function Users({ token }) {
   const save = async () => {
     const r = await fetch(`${API}/users/${editing._id}`, { method: "PATCH", headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` }, body: JSON.stringify(form) });
     const d = await r.json();
-    if (d.success) { setMsg({ type: "success", text: t("userUpdated") || "User updated!" }); setShowModal(false); load(); }
+    if (d.success) { setMsg({ type: "success", text: "User updated!" }); setShowModal(false); load(); }
     else setMsg({ type: "error", text: d.error || "Failed" });
   };
 
   const del = async (id) => {
-    if (!window.confirm(t("confirmDeleteUser") || "Delete this user?")) return;
+    if (!window.confirm("Delete this user?")) return;
     const r = await fetch(`${API}/users/${id}`, { method: "DELETE", headers: { Authorization: `Bearer ${token}` } });
     const d = await r.json();
-    if (d.success) { setMsg({ type: "success", text: t("userDeleted") || "User deleted!" }); load(); }
+    if (d.success) { setMsg({ type: "success", text: "User deleted!" }); load(); }
     else setMsg({ type: "error", text: d.error || "Failed" });
   };
 
   const roleDesc = {
-    owner: t("roleOwnerDesc") || "Full system access",
-    branch_manager: t("roleBranchDesc") || "Branch-level access",
-    sales_manager: t("roleSalesDesc") || "Sales & orders",
-    warehouse_manager: t("roleWarehouseDesc") || "Inventory access",
-    cashier: t("roleCashierDesc") || "Sales & orders only",
-    employee: t("roleEmployeeDesc") || "Limited access",
-    customer: t("roleCustomerDesc") || "Customer access",
+    owner: "Full system access",
+    branch_manager: "Branch-level access",
+    sales_manager: "Sales & orders",
+    warehouse_manager: "Inventory access",
+    cashier: "Sales & orders only",
+    employee: "Limited access",
+    customer: "Customer access",
   };
 
   return (
     <div>
       <div className="gigo-section-header" style={S.sectionHeader}>
         <div>
-          <div style={S.sectionTitle}>{t("users") || "Users & Roles"}</div>
-          <div style={{ fontSize: "12px", color: C.textMuted, marginTop: "2px" }}>{users.length} {t("teamMembers") || "team members"}</div>
+          <div style={S.sectionTitle}>Users & Roles</div>
+          <div style={{ fontSize: "12px", color: C.textMuted, marginTop: "2px" }}>{users.length} team members</div>
         </div>
       </div>
       {msg && <div style={S.alert(msg.type)}>{msg.text}</div>}
       <div className="gigo-2col-grid" style={S.grid2}>
         <div style={S.card}>
-          <div style={S.cardHeader}><div style={S.cardTitle}>{t("teamMembersTitle") || "Team Members"}</div></div>
+          <div style={S.cardHeader}><div style={S.cardTitle}>Team Members</div></div>
           {loading ? <Spinner /> : (
             <table className="gigo-table" style={S.table}>
-              <thead><tr>
-                <th style={S.th}>{t("name") || "Name"}</th>
-                <th style={S.th}>{t("roleLabel") || "Role"}</th>
-                <th style={S.th}>{t("statusLabel") || "Status"}</th>
-                <th style={S.th}>{t("actions") || "Actions"}</th>
-              </tr></thead>
+              <thead>
+                <tr>
+                  <th style={S.th}>Name</th>
+                  <th style={S.th}>Role</th>
+                  <th style={S.th}>Status</th>
+                  <th style={S.th}>Actions</th>
+                </tr>
+              </thead>
               <tbody>
-                {users.length === 0 && <tr><td colSpan={4} style={{ ...S.td, textAlign: "center", color: C.textMuted }}>{t("noUsersFound") || "No users found"}</td></tr>}
+                {users.length === 0 && (
+                  <tr><td colSpan={4} style={{ ...S.td, textAlign: "center", color: C.textMuted }}>No users found</td></tr>
+                )}
                 {users.map((u, i) => (
                   <tr key={i}>
                     <td style={S.td}>
                       <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                        <div style={{ ...S.avatar, width: "28px", height: "28px", fontSize: "11px", flexShrink: 0 }}>{u.name.split(" ").map(n => n[0]).slice(0, 2).join("")}</div>
+                        <div style={{ ...S.avatar, width: "28px", height: "28px", fontSize: "11px", flexShrink: 0 }}>
+                          {u.name.split(" ").map(n => n[0]).slice(0, 2).join("")}
+                        </div>
                         <div>
                           <div style={{ fontWeight: "600", fontSize: "13px" }}>{u.name}</div>
                           <div style={{ fontSize: "11px", color: C.textMuted }}>{u.branch}</div>
@@ -858,7 +1013,7 @@ function Users({ token }) {
                     <td style={S.td}><span style={S.badge2(u.status || "active")}>{u.status || "active"}</span></td>
                     <td style={S.td}>
                       <div style={{ display: "flex", gap: "6px" }}>
-                        <button style={{ ...S.btn("ghost"), padding: "4px 8px", fontSize: "11px" }} onClick={() => openEdit(u)}>{t("edit") || "Edit"}</button>
+                        <button style={{ ...S.btn("ghost"), padding: "4px 8px", fontSize: "11px" }} onClick={() => openEdit(u)}>Edit</button>
                         <button style={{ ...S.btn("danger"), padding: "4px 8px", fontSize: "11px", background: C.redDim, color: C.red, border: "none", borderRadius: "6px", cursor: "pointer" }} onClick={() => del(u._id)}>Del</button>
                       </div>
                     </td>
@@ -869,7 +1024,7 @@ function Users({ token }) {
           )}
         </div>
         <div style={S.card}>
-          <div style={S.cardHeader}><div style={S.cardTitle}>{t("systemRoles") || "System Roles"}</div></div>
+          <div style={S.cardHeader}><div style={S.cardTitle}>System Roles</div></div>
           <div style={{ padding: "8px 0" }}>
             {ROLES.map((r, i) => (
               <div key={i} style={{ padding: "14px 20px", borderBottom: `1px solid ${C.border}`, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
@@ -883,33 +1038,34 @@ function Users({ token }) {
           </div>
         </div>
       </div>
+
       {showModal && editing && (
         <div style={S.modal} onClick={e => e.target === e.currentTarget && setShowModal(false)}>
           <div style={S.modalBox}>
-            <div style={S.modalTitle}>{t("editUser") || "Edit User"} — {editing.name}</div>
+            <div style={S.modalTitle}>Edit User — {editing.name}</div>
             <div style={S.formRow}>
-              <label style={S.formLabel}>{t("roleLabel") || "Role"}</label>
+              <label style={S.formLabel}>Role</label>
               <select style={S.select} value={form.role} onChange={e => setForm({ ...form, role: e.target.value })}>
                 {ROLES.map(r => <option key={r} value={r}>{r.replace("_", " ")}</option>)}
               </select>
             </div>
             <div style={S.formRow}>
-              <label style={S.formLabel}>{t("branch") || "Branch"}</label>
+              <label style={S.formLabel}>Branch</label>
               <select style={S.select} value={form.branch} onChange={e => setForm({ ...form, branch: e.target.value })}>
-                <option value="all">{t("allBranches") || "All Branches"}</option>
+                <option value="all">All Branches</option>
                 {BRANCHES.map(b => <option key={b}>{b}</option>)}
               </select>
             </div>
             <div style={S.formRow}>
-              <label style={S.formLabel}>{t("statusLabel") || "Status"}</label>
+              <label style={S.formLabel}>Status</label>
               <select style={S.select} value={form.status} onChange={e => setForm({ ...form, status: e.target.value })}>
-                <option value="active">{t("statusActive") || "Active"}</option>
-                <option value="inactive">{t("statusInactive") || "Inactive"}</option>
+                <option value="active">Active</option>
+                <option value="inactive">Inactive</option>
               </select>
             </div>
             <div style={{ display: "flex", gap: "10px", justifyContent: "flex-end", marginTop: "8px" }}>
-              <button style={S.btn("ghost")} onClick={() => setShowModal(false)}>{t("cancel") || "Cancel"}</button>
-              <button style={S.btn("primary")} onClick={save}>{t("saveChanges") || "Save Changes"}</button>
+              <button style={S.btn("ghost")} onClick={() => setShowModal(false)}>Cancel</button>
+              <button style={S.btn("primary")} onClick={save}>Save Changes</button>
             </div>
           </div>
         </div>
@@ -918,9 +1074,11 @@ function Users({ token }) {
   );
 }
 
-// ── REPORTS ───────────────────────────────────────────────────────────────────
+// ── REPORTS PAGE ──────────────────────────────────────────────────────────────
 function Reports({ token }) {
-  const t = useT();
+  const { language, translations } = useContext(LanguageContext);
+  const dashLang = language === "rn" ? "fr" : language;
+  const t = (key) => translations[dashLang]?.[key] ?? translations["en"]?.[key] ?? key;
   const [daily, setDaily] = useState(null);
   const [monthly, setMonthly] = useState(null);
   const [branchPerf, setBranchPerf] = useState(null);
@@ -941,31 +1099,31 @@ function Reports({ token }) {
         const r = await fetch(`${API}/report/branch-performance`, { headers: { Authorization: `Bearer ${token}` } });
         setBranchPerf(await r.json());
       }
-    } catch (e) { console.error(e); }
+    } catch (e) {
+      console.error("Report generation error:", e);
+    }
     setLoading(false);
   };
-
-  const reportCards = [
-    { type: "daily",   title: t("dailySalesReport") || "Daily Sales Report",       icon: "◈", desc: t("dailyReportDesc") || "Today's sales summary",   color: C.green },
-    { type: "monthly", title: t("monthlyFinancialReport") || "Monthly Financial Report", icon: "◧", desc: `${MONTH_NAMES[new Date().getMonth()]} ${new Date().getFullYear()}`, color: C.accent },
-    { type: "branch",  title: t("branchPerformance") || "Branch Performance",      icon: "◉", desc: t("branchReportDesc") || "Compare by branch",       color: C.blue },
-    { type: "weekly",  title: t("weeklyReport") || "Weekly Report",                icon: "◫", desc: t("weeklyReportDesc") || "Last 7 days summary",     color: C.red },
-  ];
 
   return (
     <div>
       <div className="gigo-section-header" style={S.sectionHeader}>
-        <div><div style={S.sectionTitle}>{t("reportsAnalytics") || "Reports & Analytics"}</div></div>
+        <div><div style={S.sectionTitle}>Reports & Analytics</div></div>
       </div>
-      <div className="gigo-2col-grid" style={{ ...S.grid2, marginBottom: "16px" }}>
-        {reportCards.map((r, i) => (
+      <div className="gigo-kpi-grid" style={{ ...S.grid2, marginBottom: "16px" }}>
+        {[
+          { type: "daily", title: "Daily Sales Report", icon: "◈", desc: "Today's sales summary across all branches", color: C.green },
+          { type: "monthly", title: "Monthly Financial Report", icon: "◧", desc: `Report for ${MONTH_NAMES[new Date().getMonth()]} ${new Date().getFullYear()}`, color: C.accent },
+          { type: "branch", title: "Branch Performance", icon: "◉", desc: "Compare revenue and orders by branch", color: C.blue },
+          { type: "weekly", title: "Weekly Report", icon: "◫", desc: "Last 7 days summary", color: C.red },
+        ].map((r, i) => (
           <div key={i} style={{ ...S.card, padding: "20px", display: "flex", gap: "16px", alignItems: "flex-start" }}>
             <div style={{ fontSize: "28px", color: r.color, marginTop: "2px" }}>{r.icon}</div>
             <div style={{ flex: 1 }}>
               <div style={{ fontWeight: "700", marginBottom: "4px" }}>{r.title}</div>
               <div style={{ fontSize: "12px", color: C.textMuted, marginBottom: "14px" }}>{r.desc}</div>
               <button style={S.btn("primary")} onClick={() => generate(r.type)} disabled={loading && active === r.type}>
-                {loading && active === r.type ? t("generating") || "Generating..." : t("generate") || "Generate"}
+                {loading && active === r.type ? "Generating..." : "Generate"}
               </button>
             </div>
           </div>
@@ -974,15 +1132,15 @@ function Reports({ token }) {
 
       {daily && active === "daily" && (
         <div style={{ ...S.card, marginBottom: "16px" }}>
-          <div style={S.cardHeader}><div style={S.cardTitle}>{t("dailyReportTitle") || "Daily Report — Today"}</div></div>
+          <div style={S.cardHeader}><div style={S.cardTitle}>Daily Report — Today</div></div>
           <div style={{ padding: "20px", display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: "16px" }}>
-            <div style={{ textAlign: "center" }}><div style={{ fontSize: "24px", fontWeight: "800", color: C.accent }}>FRw {fmtM(daily.summary?.totalRevenue || 0)}</div><div style={{ fontSize: "11px", color: C.textMuted, marginTop: "4px", textTransform: "uppercase" }}>{t("revenue") || "Revenue"}</div></div>
-            <div style={{ textAlign: "center" }}><div style={{ fontSize: "24px", fontWeight: "800", color: C.green }}>{daily.summary?.totalOrders || 0}</div><div style={{ fontSize: "11px", color: C.textMuted, marginTop: "4px", textTransform: "uppercase" }}>{t("ordersLabel") || "Orders"}</div></div>
-            <div style={{ textAlign: "center" }}><div style={{ fontSize: "24px", fontWeight: "800", color: C.blue }}>{Object.keys(daily.summary?.byBranch || {}).length}</div><div style={{ fontSize: "11px", color: C.textMuted, marginTop: "4px", textTransform: "uppercase" }}>{t("branchesLabel") || "Branches"}</div></div>
+            <div style={{ textAlign: "center" }}><div style={{ fontSize: "24px", fontWeight: "800", color: C.accent }}>FRw {fmtM(daily.summary?.totalRevenue || 0)}</div><div style={{ fontSize: "11px", color: C.textMuted, marginTop: "4px", textTransform: "uppercase" }}>Total Revenue</div></div>
+            <div style={{ textAlign: "center" }}><div style={{ fontSize: "24px", fontWeight: "800", color: C.green }}>{daily.summary?.totalOrders || 0}</div><div style={{ fontSize: "11px", color: C.textMuted, marginTop: "4px", textTransform: "uppercase" }}>Total Orders</div></div>
+            <div style={{ textAlign: "center" }}><div style={{ fontSize: "24px", fontWeight: "800", color: C.blue }}>{Object.keys(daily.summary?.byBranch || {}).length}</div><div style={{ fontSize: "11px", color: C.textMuted, marginTop: "4px", textTransform: "uppercase" }}>Active Branches</div></div>
           </div>
           {daily.summary?.byBranch && (
             <table className="gigo-table" style={S.table}>
-              <thead><tr><th style={S.th}>{t("branch") || "Branch"}</th><th style={S.th}>{t("ordersLabel") || "Orders"}</th><th style={S.th}>{t("revenue") || "Revenue"}</th></tr></thead>
+              <thead><tr><th style={S.th}>Branch</th><th style={S.th}>Orders</th><th style={S.th}>Revenue</th></tr></thead>
               <tbody>
                 {Object.entries(daily.summary.byBranch).map(([branch, d], i) => (
                   <tr key={i}>
@@ -999,17 +1157,17 @@ function Reports({ token }) {
 
       {monthly && active === "monthly" && (
         <div style={{ ...S.card, marginBottom: "16px" }}>
-          <div style={S.cardHeader}><div style={S.cardTitle}>{MONTH_NAMES[(monthly.period?.month || 1) - 1]} {monthly.period?.year}</div></div>
+          <div style={S.cardHeader}><div style={S.cardTitle}>Monthly Report — {MONTH_NAMES[(monthly.period?.month || 1) - 1]} {monthly.period?.year}</div></div>
           <div style={{ padding: "20px", display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: "16px", marginBottom: "16px" }}>
-            <div style={{ textAlign: "center" }}><div style={{ fontSize: "24px", fontWeight: "800", color: C.accent }}>FRw {fmtM(monthly.summary?.totalRevenue || 0)}</div><div style={{ fontSize: "11px", color: C.textMuted, marginTop: "4px", textTransform: "uppercase" }}>{t("revenue") || "Revenue"}</div></div>
-            <div style={{ textAlign: "center" }}><div style={{ fontSize: "24px", fontWeight: "800", color: C.green }}>{monthly.summary?.totalOrders || 0}</div><div style={{ fontSize: "11px", color: C.textMuted, marginTop: "4px", textTransform: "uppercase" }}>{t("ordersLabel") || "Orders"}</div></div>
-            <div style={{ textAlign: "center" }}><div style={{ fontSize: "24px", fontWeight: "800", color: C.blue }}>{monthly.summary?.paidOrders || 0}</div><div style={{ fontSize: "11px", color: C.textMuted, marginTop: "4px", textTransform: "uppercase" }}>{t("paid") || "Paid"}</div></div>
+            <div style={{ textAlign: "center" }}><div style={{ fontSize: "24px", fontWeight: "800", color: C.accent }}>FRw {fmtM(monthly.summary?.totalRevenue || 0)}</div><div style={{ fontSize: "11px", color: C.textMuted, marginTop: "4px", textTransform: "uppercase" }}>Total Revenue</div></div>
+            <div style={{ textAlign: "center" }}><div style={{ fontSize: "24px", fontWeight: "800", color: C.green }}>{monthly.summary?.totalOrders || 0}</div><div style={{ fontSize: "11px", color: C.textMuted, marginTop: "4px", textTransform: "uppercase" }}>Total Orders</div></div>
+            <div style={{ textAlign: "center" }}><div style={{ fontSize: "24px", fontWeight: "800", color: C.blue }}>{monthly.summary?.paidOrders || 0}</div><div style={{ fontSize: "11px", color: C.textMuted, marginTop: "4px", textTransform: "uppercase" }}>Paid Orders</div></div>
           </div>
           {monthly.topProducts?.length > 0 && (
             <>
-              <div style={{ ...S.cardHeader, borderTop: `1px solid ${C.border}` }}><div style={S.cardTitle}>{t("topProducts") || "Top Products"}</div></div>
+              <div style={{ ...S.cardHeader, borderTop: `1px solid ${C.border}` }}><div style={S.cardTitle}>Top Products</div></div>
               <table className="gigo-table" style={S.table}>
-                <thead><tr><th style={S.th}>{t("product") || "Product"}</th><th style={S.th}>{t("unitsSold") || "Units Sold"}</th><th style={S.th}>{t("revenue") || "Revenue"}</th></tr></thead>
+                <thead><tr><th style={S.th}>Product</th><th style={S.th}>Units Sold</th><th style={S.th}>Revenue</th></tr></thead>
                 <tbody>
                   {monthly.topProducts.map((p, i) => (
                     <tr key={i}>
@@ -1027,15 +1185,17 @@ function Reports({ token }) {
 
       {branchPerf && active === "branch" && (
         <div style={S.card}>
-          <div style={S.cardHeader}><div style={S.cardTitle}>{t("branchPerfTitle") || "Branch Performance — This Month"}</div></div>
+          <div style={S.cardHeader}><div style={S.cardTitle}>Branch Performance — This Month</div></div>
           <table className="gigo-table" style={S.table}>
-            <thead><tr>
-              <th style={S.th}>{t("branch") || "Branch"}</th>
-              <th style={S.th}>{t("ordersLabel") || "Orders"}</th>
-              <th style={S.th}>{t("revenue") || "Revenue"}</th>
-              <th style={S.th}>{t("staff") || "Staff"}</th>
-              <th style={S.th}>{t("lowStockLabel") || "Low Stock"}</th>
-            </tr></thead>
+            <thead>
+              <tr>
+                <th style={S.th}>Branch</th>
+                <th style={S.th}>Orders</th>
+                <th style={S.th}>Revenue</th>
+                <th style={S.th}>Staff</th>
+                <th style={S.th}>Low Stock</th>
+              </tr>
+            </thead>
             <tbody>
               {(branchPerf.performance || []).map((b, i) => (
                 <tr key={i}>
@@ -1043,7 +1203,12 @@ function Reports({ token }) {
                   <td style={S.td}>{b.ordersThisMonth}</td>
                   <td style={{ ...S.td, color: C.accent, fontWeight: "700" }}>FRw {fmt(b.revenueThisMonth)}</td>
                   <td style={S.td}>{b.activeStaff}</td>
-                  <td style={S.td}>{b.lowStockAlerts > 0 ? <span style={S.badge2("Critical")}>{b.lowStockAlerts} alerts</span> : <span style={S.badge2("active")}>OK</span>}</td>
+                  <td style={S.td}>
+                    {b.lowStockAlerts > 0
+                      ? <span style={S.badge2("Critical")}>{b.lowStockAlerts} alerts</span>
+                      : <span style={S.badge2("active")}>OK</span>
+                    }
+                  </td>
                 </tr>
               ))}
             </tbody>
@@ -1054,6 +1219,28 @@ function Reports({ token }) {
   );
 }
 
+// ── NAV CONFIG ────────────────────────────────────────────────────────────────
+const NAV_ITEMS = [
+  { id: "dashboard", icon: "⬡", label: "Dashboard" },
+  { id: "products", icon: "▦", label: "Products" },
+  { id: "inventory", icon: "◫", label: "Inventory" },
+  { id: "orders", icon: "◈", label: "Orders" },
+  { id: "branches", icon: "◉", label: "Branches" },
+  { id: "users", icon: "◎", label: "Users & Roles" },
+  { id: "reports", icon: "◧", label: "Reports" },
+];
+
+const PAGE_LABELS = {
+  dashboard: "Dashboard Overview",
+  products: "Products",
+  inventory: "Inventory",
+  orders: "Orders",
+  branches: "Branches",
+  users: "Users & Roles",
+  reports: "Reports & Analytics",
+};
+
+// ── APP SHELL ─────────────────────────────────────────────────────────────────
 // ── APP SHELL ─────────────────────────────────────────────────────────────────
 export default function GigoManagement() {
   const { user, token } = useContext(AuthContext);
@@ -1061,7 +1248,6 @@ export default function GigoManagement() {
   const navigate = useNavigate();
   const [active, setActive] = useState("dashboard");
   const [lowStockCount, setLowStockCount] = useState(0);
-  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   const dashLang = language === "rn" ? "fr" : language;
   const t = (key) => translations[dashLang]?.[key] ?? translations["en"]?.[key] ?? key;
@@ -1090,9 +1276,9 @@ export default function GigoManagement() {
 
   const NAV_ITEMS = [
     { id: "dashboard", icon: "⬡", label: t("dashboard") || "Dashboard" },
-    { id: "products",  icon: "▦", label: t("products") || "Products" },
+    { id: "products",  icon: "▦", label: t("products") },
     { id: "inventory", icon: "◫", label: t("inventory") || "Inventory" },
-    { id: "orders",    icon: "◈", label: t("orders") || "Orders" },
+    { id: "orders",    icon: "◈", label: t("orders") },
     { id: "branches",  icon: "◉", label: t("branches") || "Branches" },
     { id: "users",     icon: "◎", label: t("users") || "Users & Roles" },
     { id: "reports",   icon: "◧", label: t("reports") || "Reports" },
@@ -1100,9 +1286,9 @@ export default function GigoManagement() {
 
   const PAGE_LABELS = {
     dashboard: t("dashboard") || "Dashboard",
-    products:  t("products") || "Products",
+    products:  t("products"),
     inventory: t("inventory") || "Inventory",
-    orders:    t("orders") || "Orders",
+    orders:    t("orders"),
     branches:  t("branches") || "Branches",
     users:     t("users") || "Users & Roles",
     reports:   t("reports") || "Reports",
@@ -1120,11 +1306,8 @@ export default function GigoManagement() {
   };
 
   return (
-    <div className="gigo-app" style={S.app}>
-      <style>{RESPONSIVE_CSS}</style>
-      <div className={`gigo-backdrop ${sidebarOpen ? "gigo-backdrop-open" : ""}`} onClick={() => setSidebarOpen(false)} />
-
-      <aside className={`gigo-sidebar ${sidebarOpen ? "gigo-sidebar-open" : ""}`} style={S.sidebar}>
+    <div style={S.app}>
+      <aside style={S.sidebar}>
         <div style={S.logo}>
           <div style={S.logoTop}>
             <div style={S.logoIcon}>G</div>
@@ -1135,7 +1318,7 @@ export default function GigoManagement() {
         <nav style={S.nav}>
           <div style={S.navLabel}>{t("menu") || "Menu"}</div>
           {NAV_ITEMS.map(item => (
-            <div key={item.id} style={S.navItem(active === item.id)} onClick={() => { setActive(item.id); setSidebarOpen(false); }}>
+            <div key={item.id} style={S.navItem(active === item.id)} onClick={() => setActive(item.id)}>
               <span style={S.navIcon}>{item.icon}</span>
               {item.label}
               {item.id === "inventory" && lowStockCount > 0 && (
@@ -1145,23 +1328,22 @@ export default function GigoManagement() {
           ))}
         </nav>
         <div style={S.sidebarFooter}>
-          <div style={S.userCard} onClick={logout} title={t("clickToLogout") || "Click to logout"}>
+          <div style={S.userCard} onClick={logout} title={t("logout")}>
             <div style={S.avatar}>{user?.email?.slice(0, 2).toUpperCase() || "OW"}</div>
             <div style={{ flex: 1, minWidth: 0 }}>
-              <div style={{ fontSize: "12px", fontWeight: "700", color: C.text, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{user?.email || "Owner"}</div>
-              <div style={{ fontSize: "10px", color: C.textMuted }}>{t("clickToLogout") || "Click to logout"}</div>
+              <div style={{ fontSize: "12px", fontWeight: "700", color: C.text, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                {user?.email || "Owner"}
+              </div>
+              <div style={{ fontSize: "10px", color: C.textMuted }}>{t("logout")}</div>
             </div>
             <span style={{ color: C.textMuted, fontSize: "12px" }}>⏻</span>
           </div>
         </div>
       </aside>
 
-      <main className="gigo-main" style={S.main}>
+      <main style={S.main}>
         <div style={S.topbar}>
-          <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
-            <div className="gigo-hamburger" onClick={() => setSidebarOpen(true)} style={{ alignItems: "center", justifyContent: "center", width: "32px", height: "32px", borderRadius: "8px", cursor: "pointer", fontSize: "18px", color: C.text }}>☰</div>
-            <div style={S.pageTitle}>{PAGE_LABELS[active]}</div>
-          </div>
+          <div style={S.pageTitle}>{PAGE_LABELS[active]}</div>
           <div style={S.topbarRight}>
             {lowStockCount > 0 && (
               <div style={{ position: "relative", cursor: "pointer" }} onClick={() => setActive("inventory")}>
@@ -1185,7 +1367,7 @@ export default function GigoManagement() {
             </span>
           </div>
         </div>
-        <div className="gigo-content" style={S.content}>{PAGE_MAP[active]}</div>
+        <div style={S.content}>{PAGE_MAP[active]}</div>
       </main>
     </div>
   );
