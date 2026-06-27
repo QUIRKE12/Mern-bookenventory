@@ -273,10 +273,10 @@ function Dashboard({ token }) {
   }));
 
   const kpiCards = [
-    { label: "Revenue This Month", value: `FRw ${fmtM(kpis.revenueThisMonth || 0)}`, delta: kpis.revenueDelta ? `${kpis.revenueDelta > 0 ? "+" : ""}${kpis.revenueDelta}% vs last month` : "No prev data", up: (kpis.revenueDelta || 0) >= 0, icon: "◈", color: C.accent },
-    { label: "Orders This Month", value: fmt(kpis.ordersThisMonth || 0), delta: kpis.ordersDelta ? `${kpis.ordersDelta > 0 ? "+" : ""}${kpis.ordersDelta}% vs last month` : "No prev data", up: (kpis.ordersDelta || 0) >= 0, icon: "▦", color: C.green },
-    { label: "Total Products", value: fmt(kpis.totalProducts || 0), delta: "Registered", up: true, icon: "◫", color: C.blue },
-    { label: "Low Stock Alerts", value: fmt(kpis.lowStockAlerts || 0), delta: (kpis.lowStockAlerts || 0) > 0 ? "Needs attention" : "All good", up: (kpis.lowStockAlerts || 0) === 0, icon: "⚠", color: C.red },
+    { label: t("revenueThisMonth"), value: `FRw ${fmtM(kpis.revenueThisMonth || 0)}`, delta: kpis.revenueDelta ? `${kpis.revenueDelta > 0 ? "+" : ""}${kpis.revenueDelta}% vs last month` : t("noPrevData"), up: (kpis.revenueDelta || 0) >= 0, icon: "◈", color: C.accent },
+    { label: t("ordersThisMonth"), value: fmt(kpis.ordersThisMonth || 0), delta: kpis.ordersDelta ? `${kpis.ordersDelta > 0 ? "+" : ""}${kpis.ordersDelta}% vs last month` : t("noPrevData"), up: (kpis.ordersDelta || 0) >= 0, icon: "▦", color: C.green },
+    { label: t("totalProducts"), value: fmt(kpis.totalProducts || 0), delta: t("registered"), up: true, icon: "◫", color: C.blue },
+    { label: t("lowStockAlerts"), value: fmt(kpis.lowStockAlerts || 0), delta: (kpis.lowStockAlerts || 0) > 0 ? t("needsAttention") : t("allGood"), up: (kpis.lowStockAlerts || 0) === 0, icon: "⚠", color: C.red },
   ];
 
   const maxSold = bestSellers[0]?.totalSold || 1;
@@ -284,8 +284,8 @@ function Dashboard({ token }) {
   return (
     <div>
       <div style={{ marginBottom: "20px" }}>
-        <div style={{ fontSize: "22px", fontWeight: "800", color: C.text, marginBottom: "4px" }}>Good morning, Owner 👋</div>
-        <div style={{ fontSize: "13px", color: C.textMuted }}>Here's what's happening across your branches today — {now.toLocaleDateString("en-RW", { weekday: "long", day: "numeric", month: "long", year: "numeric" })}</div>
+        <div style={{ fontSize: "22px", fontWeight: "800", color: C.text, marginBottom: "4px" }}>{t("dashboardGreeting")}</div>
+        <div style={{ fontSize: "13px", color: C.textMuted }}>{t("dashboardSubtitle")} — {now.toLocaleDateString(dashLang === "fr" ? "fr-FR" : "en-RW", { weekday: "long", day: "numeric", month: "long", year: "numeric" })}</div>
       </div>
 
       <div className="gigo-kpi-grid" style={S.grid4}>
@@ -302,19 +302,19 @@ function Dashboard({ token }) {
 
       <div className="gigo-2col-grid" style={S.grid2}>
         <div style={S.card}>
-          <div style={S.cardHeader}><div style={S.cardTitle}>Recent Orders</div></div>
+          <div style={S.cardHeader}><div style={S.cardTitle}>{t("recentOrders")}</div></div>
           <table className="gigo-table" style={S.table}>
             <thead>
               <tr>
-                <th style={S.th}>Customer</th>
-                <th style={S.th}>Branch</th>
-                <th style={S.th}>Total</th>
-                <th style={S.th}>Status</th>
+                <th style={S.th}>{t("customer")}</th>
+                <th style={S.th}>{t("branch")}</th>
+                <th style={S.th}>{t("total")}</th>
+                <th style={S.th}>{t("status")}</th>
               </tr>
             </thead>
             <tbody>
               {recentOrders.length === 0 && (
-                <tr><td colSpan={4} style={{ ...S.td, textAlign: "center", color: C.textMuted }}>No orders yet</td></tr>
+                <tr><td colSpan={4} style={{ ...S.td, textAlign: "center", color: C.textMuted }}>{t("noOrders")}</td></tr>
               )}
               {recentOrders.map((o, i) => (
                 <tr key={i}>
@@ -333,12 +333,12 @@ function Dashboard({ token }) {
 
         <div style={S.card}>
           <div style={S.cardHeader}>
-            <div style={S.cardTitle}>Best Selling Products</div>
-            <span style={{ fontSize: "11px", color: C.textMuted }}>This month</span>
+            <div style={S.cardTitle}>{t("bestSelling")}</div>
+            <span style={{ fontSize: "11px", color: C.textMuted }}>{t("thisMonth")}</span>
           </div>
           <div style={{ padding: "8px 0" }}>
             {bestSellers.length === 0 && (
-              <div style={{ padding: "20px", color: C.textMuted, fontSize: "13px", textAlign: "center" }}>No sales data yet</div>
+              <div style={{ padding: "20px", color: C.textMuted, fontSize: "13px", textAlign: "center" }}>{t("noSales")}</div>
             )}
             {bestSellers.map((p, i) => (
               <div key={i} style={{ padding: "12px 20px", borderBottom: `1px solid ${C.border}` }}>
@@ -358,7 +358,7 @@ function Dashboard({ token }) {
 
       <div style={S.card}>
         <div style={S.cardHeader}>
-          <div style={S.cardTitle}>Monthly Revenue</div>
+          <div style={S.cardTitle}>{t("monthlyRevenue")}</div>
           <span style={{ fontSize: "11px", color: C.green, fontWeight: "700" }}>
             {kpis.revenueDelta && kpis.revenueDelta > 0 ? `▲ +${kpis.revenueDelta}% vs last month` : ""}
           </span>
@@ -378,7 +378,7 @@ function Dashboard({ token }) {
               </div>
             </>
           ) : (
-            <div style={{ color: C.textMuted, fontSize: "13px", padding: "16px 0" }}>No revenue data yet</div>
+            <div style={{ color: C.textMuted, fontSize: "13px", padding: "16px 0" }}>{t("noRevenue")}</div>
           )}
         </div>
       </div>
@@ -753,9 +753,9 @@ function Orders({ token }) {
       <div style={S.card}>
         <div style={S.cardHeader}>
           <div className="gigo-tabs-scroll" style={{ display: "flex", gap: "6px", flexWrap: "wrap" }}>
-            {tabs.map(t => (
-              <button key={t} onClick={() => setFilter(t)} style={{ padding: "6px 14px", borderRadius: "6px", fontSize: "12px", fontWeight: "600", cursor: "pointer", background: filter === t ? C.accent : "transparent", color: filter === t ? C.bg : C.textMuted, border: `1px solid ${filter === t ? C.accent : C.border}` }}>
-                {t.charAt(0).toUpperCase() + t.slice(1)}
+            {tabs.map(tab => (
+              <button key={tab} onClick={() => setFilter(tab)} style={{ padding: "6px 14px", borderRadius: "6px", fontSize: "12px", fontWeight: "600", cursor: "pointer", background: filter === tab ? C.accent : "transparent", color: filter === tab ? C.bg : C.textMuted, border: `1px solid ${filter === tab ? C.accent : C.border}` }}>
+                {tab.charAt(0).toUpperCase() + tab.slice(1)}
               </button>
             ))}
           </div>
